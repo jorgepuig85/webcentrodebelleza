@@ -1,8 +1,11 @@
 export const NAV_LINKS = [
   { id: 'inicio', title: 'Inicio' },
   { id: 'servicios', title: 'Servicios' },
+  { id: 'promociones', title: 'Promociones' },
   { id: 'tecnologia', title: 'Tecnología' },
+  { id: 'alquiler', title: 'Alquiler' },
   { id: 'testimonios', title: 'Testimonios' },
+  { id: 'ubicaciones', title: 'Ubicaciones' },
   { id: 'contacto', title: 'Contacto' },
 ];
 

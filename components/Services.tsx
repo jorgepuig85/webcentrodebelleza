@@ -20,7 +20,7 @@ const cardVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
+      ease: [0, 0, 0.58, 1]
     }
   }
 };
@@ -40,9 +40,11 @@ const scrollToSection = (id: string) => {
   }
 };
 
+const MotionDiv = motion.div;
+
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
   return (
-    <motion.div
+    <MotionDiv
       className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex flex-col"
       variants={cardVariants}
       initial="hidden"
@@ -73,7 +75,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
           </button>
         </div>
       </div>
-    </motion.div>
+    </MotionDiv>
   );
 };
 

@@ -11,6 +11,8 @@ type Inputs = {
   time: string;
 };
 
+const MotionDiv = motion.div;
+
 const Contact: React.FC = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = data => {
@@ -28,7 +30,7 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <section id="contacto" className="py-20 bg-white">
+    <section id="contacto" className="py-20 bg-gray-50">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Contactanos y Reservá tu Turno</h2>
@@ -37,8 +39,8 @@ const Contact: React.FC = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          <motion.div
-            className="bg-gray-50 p-8 rounded-lg shadow-md"
+          <MotionDiv
+            className="bg-white p-8 rounded-lg shadow-md"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
@@ -73,8 +75,8 @@ const Contact: React.FC = () => {
                 <Send size={20} /> Enviar Mensaje
               </button>
             </form>
-          </motion.div>
-          <motion.div
+          </MotionDiv>
+          <MotionDiv
             className="space-y-8"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -112,7 +114,7 @@ const Contact: React.FC = () => {
                 className="rounded-lg shadow-md"
               ></iframe>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
       </div>
     </section>

@@ -1,7 +1,8 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Zap, ShieldCheck, Heart, Leaf } from 'lucide-react';
+
+const MotionDiv = motion.div;
 
 const Technology: React.FC = () => {
   const features = [
@@ -15,20 +16,20 @@ const Technology: React.FC = () => {
     <section id="tecnologia" className="py-20 bg-white">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.5 }}
             transition={{ duration: 0.7 }}
           >
             <img 
-              src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/sign/web/diodo-portatil-adss-1-1.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNWFlYWVlNC0zNDhlLTQ1ZGUtYmYwMi1kODQwYzI3NjM0NzkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWIvZGlvZG8tcG9ydGF0aWwtYWRzcy0xLTEuanBnIiwiaWF0IjoxNzUzMTEzMTM3LCJleHAiOjE3ODQ2NDkxMzd9.PznQ-HCMOBiw_LtmcmVMjSbhqNYQplsLpzPUaDv-6Ec" 
+              src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg" 
               alt="Equipo de depilación láser de última generación"
-              className="rounded-lg shadow-2xl w-full h-full object-cover"
+              className="rounded-lg shadow-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
               loading="lazy"
             />
-          </motion.div>
-          <motion.div
+          </MotionDiv>
+          <MotionDiv
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.5 }}
@@ -54,7 +55,7 @@ const Technology: React.FC = () => {
                 );
               })}
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
       </div>
     </section>

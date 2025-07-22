@@ -1,8 +1,9 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TESTIMONIALS } from '../constants';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+
+const MotionDiv = motion.div;
 
 const Testimonials: React.FC = () => {
   const [index, setIndex] = useState(0);
@@ -55,7 +56,7 @@ const Testimonials: React.FC = () => {
         
         <div className="relative max-w-3xl mx-auto h-80 md:h-64 flex items-center justify-center">
           <AnimatePresence initial={false} custom={direction}>
-            <motion.div
+            <MotionDiv
               key={index}
               custom={direction}
               variants={slideVariants}
@@ -86,7 +87,7 @@ const Testimonials: React.FC = () => {
                     </div>
                 </div>
               </div>
-            </motion.div>
+            </MotionDiv>
           </AnimatePresence>
           
           <button onClick={handlePrev} className="absolute left-0 -translate-x-12 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-pink-100 transition-colors">
