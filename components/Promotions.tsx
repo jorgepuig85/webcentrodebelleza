@@ -34,27 +34,43 @@ const Promotions: React.FC = () => {
     const fetchPromotions = async () => {
       try {
         setLoading(true);
-        console.log('Fetching promotions (is_combo=TRUE)...');
-        const { data, error } = await supabase
+        const { data: promotionsData, error: promotionsError } = await supabase
           .from('items')
           .select('id, name, description, price, zones')
-          .eq('is_combo', 'TRUE') // Search for uppercase string 'TRUE'
+          .eq('is_combo', 'TRUE')
           .order('price', { ascending: true });
 
-        console.log('Supabase response for promotions:', { data, error });
+        if (promotionsError) throw promotionsError;
 
-        if (error) throw error;
-        if (data) {
-          const formattedPromotions: Promotion[] = data.map((item: any) => ({
+        if (promotionsData && promotionsData.length > 0) {
+          const uniqueZoneIds = [...new Set(promotionsData.flatMap(promo => promo.zones || []))];
+
+          let zoneNamesMap: Record<string, string> = {};
+          if (uniqueZoneIds.length > 0) {
+            const { data: zonesData, error: zonesError } = await supabase
+              .from('items')
+              .select('id, name')
+              .in('id', uniqueZoneIds);
+
+            if (zonesError) throw zonesError;
+
+            if (zonesData) {
+              zoneNamesMap = Object.fromEntries(zonesData.map(zone => [zone.id, zone.name]));
+            }
+          }
+
+          const formattedPromotions: Promotion[] = promotionsData.map((item: any) => ({
             id: item.id,
             title: item.name,
             description: item.description || 'Un pack increíble a un precio especial.',
             price: item.price,
-            includes: item.zones || [],
+            includes: item.zones?.map((zoneId: string) => zoneNamesMap[zoneId]).filter((name): name is string => !!name) || [],
           }));
+          
           setPromotions(formattedPromotions);
+        } else {
+            setPromotions([]);
         }
-
       } catch (err: any) {
         console.error("Error fetching promotions:", err);
         setError('No se pudieron cargar las promociones. Por favor, intente más tarde.');
