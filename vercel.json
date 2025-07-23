@@ -1,4 +1,0 @@
-{
-  "buildCommand": "mkdir public && cp -r ./* public",
-  "outputDirectory": "public"
-}
