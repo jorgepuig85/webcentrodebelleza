@@ -6,7 +6,6 @@ import { Sparkles, CheckCircle } from 'lucide-react';
 type Promotion = {
   id: string;
   title: string;
-  description: string;
   price: number;
   includes: string[];
 };
@@ -36,7 +35,7 @@ const Promotions: React.FC = () => {
         setLoading(true);
         const { data: promotionsData, error: promotionsError } = await supabase
           .from('items')
-          .select('id, name, description, price, zones')
+          .select('id, name, price, zones')
           .eq('is_combo', 'TRUE')
           .order('price', { ascending: true });
 
@@ -62,7 +61,6 @@ const Promotions: React.FC = () => {
           const formattedPromotions: Promotion[] = promotionsData.map((item: any) => ({
             id: item.id,
             title: item.name,
-            description: item.description || 'Un pack increíble a un precio especial.',
             price: item.price,
             includes: item.zones?.map((zoneId: string) => zoneNamesMap[zoneId]).filter((name): name is string => !!name) || [],
           }));
@@ -124,10 +122,9 @@ const Promotions: React.FC = () => {
             <div className="bg-pink-100 p-4 rounded-full mb-4">
               <Sparkles className="text-pink-500" size={32} />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">{promo.title}</h3>
-            <p className="text-gray-500 mb-6 min-h-[3rem]">{promo.description}</p>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">{promo.title}</h3>
             
-            <ul className="mb-6 space-y-2 text-left w-full">
+            <ul className="mb-6 space-y-2 text-left w-full flex-grow">
               {promo.includes.map((item, index) => (
                 <li key={index} className="flex items-center gap-2">
                   <CheckCircle className="text-green-500 w-5 h-5 flex-shrink-0" />
