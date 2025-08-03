@@ -13,6 +13,14 @@ type Service = {
   image: string;
 };
 
+type FetchedItem = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  image_url: string | null;
+};
+
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 50 },
   visible: { 
@@ -95,7 +103,7 @@ const Services = () => {
         if (fetchError) throw fetchError;
         
         if (data) {
-           const formattedServices: Service[] = (data as any[]).map((item) => ({
+           const formattedServices: Service[] = (data as FetchedItem[]).map((item) => ({
             id: item.id,
             name: item.name,
             description: item.description || 'Consulta por más detalles de este servicio.',

@@ -38,9 +38,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const webAppointmentsResult = await supabaseAdmin.from('web_appointments').select('time').eq('date', date);
         const rentalResult = await supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date);
         
-        const { data: appointments, error: appointmentsError } = appointmentsResult;
-        const { data: webAppointments, error: webAppointmentsError } = webAppointmentsResult;
-        const { data: rentalData, error: rentalError } = rentalResult;
+        const { data: appointments, error: appointmentsError } = appointmentsResult as any;
+        const { data: webAppointments, error: webAppointmentsError } = webAppointmentsResult as any;
+        const { data: rentalData, error: rentalError } = rentalResult as any;
         
         if (appointmentsError) throw appointmentsError;
         if (webAppointmentsError) throw webAppointmentsError;
@@ -56,11 +56,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const bookedTimes = new Set([
             ...bookedAppointments
-                .map(a => a.start_time?.substring(0, 5))
-                .filter((t): t is string => Boolean(t)),
+                .map((a: any) => a.start_time?.substring(0, 5))
+                .filter((t: any): t is string => Boolean(t)),
             ...bookedWebAppointments
-                .map(a => a.time?.substring(0, 5))
-                .filter((t): t is string => Boolean(t))
+                .map((a: any) => a.time?.substring(0, 5))
+                .filter((t: any): t is string => Boolean(t))
         ]);
 
         // 3. Filter out booked slots to find what's available

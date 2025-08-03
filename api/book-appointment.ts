@@ -296,15 +296,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const existingWebAppoinmentResult = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
         if (existingWebAppoinmentResult.error) throw existingWebAppoinmentResult.error;
 
-        if (existingAppointmentResult.data || existingWebAppoinmentResult.data) {
+        if ((existingAppointmentResult as any).data || (existingWebAppoinmentResult as any).data) {
             return res.status(409).json({ error: 'Este horario acaba de ser reservado. Por favor, elegí otro.' });
         }
         
-        const { data: newAppointment, error: insertError } = await supabaseAdmin
+        const { data: newAppointment, error: insertError } = (await supabaseAdmin
             .from('web_appointments')
             .insert([{ name, email, phone: phone ?? null, date, time, zones, message: message ?? null, status: 'pendiente' }] as any)
             .select()
-            .single();
+            .single()) as any;
 
         if (insertError) {
              throw new Error(`Supabase insert error: ${insertError.message}`);

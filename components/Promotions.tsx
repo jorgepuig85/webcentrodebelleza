@@ -11,6 +11,13 @@ type Promotion = {
   includes: string[];
 };
 
+type FetchedPromotion = {
+  id: string;
+  name: string;
+  price: number;
+  zones: string[] | null;
+};
+
 const cardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.9 },
   visible: { 
@@ -41,7 +48,7 @@ const Promotions = () => {
         if (promotionsError) throw promotionsError;
 
         if (promotionsData && promotionsData.length > 0) {
-          const typedPromotionsData = promotionsData as any[];
+          const typedPromotionsData = promotionsData as FetchedPromotion[];
           const uniqueZoneIds = [...new Set(typedPromotionsData.flatMap(promo => promo.zones || []))];
 
           let zoneNamesMap: Record<string, string> = {};
@@ -58,7 +65,7 @@ const Promotions = () => {
             }
           }
 
-          const formattedPromotions: Promotion[] = typedPromotionsData.map((item: any) => ({
+          const formattedPromotions: Promotion[] = typedPromotionsData.map((item) => ({
             id: item.id,
             title: item.name,
             price: item.price,
