@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -12,15 +11,6 @@ type Service = {
   description: string;
   price: number;
   image: string;
-};
-
-// Explicit type for data fetched from Supabase
-type ItemFromDB = {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  image_url: string | null;
 };
 
 const cardVariants: Variants = {
@@ -87,7 +77,47 @@ const ServiceCard = ({ service }: { service: Service }) => {
   );
 };
 
-const ServicesContent = ({ loading, error, services }: { loading: boolean, error: string | null, services: Service[] }) => {
+const Services = () => {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const { data, error: fetchError } = await supabase
+          .from('items')
+          .select('id, name, description, price, image_url') // Fetch the new image_url column
+          .eq('is_combo', 'FALSE')
+          .order('name', { ascending: true });
+        
+        if (fetchError) throw fetchError;
+        
+        if (data) {
+           const formattedServices: Service[] = (data as any[]).map((item) => ({
+            id: item.id,
+            name: item.name,
+            description: item.description || 'Consulta por más detalles de este servicio.',
+            price: item.price,
+            // Use image_url if available, otherwise use the fallback
+            image: item.image_url || `https://picsum.photos/seed/${encodeURIComponent(item.name)}/400/300`,
+          }));
+          setServices(formattedServices);
+        }
+
+      } catch (err: any) {
+        console.error("Error fetching services:", err);
+        setError('No se pudieron cargar los servicios. Por favor, intente más tarde.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+  
+    const renderContent = (): React.ReactNode => {
     if (loading) {
       return <div className="text-center text-gray-500 py-8">Cargando servicios...</div>;
     }
@@ -112,54 +142,13 @@ const ServicesContent = ({ loading, error, services }: { loading: boolean, error
         ))}
       </div>
     );
-};
-
-const Services = () => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        setLoading(true);
-        const { data, error: fetchError } = await supabase
-          .from('items')
-          .select('id, name, description, price, image_url') // Fetch the new image_url column
-          .eq('is_combo', 'FALSE')
-          .order('name', { ascending: true });
-        
-        if (fetchError) throw fetchError;
-        
-        if (data) {
-           const items: ItemFromDB[] = data;
-           const formattedServices: Service[] = items.map((item) => ({
-            id: item.id,
-            name: item.name,
-            description: item.description || 'Consulta por más detalles de este servicio.',
-            price: item.price,
-            // Use image_url if available, otherwise use the fallback
-            image: item.image_url || `https://picsum.photos/seed/${encodeURIComponent(item.name)}/400/300`,
-          }));
-          setServices(formattedServices);
-        }
-
-      } catch (err: any) {
-        console.error("Error fetching services:", err);
-        setError('No se pudieron cargar los servicios. Por favor, intente más tarde.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchServices();
-  }, []);
+  };
 
   return (
     <section id="servicios" className="py-20 bg-gray-50">
       <div className="container mx-auto px-6">
         <SectionHeader title="Nuestros Servicios" subtitle="Elegí la zona que querés tratar y empezá tu cambio." />
-        <ServicesContent loading={loading} error={error} services={services} />
+        {renderContent()}
       </div>
     </section>
   );

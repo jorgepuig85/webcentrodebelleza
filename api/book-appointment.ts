@@ -1,5 +1,4 @@
 
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
@@ -301,20 +300,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(409).json({ error: 'Este horario acaba de ser reservado. Por favor, elegí otro.' });
         }
         
-        const appointmentToInsert = {
-            name, 
-            email, 
-            phone: phone ?? null, 
-            date, 
-            time, 
-            zones, 
-            message: message ?? null, 
-            status: 'pendiente'
-        };
-
         const { data: newAppointment, error: insertError } = await supabaseAdmin
             .from('web_appointments')
-            .insert(appointmentToInsert)
+            .insert([{ name, email, phone: phone ?? null, date, time, zones, message: message ?? null, status: 'pendiente' }])
             .select()
             .single();
 
