@@ -87,6 +87,33 @@ const ServiceCard = ({ service }: { service: Service }) => {
   );
 };
 
+const ServicesContent = ({ loading, error, services }: { loading: boolean, error: string | null, services: Service[] }) => {
+    if (loading) {
+      return <div className="text-center text-gray-500 py-8">Cargando servicios...</div>;
+    }
+
+    if (error) {
+      return <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">{error}</div>;
+    }
+
+    if (services.length === 0) {
+        return (
+            <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+                <h3 className="font-semibold text-lg mb-2">No se encontraron servicios.</h3>
+                <p>Verifique que los servicios en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> como <code className="bg-gray-200 px-1 rounded">'FALSE'</code>.</p>
+            </div>
+        );
+    }
+
+    return (
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {services.map((service) => (
+          <ServiceCard key={service.id} service={service} />
+        ))}
+      </div>
+    );
+};
+
 const Services = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -127,39 +154,12 @@ const Services = () => {
 
     fetchServices();
   }, []);
-  
-    const renderContent = (): React.ReactNode => {
-    if (loading) {
-      return <div className="text-center text-gray-500 py-8">Cargando servicios...</div>;
-    }
-
-    if (error) {
-      return <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">{error}</div>;
-    }
-
-    if (services.length === 0) {
-        return (
-            <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
-                <h3 className="font-semibold text-lg mb-2">No se encontraron servicios.</h3>
-                <p>Verifique que los servicios en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> como <code className="bg-gray-200 px-1 rounded">'FALSE'</code>.</p>
-            </div>
-        );
-    }
-
-    return (
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {services.map((service) => (
-          <ServiceCard key={service.id} service={service} />
-        ))}
-      </div>
-    );
-  };
 
   return (
     <section id="servicios" className="py-20 bg-gray-50">
       <div className="container mx-auto px-6">
         <SectionHeader title="Nuestros Servicios" subtitle="Elegí la zona que querés tratar y empezá tu cambio." />
-        {renderContent()}
+        <ServicesContent loading={loading} error={error} services={services} />
       </div>
     </section>
   );

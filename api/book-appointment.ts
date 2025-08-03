@@ -2,7 +2,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { createClient, PostgrestSingleResponse } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
@@ -291,10 +291,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const { data: existingAppointment, error: appointmentsError }: PostgrestSingleResponse<{ id: number }> = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
+        const { data: existingAppointment, error: appointmentsError } = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
         if (appointmentsError) throw appointmentsError;
 
-        const { data: existingWebAppoinment, error: webAppointmentsError }: PostgrestSingleResponse<{ id: number }> = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
+        const { data: existingWebAppoinment, error: webAppointmentsError } = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
         if (webAppointmentsError) throw webAppointmentsError;
 
         if (existingAppointment || existingWebAppoinment) {
