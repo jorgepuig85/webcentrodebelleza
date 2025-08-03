@@ -1,7 +1,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../lib/supabaseClient.js';
 
 // --- Types ---
 interface EmailProps {
@@ -21,12 +21,20 @@ interface AdminEmailProps extends EmailProps {
 
 const LOCATION = 'Neuquen 560, Miguel Riglos, La Pampa, Argentina';
 
-// Formats a YYYY-MM-DD string into a user-friendly format for display in emails.
-const formatDateForDisplay = (dateString: string) => {
-    const date = new Date(`${dateString}T00:00:00-03:00`); // ART is UTC-3
-    const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Argentina/Buenos_Aires' };
-    return new Intl.DateTimeFormat('es-AR', options).format(date);
+// Manual date formatter to avoid Node full-icu dependency on Vercel
+const formatDateForDisplay = (dateString: string): string => {
+    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    
+    const date = new Date(`${dateString}T00:00:00-03:00`); // ART is UTC-3, ensure correct date object
+    const dayOfWeek = days[date.getUTCDay()];
+    const dayOfMonth = date.getUTCDate();
+    const month = months[date.getUTCMonth()];
+    const year = date.getUTCFullYear();
+
+    return `${dayOfWeek}, ${dayOfMonth} de ${month} de ${year}`;
 };
+
 
 // Creates UTC date strings required by calendar links (e.g., 20240815T180000Z)
 const getUtcDateTime = (date: string, time: string): { start: string, end: string } => {
