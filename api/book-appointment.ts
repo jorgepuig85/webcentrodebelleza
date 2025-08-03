@@ -2,8 +2,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
-import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
 
 // --- Types ---
 interface EmailProps {
@@ -18,32 +16,6 @@ interface AdminEmailProps extends EmailProps {
     phone?: string;
     message?: string;
 }
-
-// --- Rate Limiter Initialization ---
-let redis: Redis | null = null;
-let ratelimit: Ratelimit | null = null;
-
-// Initialize the rate limiter only if the environment variables are set
-if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-    try {
-        redis = new Redis({
-            url: process.env.UPSTASH_REDIS_REST_URL,
-            token: process.env.UPSTASH_REDIS_REST_TOKEN,
-        });
-
-        ratelimit = new Ratelimit({
-            redis: redis,
-            limiter: Ratelimit.slidingWindow(5, '1 m'), // Limit: 5 requests per 1 minute
-            analytics: true,
-            prefix: 'centro_belleza_ratelimit',
-        });
-    } catch (error) {
-        console.error('Failed to initialize Upstash Redis for rate limiting:', error);
-    }
-} else {
-    console.warn('Upstash Redis environment variables not set. Rate limiting is disabled.');
-}
-
 
 // --- Calendar & Date Helpers ---
 
@@ -238,33 +210,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(405).end('Method Not Allowed');
     }
     
-    // --- Rate Limiting Logic ---
-    if (ratelimit) {
-        // Use 'x-forwarded-for' header or fallback to socket remote address for IP identification
-        const ip = req.headers['x-forwarded-for'] ?? req.socket.remoteAddress;
-        if (typeof ip === 'string' && ip) {
-            try {
-                const { success, limit, remaining, reset } = await ratelimit.limit(ip);
-                
-                res.setHeader('X-RateLimit-Limit', limit.toString());
-                res.setHeader('X-RateLimit-Remaining', remaining.toString());
-                res.setHeader('X-RateLimit-Reset', reset.toString());
-
-                if (!success) {
-                    return res.status(429).json({ 
-                        error: 'Demasiadas solicitudes.',
-                        message: 'Has intentado agendar un turno demasiadas veces. Por favor, esperá un minuto antes de volver a intentarlo.' 
-                    });
-                }
-            } catch (error) {
-                console.error('Error communicating with Upstash Ratelimit:', error);
-                // If the rate limiter fails, we proceed without it but log the error.
-                // This prevents a single point of failure from taking down the booking system.
-            }
-        }
-    }
-
-
     const resendApiKey = process.env.RESEND_API_KEY;
     const adminEmailsEnv = process.env.ADMIN_EMAIL;
     const fromEmail = process.env.FROM_EMAIL || 'Centro de Belleza <onboarding@resend.dev>';
@@ -290,21 +235,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const existingAppointmentResult = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
-        if (existingAppointmentResult.error) throw existingAppointmentResult.error;
+        const { data: existingAppointment, error: existingAppointmentError } = await supabaseAdmin
+            .from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
+        if (existingAppointmentError) throw existingAppointmentError;
 
-        const existingWebAppoinmentResult = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
-        if (existingWebAppoinmentResult.error) throw existingWebAppoinmentResult.error;
+        const { data: existingWebAppoinment, error: existingWebAppoinmentError } = await supabaseAdmin
+            .from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
+        if (existingWebAppoinmentError) throw existingWebAppoinmentError;
 
-        if ((existingAppointmentResult as any).data || (existingWebAppoinmentResult as any).data) {
+        if (existingAppointment || existingWebAppoinment) {
             return res.status(409).json({ error: 'Este horario acaba de ser reservado. Por favor, elegí otro.' });
         }
         
-        const { data: newAppointment, error: insertError } = (await supabaseAdmin
+        const { data: newAppointment, error: insertError } = await supabaseAdmin
             .from('web_appointments')
-            .insert([{ name, email, phone: phone ?? null, date, time, zones, message: message ?? null, status: 'pendiente' }] as any)
+            .insert([{ name, email, phone: phone ?? null, date, time, zones, message: message ?? null, status: 'pendiente' }])
             .select()
-            .single()) as any;
+            .single();
 
         if (insertError) {
              throw new Error(`Supabase insert error: ${insertError.message}`);

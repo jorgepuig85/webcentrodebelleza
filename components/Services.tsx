@@ -94,11 +94,14 @@ const Services = () => {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        const { data, error: fetchError } = await supabase
+        // Explicitly type response as any to prevent deep type instantiation issues.
+        const response: any = await supabase
           .from('items')
-          .select('id, name, description, price, image_url') // Fetch the new image_url column
+          .select('id, name, description, price, image_url')
           .eq('is_combo', 'FALSE')
           .order('name', { ascending: true });
+        
+        const { data, error: fetchError } = response;
         
         if (fetchError) throw fetchError;
         
@@ -108,7 +111,6 @@ const Services = () => {
             name: item.name,
             description: item.description || 'Consulta por más detalles de este servicio.',
             price: item.price,
-            // Use image_url if available, otherwise use the fallback
             image: item.image_url || `https://picsum.photos/seed/${encodeURIComponent(item.name)}/400/300`,
           }));
           setServices(formattedServices);

@@ -39,11 +39,13 @@ const Promotions = () => {
     const fetchPromotions = async () => {
       try {
         setLoading(true);
-        const { data: promotionsData, error: promotionsError } = await supabase
+        const promotionsResponse: any = await supabase
           .from('items')
           .select('id, name, price, zones')
           .eq('is_combo', 'TRUE')
           .order('price', { ascending: true });
+
+        const { data: promotionsData, error: promotionsError } = promotionsResponse;
 
         if (promotionsError) throw promotionsError;
 
@@ -53,10 +55,12 @@ const Promotions = () => {
 
           let zoneNamesMap: Record<string, string> = {};
           if (uniqueZoneIds.length > 0) {
-            const { data: zonesData, error: zonesError } = await supabase
+            const zonesResponse: any = await supabase
               .from('items')
               .select('id, name')
               .in('id', uniqueZoneIds);
+            
+            const { data: zonesData, error: zonesError } = zonesResponse;
 
             if (zonesError) throw zonesError;
 

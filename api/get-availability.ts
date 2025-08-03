@@ -34,13 +34,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const allSlots = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => `${String(START_HOUR + i).padStart(2, '0')}:00`);
 
         // 2. Fetch all bookings for the day from all relevant tables using the admin client
-        const appointmentsResult = await supabaseAdmin.from('appointments').select('start_time').eq('date', date);
-        const webAppointmentsResult = await supabaseAdmin.from('web_appointments').select('time').eq('date', date);
-        const rentalResult = await supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date);
-        
-        const { data: appointments, error: appointmentsError } = appointmentsResult as any;
-        const { data: webAppointments, error: webAppointmentsError } = webAppointmentsResult as any;
-        const { data: rentalData, error: rentalError } = rentalResult as any;
+        const { data: appointments, error: appointmentsError } = await supabaseAdmin.from('appointments').select('start_time').eq('date', date);
+        const { data: webAppointments, error: webAppointmentsError } = await supabaseAdmin.from('web_appointments').select('time').eq('date', date);
+        const { data: rentalData, error: rentalError } = await supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date);
         
         if (appointmentsError) throw appointmentsError;
         if (webAppointmentsError) throw webAppointmentsError;
@@ -56,11 +52,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const bookedTimes = new Set([
             ...bookedAppointments
-                .map((a: any) => a.start_time?.substring(0, 5))
-                .filter((t: any): t is string => Boolean(t)),
+                .map((a: { start_time?: string | null }) => a.start_time?.substring(0, 5))
+                .filter((t): t is string => Boolean(t)),
             ...bookedWebAppointments
-                .map((a: any) => a.time?.substring(0, 5))
-                .filter((t: any): t is string => Boolean(t))
+                .map((a: { time?: string | null }) => a.time?.substring(0, 5))
+                .filter((t): t is string => Boolean(t))
         ]);
 
         // 3. Filter out booked slots to find what's available

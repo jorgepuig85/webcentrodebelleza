@@ -124,7 +124,6 @@ const Contact: React.FC = () => {
     setFormStatus('loading');
     setStatusMessage('');
     try {
-        // All submissions now go through the secure API route
         const response = await fetch('/api/book-appointment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -132,24 +131,16 @@ const Contact: React.FC = () => {
         });
 
         if (!response.ok) {
-          let errorMsg = 'Ocurrió un error al agendar el turno.';
-          try {
             const errorData = await response.json();
-            // Use the 'message' field for rate-limiting errors (429), or 'error' for others.
-            errorMsg = errorData.message || errorData.error || `Error del servidor: ${response.status}`;
-          } catch (jsonError) {
-            // If response is not JSON, use the status text as a fallback.
-            errorMsg = `Error de comunicación con el servidor (${response.statusText || response.status}).`;
-          }
-          throw new Error(errorMsg);
+            throw new Error(errorData.error || 'Ocurrió un error al agendar el turno.');
         }
 
         await response.json();
         setFormStatus('success');
         setStatusMessage('¡Tu turno fue solicitado con éxito! Recibirás un email con los detalles y te contactaremos para confirmar.');
       
-      reset({ contactType: 'appointment', name: '', email: '', phone: '', date: '', time: '', zones: [], message: '' });
-      setAvailableTimes([]);
+        reset({ contactType: 'appointment', name: '', email: '', phone: '', date: '', time: '', zones: [], message: '' });
+        setAvailableTimes([]);
 
     } catch (error: any) {
       setFormStatus('error');
