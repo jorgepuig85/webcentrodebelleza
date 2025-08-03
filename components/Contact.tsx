@@ -135,9 +135,11 @@ const Contact: React.FC = () => {
           let errorMsg = 'Ocurrió un error al agendar el turno.';
           try {
             const errorData = await response.json();
-            errorMsg = errorData.error || `Error del servidor: ${response.status}`;
+            // Use the 'message' field for rate-limiting errors (429), or 'error' for others.
+            errorMsg = errorData.message || errorData.error || `Error del servidor: ${response.status}`;
           } catch (jsonError) {
-            errorMsg = `Error de comunicación con el servidor (${response.status}).`;
+            // If response is not JSON, use the status text as a fallback.
+            errorMsg = `Error de comunicación con el servidor (${response.statusText || response.status}).`;
           }
           throw new Error(errorMsg);
         }
