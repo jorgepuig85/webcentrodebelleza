@@ -1,4 +1,5 @@
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 
@@ -33,21 +34,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // 1. Generate all possible time slots for the day
         const allSlots = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => `${String(START_HOUR + i).padStart(2, '0')}:00`);
 
-        // 2. Fetch all bookings for the day from all relevant tables using the admin client
-        const [
-            appointmentsResult,
-            webAppointmentsResult,
-            rentalResult
-        ] = await Promise.all([
-            supabaseAdmin.from('appointments').select('start_time').eq('date', date),
-            supabaseAdmin.from('web_appointments').select('time').eq('date', date),
-            supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date)
-        ]);
+        // 2. Fetch all bookings for the day sequentially to help with type inference
+        const { data: appointments, error: appointmentsError } = await supabaseAdmin
+            .from('appointments')
+            .select('start_time')
+            .eq('date', date);
+
+        const { data: webAppointments, error: webAppointmentsError } = await supabaseAdmin
+            .from('web_appointments')
+            .select('time')
+            .eq('date', date);
         
-        const { data: appointments, error: appointmentsError } = appointmentsResult;
-        const { data: webAppointments, error: webAppointmentsError } = webAppointmentsResult;
-        const { data: rentalData, error: rentalError } = rentalResult;
-        
+        const { data: rentalData, error: rentalError } = await supabaseAdmin
+            .from('rentals')
+            .select('id')
+            .lte('start_date', date)
+            .gte('end_date', date);
+
         if (appointmentsError) throw appointmentsError;
         if (webAppointmentsError) throw webAppointmentsError;
         if (rentalError) throw rentalError;
@@ -62,10 +65,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const bookedTimes = new Set([
             ...bookedAppointments
-                .map(a => a.start_time?.substring(0, 5))
+                .map((a: { start_time: string | null }) => a.start_time?.substring(0, 5))
                 .filter((t): t is string => Boolean(t)),
             ...bookedWebAppointments
-                .map(a => a.time?.substring(0, 5))
+                .map((a: { time: string | null }) => a.time?.substring(0, 5))
                 .filter((t): t is string => Boolean(t))
         ]);
 

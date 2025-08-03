@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -9,6 +10,18 @@ type Promotion = {
   title: string;
   price: number;
   includes: string[];
+};
+
+// Explicit types for data fetched from Supabase
+type PromotionFromDB = {
+  id: string;
+  name: string;
+  price: number;
+  zones: string[] | null;
+};
+type ZoneFromDB = {
+  id: string;
+  name: string;
 };
 
 const cardVariants: Variants = {
@@ -41,7 +54,7 @@ const Promotions = () => {
         if (promotionsError) throw promotionsError;
 
         if (promotionsData && promotionsData.length > 0) {
-          const typedPromotionsData = promotionsData as any[];
+          const typedPromotionsData: PromotionFromDB[] = promotionsData;
           const uniqueZoneIds = [...new Set(typedPromotionsData.flatMap(promo => promo.zones || []))];
 
           let zoneNamesMap: Record<string, string> = {};
@@ -54,11 +67,12 @@ const Promotions = () => {
             if (zonesError) throw zonesError;
 
             if (zonesData) {
-              zoneNamesMap = Object.fromEntries(zonesData.map(zone => [zone.id, zone.name]));
+              const zones: ZoneFromDB[] = zonesData;
+              zoneNamesMap = Object.fromEntries(zones.map(zone => [zone.id, zone.name]));
             }
           }
 
-          const formattedPromotions: Promotion[] = typedPromotionsData.map((item: any) => ({
+          const formattedPromotions: Promotion[] = typedPromotionsData.map((item) => ({
             id: item.id,
             title: item.name,
             price: item.price,
