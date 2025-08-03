@@ -212,7 +212,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const resendApiKey = process.env.RESEND_API_KEY;
     const adminEmailsEnv = process.env.ADMIN_EMAIL;
-    const fromEmail = 'Centro de Belleza <onboarding@resend.dev>';
+    
+    // Use environment variable for the 'from' email address for production readiness
+    const fromEmail = process.env.FROM_EMAIL || 'Centro de Belleza <onboarding@resend.dev>';
+    if (!process.env.FROM_EMAIL) {
+        console.warn("ADVERTENCIA: La variable de entorno FROM_EMAIL no está configurada. Usando 'onboarding@resend.dev', que solo envía correos a la dirección de la cuenta de Resend. Configure FROM_EMAIL con un dominio verificado para producción.");
+    }
     
     const resend = resendApiKey ? new Resend(resendApiKey) : null;
     const { name, email, phone, date, time, zones, message } = req.body as AdminEmailProps;
@@ -273,13 +278,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         })
                     ]);
                 } catch (emailError) {
-                    console.error("Failed to send emails (booking is still saved):", emailError);
+                    console.error("Fallo al enviar correos (el turno se guardó igualmente):", emailError);
                 }
             } else {
-                 console.warn('Email sending skipped: ADMIN_EMAIL is set but contains no valid email addresses.');
+                 console.warn('Envío de email omitido: ADMIN_EMAIL está configurado pero no contiene direcciones válidas.');
             }
         } else {
-            console.warn('Email sending skipped: Resend API Key or Admin Email not configured in environment.');
+            console.warn('Envío de email omitido: La clave de API de Resend o el email de administrador no están configurados.');
         }
 
         return res.status(201).json({ success: true, message: 'Appointment requested successfully!', appointment: newAppointment });
