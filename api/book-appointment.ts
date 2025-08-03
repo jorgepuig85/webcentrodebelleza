@@ -1,7 +1,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
-import { supabase } from '../lib/supabaseClient.js';
+import { createClient } from '@supabase/supabase-js';
 
 // --- Types ---
 interface EmailProps {
@@ -212,12 +212,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const resendApiKey = process.env.RESEND_API_KEY;
     const adminEmailsEnv = process.env.ADMIN_EMAIL;
-    
-    // Use environment variable for the 'from' email address for production readiness
     const fromEmail = process.env.FROM_EMAIL || 'Centro de Belleza <onboarding@resend.dev>';
-    if (!process.env.FROM_EMAIL) {
-        console.warn("ADVERTENCIA: La variable de entorno FROM_EMAIL no está configurada. Usando 'onboarding@resend.dev', que solo envía correos a la dirección de la cuenta de Resend. Configure FROM_EMAIL con un dominio verificado para producción.");
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://aftweonqhxvbcujexyre.supabase.co';
+    const serviceKey = process.env.SUPABASE_SERVICE_KEY;
+    
+    if (!serviceKey) {
+        console.error('CRITICAL: SUPABASE_SERVICE_KEY is not set.');
+        return res.status(500).json({ error: 'El servidor no está configurado para acceder a la base de datos.' });
     }
+
+    // Create a new Supabase client with the service_role key for admin-level access
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
     
     const resend = resendApiKey ? new Resend(resendApiKey) : null;
     const { name, email, phone, date, time, zones, message } = req.body as AdminEmailProps;
@@ -230,17 +235,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const { data: existingAppointment, error: appointmentsError } = await supabase.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
+        const { data: existingAppointment, error: appointmentsError } = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
         if (appointmentsError) throw appointmentsError;
 
-        const { data: existingWebAppoinment, error: webAppointmentsError } = await supabase.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
+        const { data: existingWebAppoinment, error: webAppointmentsError } = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
         if (webAppointmentsError) throw webAppointmentsError;
 
         if (existingAppointment || existingWebAppoinment) {
             return res.status(409).json({ error: 'Este horario acaba de ser reservado. Por favor, elegí otro.' });
         }
         
-        const { data: newAppointment, error: insertError } = await supabase
+        const { data: newAppointment, error: insertError } = await supabaseAdmin
             .from('web_appointments')
             .insert([{ name, email, phone: phone ?? null, date, time, zones, message: message ?? null, status: 'pendiente' }])
             .select()

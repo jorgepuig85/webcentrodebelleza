@@ -88,7 +88,7 @@ const Contact: React.FC = () => {
     }
   }, [selectedZoneNames, zones]);
 
-  // Fetch available times when date changes
+  // Fetch available times when date changes by calling the secure API endpoint
   useEffect(() => {
     if (contactType === 'appointment' && selectedDate) {
       const fetchAvailability = async () => {
@@ -96,64 +96,15 @@ const Contact: React.FC = () => {
         setAvailableTimes([]);
         setValue('time', '');
         try {
-          // Logic moved from /api/get-availability to work client-side
-          const START_HOUR = 7;
-          const END_HOUR = 21; // Last appointment starts at 20:00
-          
-          const date = selectedDate;
-
-          // 1. Generate all possible time slots
-          const allSlots = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => `${String(START_HOUR + i).padStart(2, '0')}:00`);
-          
-          // 2. Fetch bookings and rentals sequentially to avoid potential Supabase client issues with Promise.all
-          const { data: rentalData, error: rentalError } = await supabase
-            .from('rentals')
-            .select('id')
-            .lte('start_date', date)
-            .gte('end_date', date);
-
-          if (rentalError) throw rentalError;
-
-          // If there's a rental for the day, no slots are available
-          if (rentalData && rentalData.length > 0) {
-            setAvailableTimes([]);
-            setIsFetchingTimes(false);
-            return; // Exit early
+          const response = await fetch(`/api/get-availability?date=${selectedDate}`);
+          if (!response.ok) {
+            throw new Error('No se pudo conectar con el servidor para obtener los horarios.');
           }
-
-          const { data: appointments, error: appointmentsError } = await supabase
-            .from('appointments')
-            .select('start_time')
-            .eq('date', date);
-
-          if (appointmentsError) throw appointmentsError;
-
-          const { data: webAppointments, error: webAppointmentsError } = await supabase
-            .from('web_appointments')
-            .select('time')
-            .eq('date', date);
-
-          if (webAppointmentsError) throw webAppointmentsError;
-
-          const bookedAppointments = appointments || [];
-          const bookedWebAppointments = webAppointments || [];
-
-          const bookedTimes = new Set([
-            ...bookedAppointments
-                .map((a: any) => a.start_time?.substring(0, 5))
-                .filter((t): t is string => Boolean(t)),
-            ...bookedWebAppointments
-                .map((a: any) => a.time?.substring(0, 5))
-                .filter((t): t is string => Boolean(t))
-          ]);
-          
-          const availableSlots = allSlots.filter(slot => !bookedTimes.has(slot));
-          
-          setAvailableTimes(availableSlots);
-          
+          const data = await response.json();
+          setAvailableTimes(data.availableSlots || []);
         } catch (error) {
-          console.error("Error fetching availability:", error);
-          setAvailableTimes([]); // On any error, ensure times are empty
+          console.error("Error fetching availability via API:", error);
+          setAvailableTimes([]);
         } finally {
           setIsFetchingTimes(false);
         }
@@ -173,43 +124,7 @@ const Contact: React.FC = () => {
     setFormStatus('loading');
     setStatusMessage('');
     try {
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-      if (isLocal) {
-        // --- Local Development: Direct Supabase insert, no email ---
-        console.warn("Modo de desarrollo: Agendando turno directamente en Supabase sin envío de email.");
-        
-        // 1. Re-verify availability to prevent race conditions
-        const { data: existingAppointment, error: appointmentsError } = await supabase.from('appointments').select('id').eq('date', data.date).eq('start_time', `${data.time}:00`).maybeSingle();
-        if (appointmentsError) throw appointmentsError;
-
-        const { data: existingWebAppoinment, error: webAppointmentsError } = await supabase.from('web_appointments').select('id').eq('date', data.date).eq('time', data.time).maybeSingle();
-        if (webAppointmentsError) throw webAppointmentsError;
-
-        if (existingAppointment || existingWebAppoinment) {
-          throw new Error('Este horario acaba de ser reservado. Por favor, elegí otro.');
-        }
-
-        // 2. Insert into web_appointments table
-        const { error: insertError } = await supabase
-            .from('web_appointments')
-            .insert([{ 
-                name: data.name, 
-                email: data.email, 
-                phone: data.phone ?? null, 
-                date: data.date, 
-                time: data.time, 
-                zones: data.zones, 
-                message: data.message ?? null, 
-                status: 'pendiente' 
-            }]);
-        if (insertError) throw new Error(`Error al guardar en Supabase: ${insertError.message}`);
-        
-        setFormStatus('success');
-        setStatusMessage('¡Turno agendado con éxito! (Modo desarrollo: no se enviaron emails de confirmación).');
-
-      } else {
-        // --- Production: Use API route to handle insert and emails ---
+        // All submissions now go through the secure API route
         const response = await fetch('/api/book-appointment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -222,8 +137,7 @@ const Contact: React.FC = () => {
             const errorData = await response.json();
             errorMsg = errorData.error || `Error del servidor: ${response.status}`;
           } catch (jsonError) {
-            // This case handles the user's reported error, where the response is not valid JSON
-            errorMsg = `Error de comunicación con el servidor (${response.status}). Asegúrese de que el entorno de producción esté configurado correctamente.`;
+            errorMsg = `Error de comunicación con el servidor (${response.status}).`;
           }
           throw new Error(errorMsg);
         }
@@ -231,9 +145,7 @@ const Contact: React.FC = () => {
         await response.json();
         setFormStatus('success');
         setStatusMessage('¡Tu turno fue solicitado con éxito! Recibirás un email con los detalles y te contactaremos para confirmar.');
-      }
       
-      // Reset form on success for both paths
       reset({ contactType: 'appointment', name: '', email: '', phone: '', date: '', time: '', zones: [], message: '' });
       setAvailableTimes([]);
 

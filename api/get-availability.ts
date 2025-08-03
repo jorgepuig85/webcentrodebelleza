@@ -1,6 +1,6 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { supabase } from '../lib/supabaseClient.js';
+import { createClient } from '@supabase/supabase-js';
 
 // Business hours configuration
 const START_HOUR = 7;
@@ -12,6 +12,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(405).end('Method Not Allowed');
     }
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://aftweonqhxvbcujexyre.supabase.co';
+    const serviceKey = process.env.SUPABASE_SERVICE_KEY;
+
+    if (!serviceKey) {
+        console.error('CRITICAL: SUPABASE_SERVICE_KEY is not set.');
+        return res.status(500).json({ error: 'El servidor no está configurado correctamente para acceder a la base de datos.' });
+    }
+    
+    // Create a new Supabase client with the service_role key for admin-level access
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
+
     const { date } = req.query;
 
     if (!date || typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -22,13 +33,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // 1. Generate all possible time slots for the day
         const allSlots = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => `${String(START_HOUR + i).padStart(2, '0')}:00`);
 
-        // 2. Fetch all bookings for the day from all relevant tables
-        // Switched to sequential awaits to avoid a TypeScript type inference issue with Promise.all and the Supabase client library.
-        const appointmentsResult = await supabase.from('appointments').select('start_time').eq('date', date);
-        const webAppointmentsResult = await supabase.from('web_appointments').select('time').eq('date', date);
-        const rentalResult = await supabase.from('rentals').select('id').lte('start_date', date).gte('end_date', date);
-
-
+        // 2. Fetch all bookings for the day from all relevant tables using the admin client
+        const [
+            appointmentsResult,
+            webAppointmentsResult,
+            rentalResult
+        ] = await Promise.all([
+            supabaseAdmin.from('appointments').select('start_time').eq('date', date),
+            supabaseAdmin.from('web_appointments').select('time').eq('date', date),
+            supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date)
+        ]);
+        
         const { data: appointments, error: appointmentsError } = appointmentsResult;
         const { data: webAppointments, error: webAppointmentsError } = webAppointmentsResult;
         const { data: rentalData, error: rentalError } = rentalResult;
