@@ -1,268 +1,534 @@
-import React, { useState, useCallback } from 'react';
+
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { Send, Phone, MapPin, Instagram, Clock, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
+import { Send, Phone, MapPin, Instagram, Mail, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
-type Inputs = {
+// Types
+type FormInputs = {
   contactType: 'inquiry' | 'appointment';
   name: string;
   whatsapp: string;
+  email: string;
+  phone?: string;
+  date: string;
+  time: string;
+  zones: string[];
   message: string;
-  date?: string;
-  time?: string;
 };
+
+type Zone = {
+  id: string;
+  name: string;
+  price: number;
+};
+
+type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
 const MotionDiv = motion.div;
 
 const Contact: React.FC = () => {
-  const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<Inputs>({
+  const { register, handleSubmit, formState: { errors }, reset, watch, setValue, trigger } = useForm<FormInputs>({
     defaultValues: {
       contactType: 'inquiry',
+      name: '',
+      whatsapp: '',
+      email: '',
+      phone: '',
+      date: '',
+      time: '',
+      zones: [],
+      message: '',
     },
   });
 
   const contactType = watch('contactType');
   const selectedDate = watch('date');
   const selectedTime = watch('time');
+  const selectedZoneNames = watch('zones');
 
-  const [isChecking, setIsChecking] = useState(false);
-  const [availability, setAvailability] = useState<'idle' | 'available' | 'unavailable' | 'error'>('idle');
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [totalCost, setTotalCost] = useState(0);
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [isFetchingTimes, setIsFetchingTimes] = useState(false);
+  const [formStatus, setFormStatus] = useState<FormStatus>('idle');
+  const [statusMessage, setStatusMessage] = useState('');
+  
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // Assumption: standard appointment duration is 30 minutes for the check.
-  const APPOINTMENT_DURATION_MINUTES = 30;
-
-  const checkAvailability = useCallback(async () => {
-    if (!selectedDate || !selectedTime) {
-      alert('Por favor, seleccioná una fecha y hora para verificar.');
-      return;
-    }
-
-    setIsChecking(true);
-    setAvailability('idle');
-
-    try {
-      // 1. Check for rentals/blockages for the entire day
-      const { data: rentalData, error: rentalError } = await supabase
-        .from('rentals')
-        .select('id')
-        .lte('start_date', selectedDate)
-        .gte('end_date', selectedDate);
+  // Fetch treatment zones for checkboxes
+  useEffect(() => {
+    const fetchZones = async () => {
+      const { data, error } = await supabase
+        .from('items')
+        .select('id, name, price')
+        .eq('is_combo', false)
+        .order('name');
       
-      if (rentalError) throw new Error(rentalError.message);
-      if (rentalData && rentalData.length > 0) {
-        setAvailability('unavailable');
-        setIsChecking(false);
-        return;
+      if (error) {
+        console.error("Error fetching zones:", error);
+      } else if (data) {
+        setZones(data as Zone[]);
       }
-      
-      // 2. Check for overlapping appointments
-      const startTime = new Date(`${selectedDate}T${selectedTime}`);
-      const endTime = new Date(startTime.getTime() + APPOINTMENT_DURATION_MINUTES * 60000);
-      
-      const formatTime = (date: Date) => date.toTimeString().split(' ')[0];
-      const startTimeStr = formatTime(startTime);
-      const endTimeStr = formatTime(endTime);
+    };
+    fetchZones();
+  }, []);
 
-      const { data: appointmentData, error: appointmentError } = await supabase
-        .from('appointments')
-        .select('id')
-        .eq('date', selectedDate)
-        .lt('start_time', endTimeStr) // Existing appointment starts before new one ends
-        .gt('end_time', startTimeStr); // Existing appointment ends after new one starts
-
-      if (appointmentError) throw new Error(appointmentError.message);
-
-      if (appointmentData && appointmentData.length > 0) {
-        setAvailability('unavailable');
-      } else {
-        setAvailability('available');
-      }
-
-    } catch (error) {
-      console.error('Error checking availability:', error);
-      setAvailability('error');
-    } finally {
-      setIsChecking(false);
+  // Calculate total cost when selected zones or available zones change
+  useEffect(() => {
+    if (zones.length > 0 && selectedZoneNames?.length > 0) {
+      const cost = selectedZoneNames.reduce((acc, zoneName) => {
+        const selectedZone = zones.find(z => z.name === zoneName);
+        return acc + (selectedZone?.price || 0);
+      }, 0);
+      setTotalCost(cost);
+    } else {
+      setTotalCost(0);
     }
-  }, [selectedDate, selectedTime]);
+  }, [selectedZoneNames, zones]);
 
-  const onSubmit: SubmitHandler<Inputs> = data => {
-    const subject = encodeURIComponent(
-      data.contactType === 'appointment' 
-      ? `Solicitud de Turno de ${data.name}`
-      : `Consulta desde la web de ${data.name}`
-    );
-    
-    let bodyContent = `Nombre: ${data.name}\n` +
-                      `WhatsApp: ${data.whatsapp}\n\n`;
+  // Fetch available times when date changes
+  useEffect(() => {
+    if (contactType === 'appointment' && selectedDate) {
+      const fetchAvailability = async () => {
+        setIsFetchingTimes(true);
+        setAvailableTimes([]);
+        setValue('time', '');
+        try {
+          // Logic moved from /api/get-availability to work client-side
+          const START_HOUR = 7;
+          const END_HOUR = 21; // Last appointment starts at 20:00
+          
+          const date = selectedDate;
 
-    if (data.contactType === 'appointment') {
-      bodyContent += `Fecha preferida: ${data.date || 'No especificada'}\n` +
-                     `Hora preferida: ${data.time || 'No especificada'}\n\n`;
+          // 1. Generate all possible time slots
+          const allSlots = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => `${String(START_HOUR + i).padStart(2, '0')}:00`);
+          
+          // 2. Fetch bookings and rentals sequentially to avoid potential Supabase client issues with Promise.all
+          const { data: rentalData, error: rentalError } = await supabase
+            .from('rentals')
+            .select('id')
+            .lte('start_date', date)
+            .gte('end_date', date);
+
+          if (rentalError) throw rentalError;
+
+          // If there's a rental for the day, no slots are available
+          if (rentalData && rentalData.length > 0) {
+            setAvailableTimes([]);
+            setIsFetchingTimes(false);
+            return; // Exit early
+          }
+
+          const { data: appointments, error: appointmentsError } = await supabase
+            .from('appointments')
+            .select('start_time')
+            .eq('date', date);
+
+          if (appointmentsError) throw appointmentsError;
+
+          const { data: webAppointments, error: webAppointmentsError } = await supabase
+            .from('web_appointments')
+            .select('time')
+            .eq('date', date);
+
+          if (webAppointmentsError) throw webAppointmentsError;
+
+          const bookedAppointments = appointments || [];
+          const bookedWebAppointments = webAppointments || [];
+
+          const bookedTimes = new Set([
+            ...bookedAppointments
+                .map((a: any) => a.start_time?.substring(0, 5))
+                .filter((t): t is string => Boolean(t)),
+            ...bookedWebAppointments
+                .map((a: any) => a.time?.substring(0, 5))
+                .filter((t): t is string => Boolean(t))
+          ]);
+          
+          const availableSlots = allSlots.filter(slot => !bookedTimes.has(slot));
+          
+          setAvailableTimes(availableSlots);
+          
+        } catch (error) {
+          console.error("Error fetching availability:", error);
+          setAvailableTimes([]); // On any error, ensure times are empty
+        } finally {
+          setIsFetchingTimes(false);
+        }
+      };
+      fetchAvailability();
     }
-    
-    bodyContent += `Mensaje:\n${data.message}`;
+  }, [selectedDate, contactType, setValue]);
 
-    const body = encodeURIComponent(bodyContent);
-    
+  const onInquirySubmit: SubmitHandler<FormInputs> = data => {
+    const subject = encodeURIComponent(`Consulta desde la web de ${data.name}`);
+    const body = encodeURIComponent(`Nombre: ${data.name}\nWhatsApp: ${data.whatsapp}\n\nMensaje:\n${data.message}`);
     window.location.href = `mailto:yani.2185@gmail.com?subject=${subject}&body=${body}`;
-    alert('Serás redirigido/a a tu cliente de correo para enviar el mensaje. La disponibilidad del turno será confirmada a la brevedad. ¡Gracias!');
     reset();
-    setAvailability('idle');
   };
 
-  const renderAvailabilityMessage = () => {
-    if (availability === 'available') {
-      return (
-        <div className="mt-2 flex items-center gap-2 text-green-600 bg-green-50 p-2 rounded-md text-sm">
-          <CheckCircle size={18} />
-          <span>¡Horario disponible! Podés continuar y enviar tu solicitud.</span>
-        </div>
-      );
+  const onAppointmentSubmit: SubmitHandler<FormInputs> = async (data) => {
+    setFormStatus('loading');
+    setStatusMessage('');
+    try {
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+      if (isLocal) {
+        // --- Local Development: Direct Supabase insert, no email ---
+        console.warn("Modo de desarrollo: Agendando turno directamente en Supabase sin envío de email.");
+        
+        // 1. Re-verify availability to prevent race conditions
+        const { data: existingAppointment, error: appointmentsError } = await supabase.from('appointments').select('id').eq('date', data.date).eq('start_time', `${data.time}:00`).maybeSingle();
+        if (appointmentsError) throw appointmentsError;
+
+        const { data: existingWebAppoinment, error: webAppointmentsError } = await supabase.from('web_appointments').select('id').eq('date', data.date).eq('time', data.time).maybeSingle();
+        if (webAppointmentsError) throw webAppointmentsError;
+
+        if (existingAppointment || existingWebAppoinment) {
+          throw new Error('Este horario acaba de ser reservado. Por favor, elegí otro.');
+        }
+
+        // 2. Insert into web_appointments table
+        const { error: insertError } = await supabase
+            .from('web_appointments')
+            .insert([{ 
+                name: data.name, 
+                email: data.email, 
+                phone: data.phone ?? null, 
+                date: data.date, 
+                time: data.time, 
+                zones: data.zones, 
+                message: data.message ?? null, 
+                status: 'pendiente' 
+            }]);
+        if (insertError) throw new Error(`Error al guardar en Supabase: ${insertError.message}`);
+        
+        setFormStatus('success');
+        setStatusMessage('¡Turno agendado con éxito! (Modo desarrollo: no se enviaron emails de confirmación).');
+
+      } else {
+        // --- Production: Use API route to handle insert and emails ---
+        const response = await fetch('/api/book-appointment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          let errorMsg = 'Ocurrió un error al agendar el turno.';
+          try {
+            const errorData = await response.json();
+            errorMsg = errorData.error || `Error del servidor: ${response.status}`;
+          } catch (jsonError) {
+            // This case handles the user's reported error, where the response is not valid JSON
+            errorMsg = `Error de comunicación con el servidor (${response.status}). Asegúrese de que el entorno de producción esté configurado correctamente.`;
+          }
+          throw new Error(errorMsg);
+        }
+
+        await response.json();
+        setFormStatus('success');
+        setStatusMessage('¡Tu turno fue solicitado con éxito! Recibirás un email con los detalles y te contactaremos para confirmar.');
+      }
+      
+      // Reset form on success for both paths
+      reset({ contactType: 'appointment', name: '', email: '', phone: '', date: '', time: '', zones: [], message: '' });
+      setAvailableTimes([]);
+
+    } catch (error: any) {
+      setFormStatus('error');
+      setStatusMessage(error.message);
     }
-    if (availability === 'unavailable') {
-      return (
-        <div className="mt-2 flex items-center gap-2 text-orange-600 bg-orange-50 p-2 rounded-md text-sm">
-          <AlertCircle size={18} />
-          <span>El horario no está disponible. Por favor, intentá con otro.</span>
-        </div>
-      );
-    }
-    if (availability === 'error') {
-       return (
-        <div className="mt-2 flex items-center gap-2 text-red-600 bg-red-50 p-2 rounded-md text-sm">
-          <AlertCircle size={18} />
-          <span>Error al verificar. Por favor, intentá más tarde o contactanos directamente.</span>
-        </div>
-      );
-    }
-    return null;
   };
+
+
+  const onSubmit: SubmitHandler<FormInputs> = (data) => {
+    setFormStatus('idle'); // reset status before new submission
+    if (data.contactType === 'appointment') {
+      onAppointmentSubmit(data);
+    } else {
+      onInquirySubmit(data);
+    }
+  };
+
+  const renderStatusMessage = () => {
+    if (formStatus === 'idle' || !statusMessage) return null;
+
+    const isSuccess = formStatus === 'success';
+    const Icon = isSuccess ? CheckCircle : AlertCircle;
+    const colorClass = isSuccess ? 'green' : 'red';
+    
+    return (
+      <div className={`mt-4 flex items-start gap-2 text-${colorClass}-700 bg-${colorClass}-50 p-3 rounded-md text-sm`}>
+        <Icon size={20} className="flex-shrink-0 mt-0.5" />
+        <span>{statusMessage}</span>
+      </div>
+    );
+  };
+  
+  const Calendar = () => {
+    // Get today's date at midnight UTC to prevent timezone issues
+    const today = new Date();
+    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+
+    // Use UTC methods for all date calculations
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+
+    const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
+    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    const startingDay = (firstDayOfMonth.getUTCDay() + 6) % 7; // 0 for Monday
+
+    const handleDateSelect = (day: number) => {
+      const date = new Date(Date.UTC(year, month, day));
+      if (date < todayUTC) return; // Prevent selecting past dates in any timezone
+      
+      const dateString = date.toISOString().split('T')[0];
+      setValue('date', dateString);
+      trigger('date');
+    };
+    
+    const prevMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+    const nextMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+    
+    const calendarDays = Array.from({ length: startingDay + daysInMonth }, (_, i) => {
+        if (i < startingDay) return <div key={`empty-${i}`}></div>; // empty days
+        
+        const day = i - startingDay + 1;
+        const date = new Date(Date.UTC(year, month, day));
+
+        const isPast = date < todayUTC;
+        const isSelected = selectedDate === date.toISOString().split('T')[0];
+        
+        return (
+            <button
+                type="button"
+                key={i}
+                onClick={() => handleDateSelect(day)}
+                disabled={isPast}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm transition-colors duration-200
+                    ${isPast ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-pink-100'}
+                    ${isSelected ? 'bg-pink-500 text-white font-bold' : 'text-gray-700'}
+                `}
+            >
+                {day}
+            </button>
+        );
+    });
+
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <button type="button" onClick={prevMonth} className="p-2 rounded-full hover:bg-gray-100"><ChevronLeft size={20}/></button>
+          <span className="font-semibold text-lg capitalize">{currentMonth.toLocaleString('es-AR', { month: 'long', year: 'numeric' })}</span>
+          <button type="button" onClick={nextMonth} className="p-2 rounded-full hover:bg-gray-100"><ChevronRight size={20}/></button>
+        </div>
+        <div className="grid grid-cols-7 gap-y-2 text-center text-xs text-gray-500 mb-2">
+            <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span><span>Do</span>
+        </div>
+        <div className="grid grid-cols-7 gap-y-2 justify-items-center">
+            {calendarDays}
+        </div>
+        {errors.date && <span className="text-red-500 text-sm mt-2 block">{errors.date.message}</span>}
+      </div>
+    );
+  };
+  
+  const TimeSlots = () => {
+    const ALL_POSSIBLE_TIMES = useMemo(() => 
+        Array.from({length: 14}, (_, i) => `${String(i + 7).padStart(2, '0')}:00`), []); // 07:00 to 20:00
+
+    if (!selectedDate) {
+        return <div className="text-center text-sm text-gray-500 bg-gray-50 p-4 rounded-md">Seleccioná una fecha para ver los horarios.</div>;
+    }
+    
+    if (isFetchingTimes) {
+        return (
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {ALL_POSSIBLE_TIMES.map(time => (
+                    <div key={time} className="h-10 bg-gray-200 rounded-md animate-pulse"></div>
+                ))}
+            </div>
+        );
+    }
+    
+    if (availableTimes.length === 0) {
+       return <div className="text-center text-sm text-gray-500 bg-gray-50 p-4 rounded-md">No hay horarios disponibles para este día.</div>;
+    }
+
+    return (
+        <div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {ALL_POSSIBLE_TIMES.map(time => {
+                    const isAvailable = availableTimes.includes(time);
+                    const isSelected = selectedTime === time;
+                    return (
+                        <button
+                            type="button"
+                            key={time}
+                            disabled={!isAvailable}
+                            onClick={() => {
+                                if (isAvailable) {
+                                    setValue('time', time);
+                                    trigger('time');
+                                }
+                            }}
+                            className={`p-2 rounded-md text-sm font-medium transition-all duration-200 border
+                                ${!isAvailable ? 'bg-gray-100 text-gray-400 border-gray-200 line-through cursor-not-allowed' : ''}
+                                ${isAvailable && !isSelected ? 'bg-white border-gray-300 hover:bg-gray-100 hover:border-gray-400' : ''}
+                                ${isSelected ? 'bg-pink-500 text-white border-pink-500 ring-2 ring-pink-300' : ''}
+                            `}
+                        >
+                            {time} hs
+                        </button>
+                    );
+                })}
+            </div>
+            {errors.time && <span className="text-red-500 text-sm mt-2 block">{errors.time.message}</span>}
+        </div>
+    );
+  };
+
 
   return (
     <section id="contacto" className="py-20 bg-gray-50">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Contactanos</h2>
-          <p className="text-lg text-gray-500 mt-2">Estamos para resolver todas tus dudas.</p>
+          <p className="text-lg text-gray-500 mt-2">Resolvé tus dudas o agendá tu próxima visita.</p>
           <div className="mt-4 w-24 h-1 bg-pink-400 mx-auto rounded"></div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
           <MotionDiv
             className="bg-white p-8 rounded-lg shadow-md"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7 }}
           >
             <h3 className="text-2xl font-bold text-gray-800 mb-6">Envianos tu Mensaje</h3>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Contacto</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Quiero...</label>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="radio" 
-                      value="inquiry" 
-                      {...register("contactType")}
-                      className="focus:ring-pink-500 h-4 w-4 text-pink-600 border-gray-300"
-                    />
+                    <input type="radio" value="inquiry" {...register("contactType")} className="focus:ring-pink-500 h-4 w-4 text-pink-600 border-gray-300"/>
                     Hacer una Consulta
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="radio" 
-                      value="appointment" 
-                      {...register("contactType")}
-                      className="focus:ring-pink-500 h-4 w-4 text-pink-600 border-gray-300"
-                    />
-                    Solicitar Turno
+                    <input type="radio" value="appointment" {...register("contactType")} className="focus:ring-pink-500 h-4 w-4 text-pink-600 border-gray-300"/>
+                    Agendar un Turno
                   </label>
                 </div>
               </div>
-
+              
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre Completo</label>
                 <input type="text" id="name" {...register("name", { required: "El nombre es requerido" })} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
                 {errors.name && <span className="text-red-500 text-sm mt-1">{errors.name.message}</span>}
               </div>
-              <div>
-                <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700">Número de WhatsApp</label>
-                <input type="tel" id="whatsapp" {...register("whatsapp", { required: "El WhatsApp es requerido" })} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
-                {errors.whatsapp && <span className="text-red-500 text-sm mt-1">{errors.whatsapp.message}</span>}
-              </div>
 
-              {contactType === 'appointment' && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                  animate={{ opacity: 1, height: 'auto', marginTop: '1rem' }}
-                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                  className="space-y-4 overflow-hidden"
-                >
-                  <p className="text-sm text-gray-600 bg-pink-50 p-3 rounded-md border border-pink-100">
-                    Por favor, seleccioná una fecha y hora, y <b>verificá la disponibilidad</b> antes de enviar tu solicitud.
-                  </p>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="date" className="block text-sm font-medium text-gray-700">Fecha preferida</label>
-                      <input type="date" id="date" {...register("date", { required: "La fecha es requerida para un turno"})} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
-                      {errors.date && <span className="text-red-500 text-sm mt-1">{errors.date.message}</span>}
-                    </div>
-                    <div>
-                      <label htmlFor="time" className="block text-sm font-medium text-gray-700">Hora preferida</label>
-                      <input type="time" id="time" {...register("time", { required: "La hora es requerida para un turno"})} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
-                      {errors.time && <span className="text-red-500 text-sm mt-1">{errors.time.message}</span>}
-                    </div>
+              {contactType === 'inquiry' && (
+                <motion.div initial={{opacity:0}} animate={{opacity:1}} className="space-y-4">
+                  <div>
+                    <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700">Número de WhatsApp</label>
+                    <input type="tel" id="whatsapp" {...register("whatsapp", { required: "El WhatsApp es requerido" })} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
+                    {errors.whatsapp && <span className="text-red-500 text-sm mt-1">{errors.whatsapp.message}</span>}
                   </div>
                   <div>
-                    <button
-                      type="button"
-                      onClick={checkAvailability}
-                      disabled={isChecking}
-                      className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-6 py-2 rounded-full font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-700">Mensaje</label>
+                    <textarea id="message" rows={4} {...register("message", { required: "Dejanos tu consulta" })} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500"></textarea>
+                    {errors.message && <span className="text-red-500 text-sm mt-1">{errors.message.message}</span>}
+                  </div>
+                </motion.div>
+              )}
+              
+              {contactType === 'appointment' && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="space-y-4 overflow-hidden"
+                >
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" {...register("email", { required: "El email es requerido para confirmar", pattern: { value: /^\S+@\S+$/i, message: "Formato de email inválido" } })} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
+                    {errors.email && <span className="text-red-500 text-sm mt-1">{errors.email.message}</span>}
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Teléfono/WhatsApp (Opcional)</label>
+                    <input type="tel" id="phone" {...register("phone")} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">1. Elegí una fecha</label>
+                        <input type="hidden" {...register("date", { required: "La fecha es requerida" })} />
+                        <Calendar/>
+                    </div>
+                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">2. Elegí un horario</label>
+                         <input type="hidden" {...register("time", { required: "La hora es requerida" })} />
+                        <TimeSlots/>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">3. Zonas a tratar</label>
+                    <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 max-h-48 overflow-y-auto bg-gray-50 p-3 rounded-md border">
+                      {zones.length > 0 ? zones.map(zone => (
+                        <label key={zone.id} className="flex items-center gap-2 cursor-pointer text-sm">
+                          <input type="checkbox" value={zone.name} {...register("zones", { required: "Seleccioná al menos una zona" })} className="focus:ring-pink-500 h-4 w-4 text-pink-600 border-gray-300 rounded"/>
+                          {zone.name}
+                        </label>
+                      )) : <span className="text-sm text-gray-500">Cargando zonas...</span>}
+                    </div>
+                     {errors.zones && <span className="text-red-500 text-sm mt-1">{errors.zones.message}</span>}
+                  </div>
+                  
+                  {totalCost > 0 && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 p-4 bg-pink-50 border border-pink-200 rounded-lg text-right"
                     >
-                      {isChecking ? (
-                        <>
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-5 h-5"
-                          >
-                            <Clock size={20} />
-                          </motion.div>
-                          Verificando...
-                        </>
-                      ) : (
-                        <>
-                          <Calendar size={20} /> Verificar Disponibilidad
-                        </>
-                      )}
-                    </button>
-                    {renderAvailabilityMessage()}
+                      <span className="text-sm font-medium text-gray-600">Costo Total Estimado:</span>
+                      <span className="text-2xl font-bold text-pink-500 ml-3">
+                        ${totalCost.toLocaleString('es-AR')}
+                      </span>
+                    </motion.div>
+                  )}
+
+                   <div>
+                    <label htmlFor="appointment_message" className="block text-sm font-medium text-gray-700">Mensaje adicional (Opcional)</label>
+                    <textarea id="appointment_message" rows={3} {...register("message")} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500"></textarea>
                   </div>
                 </motion.div>
               )}
 
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">Mensaje</label>
-                <textarea id="message" rows={4} {...register("message", { required: "Dejanos tu consulta" })} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500"></textarea>
-                {errors.message && <span className="text-red-500 text-sm mt-1">{errors.message.message}</span>}
-              </div>
+              {renderStatusMessage()}
+              
               <button 
                 type="submit" 
                 className="w-full flex items-center justify-center gap-2 bg-pink-400 text-white px-6 py-3 rounded-full font-semibold hover:bg-pink-500 transition-transform duration-300 hover:scale-105 disabled:bg-pink-300 disabled:cursor-not-allowed"
-                disabled={contactType === 'appointment' && availability !== 'available'}
+                disabled={formStatus === 'loading'}
               >
-                <Send size={20} /> 
-                {contactType === 'appointment' ? 'Enviar Solicitud de Turno' : 'Enviar Consulta'}
+                {formStatus === 'loading' ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} /> Enviando...
+                  </>
+                ) : (
+                  <>
+                    <Send size={20} />
+                    {contactType === 'appointment' ? 'Agendar Turno' : 'Enviar Consulta'}
+                  </>
+                )}
               </button>
-              {contactType === 'appointment' && availability !== 'available' && (
-                <p className="text-xs text-center text-gray-500">Por favor, verificá un horario disponible para poder enviar la solicitud.</p>
-              )}
             </form>
           </MotionDiv>
+          
           <MotionDiv
             className="space-y-8"
             initial={{ opacity: 0, y: 50 }}
@@ -272,10 +538,14 @@ const Contact: React.FC = () => {
           >
             <div>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Información de Contacto</h3>
-              <div className="space-y-3">
-                 <a href="https://wa.me/5492954391448?text=Hola!%20Quisiera%20hacer%20una%20consulta." target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-gray-600 hover:text-pink-500">
+              <div className="space-y-4">
+                 <a href="https://wa.me/5492954391448?text=Hola!%20Quisiera%20hacer%20una%20consulta." target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-gray-600 hover:text-pink-500 transition-colors">
                   <Phone className="w-6 h-6 text-pink-400" />
                   <span>+54 9 2954 39-1448</span>
+                </a>
+                <a href="mailto:yani.2185@gmail.com" className="flex items-center gap-4 text-gray-600 hover:text-pink-500 transition-colors">
+                    <Mail className="w-6 h-6 text-pink-400" />
+                    <span>yani.2185@gmail.com</span>
                 </a>
                 <div className="flex items-start gap-4 text-gray-600">
                   <MapPin className="w-6 h-6 text-pink-400 mt-1 flex-shrink-0" />
@@ -293,7 +563,7 @@ const Contact: React.FC = () => {
               <iframe
                 src="https://maps.google.com/maps?q=-36.85295661306252,-63.68863452311219&hl=es&z=15&output=embed"
                 width="100%"
-                height="250"
+                height="300"
                 style={{ border: 0 }}
                 allowFullScreen={false}
                 loading="lazy"

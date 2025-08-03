@@ -25,7 +25,7 @@ const cardVariants: Variants = {
   }
 };
 
-const SectionHeader: React.FC<{ title: string; subtitle: string }> = ({ title, subtitle }) => (
+const SectionHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
   <div className="text-center mb-12">
     <h2 className="text-3xl md:text-4xl font-bold text-gray-800">{title}</h2>
     <p className="text-lg text-gray-500 mt-2">{subtitle}</p>
@@ -40,11 +40,9 @@ const scrollToSection = (id: string) => {
   }
 };
 
-const MotionDiv = motion.div;
-
-const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
+const ServiceCard = ({ service }: { service: Service }) => {
   return (
-    <MotionDiv
+    <motion.div
       className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex flex-col"
       variants={cardVariants}
       initial="hidden"
@@ -75,11 +73,11 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
           </button>
         </div>
       </div>
-    </MotionDiv>
+    </motion.div>
   );
 };
 
-const Services: React.FC = () => {
+const Services = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,16 +86,16 @@ const Services: React.FC = () => {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        const { data, error: fetchError } = await supabase
           .from('items')
           .select('id, name, description, price, image_url') // Fetch the new image_url column
           .eq('is_combo', 'FALSE')
           .order('name', { ascending: true });
         
-        if (error) throw error;
+        if (fetchError) throw fetchError;
         
         if (data) {
-           const formattedServices: Service[] = data.map((item: any) => ({
+           const formattedServices: Service[] = (data as any[]).map((item) => ({
             id: item.id,
             name: item.name,
             description: item.description || 'Consulta por más detalles de este servicio.',
@@ -119,7 +117,7 @@ const Services: React.FC = () => {
     fetchServices();
   }, []);
   
-    const renderContent = () => {
+    const renderContent = (): React.ReactNode => {
     if (loading) {
       return <div className="text-center text-gray-500 py-8">Cargando servicios...</div>;
     }

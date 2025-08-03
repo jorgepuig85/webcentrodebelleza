@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -22,9 +23,7 @@ const cardVariants: Variants = {
   }
 };
 
-const MotionDiv = motion.div;
-
-const Promotions: React.FC = () => {
+const Promotions = () => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +41,8 @@ const Promotions: React.FC = () => {
         if (promotionsError) throw promotionsError;
 
         if (promotionsData && promotionsData.length > 0) {
-          const uniqueZoneIds = [...new Set(promotionsData.flatMap(promo => promo.zones || []))];
+          const typedPromotionsData = promotionsData as any[];
+          const uniqueZoneIds = [...new Set(typedPromotionsData.flatMap(promo => promo.zones || []))];
 
           let zoneNamesMap: Record<string, string> = {};
           if (uniqueZoneIds.length > 0) {
@@ -58,7 +58,7 @@ const Promotions: React.FC = () => {
             }
           }
 
-          const formattedPromotions: Promotion[] = promotionsData.map((item: any) => ({
+          const formattedPromotions: Promotion[] = typedPromotionsData.map((item: any) => ({
             id: item.id,
             title: item.name,
             price: item.price,
@@ -87,7 +87,7 @@ const Promotions: React.FC = () => {
     }
   };
 
-  const renderContent = () => {
+  const renderContent = (): React.ReactNode => {
     if (loading) {
       return <div className="text-center text-gray-500 py-8">Cargando promociones...</div>;
     }
@@ -106,7 +106,7 @@ const Promotions: React.FC = () => {
     }
     
     return (
-      <MotionDiv 
+      <motion.div 
         className="grid lg:grid-cols-3 gap-8"
         initial="hidden"
         whileInView="visible"
@@ -114,7 +114,7 @@ const Promotions: React.FC = () => {
         transition={{ staggerChildren: 0.2 }}
       >
         {promotions.map((promo) => (
-          <MotionDiv
+          <motion.div
             key={promo.id}
             className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center transform hover:-translate-y-2 transition-transform duration-300 border-t-4 border-pink-400"
             variants={cardVariants}
@@ -142,9 +142,9 @@ const Promotions: React.FC = () => {
                 ¡Lo quiero!
               </button>
             </div>
-          </MotionDiv>
+          </motion.div>
         ))}
-      </MotionDiv>
+      </motion.div>
     );
   };
 

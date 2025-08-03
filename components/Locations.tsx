@@ -33,12 +33,13 @@ const Locations: React.FC = () => {
     const fetchLocations = async () => {
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        const response = await supabase
           .from('locations')
           .select('id, name, province')
           .order('name', { ascending: true });
         
-        if (error) throw error;
+        const { data, error: fetchError } = response;
+        if (fetchError) throw fetchError;
         
         if (data) {
           setLocations(data);

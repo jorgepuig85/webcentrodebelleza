@@ -14,7 +14,9 @@
     "framer-motion": "^12.23.6",
     "lucide-react": "^0.525.0",
     "react-hook-form": "^7.60.0",
-    "@supabase/supabase-js": "^2.44.4"
+    "@supabase/supabase-js": "^2.44.4",
+    "@vercel/node": "^5.3.8",
+    "resend": "^4.7.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
