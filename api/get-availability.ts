@@ -34,15 +34,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const allSlots = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => `${String(START_HOUR + i).padStart(2, '0')}:00`);
 
         // 2. Fetch all bookings for the day from all relevant tables using the admin client
-        const [
-            appointmentsResult,
-            webAppointmentsResult,
-            rentalResult
-        ] = await Promise.all([
-            supabaseAdmin.from('appointments').select('start_time').eq('date', date),
-            supabaseAdmin.from('web_appointments').select('time').eq('date', date),
-            supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date)
-        ]);
+        const appointmentsResult = await supabaseAdmin.from('appointments').select('start_time').eq('date', date);
+        const webAppointmentsResult = await supabaseAdmin.from('web_appointments').select('time').eq('date', date);
+        const rentalResult = await supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date);
         
         const { data: appointments, error: appointmentsError } = appointmentsResult;
         const { data: webAppointments, error: webAppointmentsError } = webAppointmentsResult;

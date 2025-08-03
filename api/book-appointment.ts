@@ -290,19 +290,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const { data: existingAppointment, error: appointmentsError } = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
-        if (appointmentsError) throw appointmentsError;
+        const existingAppointmentResult = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
+        if (existingAppointmentResult.error) throw existingAppointmentResult.error;
 
-        const { data: existingWebAppoinment, error: webAppointmentsError } = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
-        if (webAppointmentsError) throw webAppointmentsError;
+        const existingWebAppoinmentResult = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
+        if (existingWebAppoinmentResult.error) throw existingWebAppoinmentResult.error;
 
-        if (existingAppointment || existingWebAppoinment) {
+        if (existingAppointmentResult.data || existingWebAppoinmentResult.data) {
             return res.status(409).json({ error: 'Este horario acaba de ser reservado. Por favor, elegí otro.' });
         }
         
         const { data: newAppointment, error: insertError } = await supabaseAdmin
             .from('web_appointments')
-            .insert([{ name, email, phone: phone ?? null, date, time, zones, message: message ?? null, status: 'pendiente' }])
+            .insert([{ name, email, phone: phone ?? null, date, time, zones, message: message ?? null, status: 'pendiente' }] as any)
             .select()
             .single();
 

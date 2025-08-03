@@ -117,7 +117,7 @@ const Services = () => {
     fetchServices();
   }, []);
   
-    const renderContent = (): React.ReactNode => {
+    const renderContent = (): JSX.Element => {
     if (loading) {
       return <div className="text-center text-gray-500 py-8">Cargando servicios...</div>;
     }
