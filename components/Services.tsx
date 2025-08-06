@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -124,38 +125,33 @@ const Services = () => {
     fetchServices();
   }, []);
   
-    const renderContent = (): JSX.Element => {
-    if (loading) {
-      return <div className="text-center text-gray-500 py-8">Cargando servicios...</div>;
-    }
-
-    if (error) {
-      return <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">{error}</div>;
-    }
-
-    if (services.length === 0) {
-        return (
-            <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
-                <h3 className="font-semibold text-lg mb-2">No se encontraron servicios.</h3>
-                <p>Verifique que los servicios en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> como <code className="bg-gray-200 px-1 rounded">false</code>.</p>
-            </div>
-        );
-    }
-
-    return (
+  let content: JSX.Element;
+  if (loading) {
+    content = <div className="text-center text-gray-500 py-8">Cargando servicios...</div>;
+  } else if (error) {
+    content = <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">{error}</div>;
+  } else if (services.length === 0) {
+    content = (
+      <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+        <h3 className="font-semibold text-lg mb-2">No se encontraron servicios.</h3>
+        <p>Verifique que los servicios en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> como <code className="bg-gray-200 px-1 rounded">false</code>.</p>
+      </div>
+    );
+  } else {
+    content = (
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map((service) => (
           <ServiceCard key={service.id} service={service} />
         ))}
       </div>
     );
-  };
+  }
 
   return (
     <section id="servicios" className="py-20 bg-gray-50">
       <div className="container mx-auto px-6">
         <SectionHeader title="Nuestros Servicios" subtitle="Elegí la zona que querés tratar y empezá tu cambio." />
-        {renderContent()}
+        {content}
       </div>
     </section>
   );

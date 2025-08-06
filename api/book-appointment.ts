@@ -1,4 +1,5 @@
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
@@ -265,7 +266,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.error('CRITICAL: SUPABASE_SERVICE_KEY is not set.');
         return res.status(500).json({ error: 'El servidor no está configurado para acceder a la base de datos.' });
     }
-    const supabaseAdmin = createClient<any>(supabaseUrl, serviceKey);
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
     const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
     if (!name || !email || !date || !time || !Array.isArray(zones) || zones.length === 0) {
@@ -276,10 +277,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const [appointmentRes, webAppointmentRes] = await Promise.all([
-            supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle(),
-            supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle()
-        ]);
+        const appointmentRes = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
+        const webAppointmentRes = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
         
         const { data: existingAppointment, error: existingAppointmentError } = appointmentRes;
         if (existingAppointmentError) throw existingAppointmentError;

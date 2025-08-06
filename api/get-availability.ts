@@ -1,4 +1,5 @@
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 
@@ -21,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     
     // Create a new Supabase client with the service_role key for admin-level access
-    const supabaseAdmin = createClient<any>(supabaseUrl, serviceKey);
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
     const { date } = req.query;
 
@@ -34,11 +35,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const allSlots = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => `${String(START_HOUR + i).padStart(2, '0')}:00`);
 
         // 2. Fetch all bookings for the day from all relevant tables using the admin client
-        const [appointmentsRes, webAppointmentsRes, rentalRes] = await Promise.all([
-            supabaseAdmin.from('appointments').select('start_time').eq('date', date),
-            supabaseAdmin.from('web_appointments').select('time').eq('date', date),
-            supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date)
-        ]);
+        const appointmentsRes = await supabaseAdmin.from('appointments').select('start_time').eq('date', date);
+        const webAppointmentsRes = await supabaseAdmin.from('web_appointments').select('time').eq('date', date);
+        const rentalRes = await supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date);
         
         const { data: appointments, error: appointmentsError } = appointmentsRes;
         const { data: webAppointments, error: webAppointmentsError } = webAppointmentsRes;

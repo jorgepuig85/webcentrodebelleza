@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -94,25 +95,21 @@ const Promotions = () => {
     }
   };
 
-  const renderContent = (): JSX.Element => {
-    if (loading) {
-      return <div className="text-center text-gray-500 py-8">Cargando promociones...</div>;
-    }
-    
-    if (error) {
-      return <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">{error}</div>;
-    }
+  let content: JSX.Element;
 
-    if (promotions.length === 0) {
-      return (
-        <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
-            <h3 className="font-semibold text-lg mb-2">No se encontraron promociones.</h3>
-            <p>Asegúrese de que las promociones en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> marcado como <code className="bg-gray-200 px-1 rounded">true</code>.</p>
-        </div>
-      );
-    }
-    
-    return (
+  if (loading) {
+    content = <div className="text-center text-gray-500 py-8">Cargando promociones...</div>;
+  } else if (error) {
+    content = <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">{error}</div>;
+  } else if (promotions.length === 0) {
+    content = (
+      <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+          <h3 className="font-semibold text-lg mb-2">No se encontraron promociones.</h3>
+          <p>Asegúrese de que las promociones en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> marcado como <code className="bg-gray-200 px-1 rounded">true</code>.</p>
+      </div>
+    );
+  } else {
+    content = (
       <motion.div 
         className="grid lg:grid-cols-3 gap-8"
         initial="hidden"
@@ -153,7 +150,7 @@ const Promotions = () => {
         ))}
       </motion.div>
     );
-  };
+  }
 
   return (
     <section id="promociones" className="py-20 bg-pink-50">
@@ -163,7 +160,7 @@ const Promotions = () => {
           <p className="text-lg text-gray-500 mt-2">Combiná zonas y obtené los mejores precios.</p>
           <div className="mt-4 w-24 h-1 bg-pink-400 mx-auto rounded"></div>
         </div>
-        {renderContent()}
+        {content}
       </div>
     </section>
   );
