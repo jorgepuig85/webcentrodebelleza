@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { Send, Phone, MapPin, Instagram, Mail, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
@@ -43,6 +43,7 @@ const Contact: React.FC = () => {
     },
   });
 
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const contactType = watch('contactType');
   const selectedDate = watch('date');
   const selectedTime = watch('time');
@@ -123,11 +124,21 @@ const Contact: React.FC = () => {
   const onAppointmentSubmit: SubmitHandler<FormInputs> = async (data) => {
     setFormStatus('loading');
     setStatusMessage('');
+
+    if (!executeRecaptcha) {
+        console.error('reCAPTCHA no está listo.');
+        setFormStatus('error');
+        setStatusMessage('Error de reCAPTCHA. Por favor, recargá la página e intentalo de nuevo.');
+        return;
+    }
+
     try {
+        const recaptchaToken = await executeRecaptcha('bookAppointment');
+
         const response = await fetch('/api/book-appointment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
+          body: JSON.stringify({ ...data, recaptchaToken }),
         });
 
         if (!response.ok) {

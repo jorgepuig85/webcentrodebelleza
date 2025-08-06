@@ -94,14 +94,11 @@ const Services = () => {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        // Explicitly type response as any to prevent deep type instantiation issues.
-        const response: any = await supabase
+        const { data, error: fetchError } = await supabase
           .from('items')
           .select('id, name, description, price, image_url')
-          .eq('is_combo', 'FALSE')
+          .eq('is_combo', false)
           .order('name', { ascending: true });
-        
-        const { data, error: fetchError } = response;
         
         if (fetchError) throw fetchError;
         
@@ -140,7 +137,7 @@ const Services = () => {
         return (
             <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
                 <h3 className="font-semibold text-lg mb-2">No se encontraron servicios.</h3>
-                <p>Verifique que los servicios en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> como <code className="bg-gray-200 px-1 rounded">'FALSE'</code>.</p>
+                <p>Verifique que los servicios en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> como <code className="bg-gray-200 px-1 rounded">false</code>.</p>
             </div>
         );
     }

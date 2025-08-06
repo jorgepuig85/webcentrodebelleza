@@ -16,7 +16,8 @@
     "react-hook-form": "^7.60.0",
     "@supabase/supabase-js": "^2.44.4",
     "resend": "^3.5.0",
-    "@vercel/node": "^5.3.10"
+    "@vercel/node": "^5.3.10",
+    "react-google-recaptcha-v3": "^1.10.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

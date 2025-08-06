@@ -39,13 +39,11 @@ const Promotions = () => {
     const fetchPromotions = async () => {
       try {
         setLoading(true);
-        const promotionsResponse: any = await supabase
+        const { data: promotionsData, error: promotionsError } = await supabase
           .from('items')
           .select('id, name, price, zones')
-          .eq('is_combo', 'TRUE')
+          .eq('is_combo', true)
           .order('price', { ascending: true });
-
-        const { data: promotionsData, error: promotionsError } = promotionsResponse;
 
         if (promotionsError) throw promotionsError;
 
@@ -55,13 +53,11 @@ const Promotions = () => {
 
           let zoneNamesMap: Record<string, string> = {};
           if (uniqueZoneIds.length > 0) {
-            const zonesResponse: any = await supabase
+            const { data: zonesData, error: zonesError } = await supabase
               .from('items')
               .select('id, name')
               .in('id', uniqueZoneIds);
             
-            const { data: zonesData, error: zonesError } = zonesResponse;
-
             if (zonesError) throw zonesError;
 
             if (zonesData) {
@@ -111,7 +107,7 @@ const Promotions = () => {
       return (
         <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
             <h3 className="font-semibold text-lg mb-2">No se encontraron promociones.</h3>
-            <p>Asegúrese de que las promociones en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> marcado como <code className="bg-gray-200 px-1 rounded">TRUE</code>.</p>
+            <p>Asegúrese de que las promociones en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> marcado como <code className="bg-gray-200 px-1 rounded">true</code>.</p>
         </div>
       );
     }

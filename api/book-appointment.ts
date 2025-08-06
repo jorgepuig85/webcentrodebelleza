@@ -203,6 +203,35 @@ const createAdminNotificationEmailHtml = (props: AdminEmailProps) => {
     </html>`;
 };
 
+
+// --- reCAPTCHA Verification Helper ---
+async function verifyRecaptcha(token: string): Promise<{ success: boolean; score: number }> {
+    // For production, set RECAPTCHA_V3_SECRET_KEY in your Vercel environment variables.
+    // Using Google's test key as a fallback for development.
+    const secretKey = process.env.RECAPTCHA_V3_SECRET_KEY || '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+    const verificationUrl = `https://www.google.com/recaptcha/api/siteverify`;
+
+    try {
+        const response = await fetch(verificationUrl, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `secret=${secretKey}&response=${token}`,
+        });
+
+        if (!response.ok) {
+            throw new Error(`reCAPTCHA verification request failed with status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("reCAPTCHA verification response:", data); // For debugging
+        return { success: data.success, score: data.score };
+    } catch (error) {
+        console.error('reCAPTCHA verification error:', error);
+        return { success: false, score: 0 };
+    }
+}
+
+
 // --- API Handler ---
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {
@@ -210,6 +239,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(405).end('Method Not Allowed');
     }
     
+    const { recaptchaToken, ...formData } = req.body;
+    const { name, email, phone, date, time, zones, message } = formData as AdminEmailProps;
+
+    // --- 1. reCAPTCHA Verification ---
+    if (!recaptchaToken) {
+        return res.status(400).json({ error: 'Falta el token de reCAPTCHA.' });
+    }
+
+    const recaptchaResult = await verifyRecaptcha(recaptchaToken);
+    // A score of 0.5 is a common threshold for v3.
+    if (!recaptchaResult.success || recaptchaResult.score < 0.5) {
+        console.warn(`reCAPTCHA verification failed for ${email}. Score: ${recaptchaResult.score}`);
+        return res.status(403).json({ error: 'La verificación de seguridad falló. Por favor, intente de nuevo.' });
+    }
+    
+    // --- 2. Proceed with booking logic if verification is successful ---
     const resendApiKey = process.env.RESEND_API_KEY;
     const adminEmailsEnv = process.env.ADMIN_EMAIL;
     const fromEmail = process.env.FROM_EMAIL || 'Centro de Belleza <onboarding@resend.dev>';
@@ -220,12 +265,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.error('CRITICAL: SUPABASE_SERVICE_KEY is not set.');
         return res.status(500).json({ error: 'El servidor no está configurado para acceder a la base de datos.' });
     }
-
-    // Create a new Supabase client with the service_role key for admin-level access
-    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
-    
+    const supabaseAdmin = createClient<any>(supabaseUrl, serviceKey);
     const resend = resendApiKey ? new Resend(resendApiKey) : null;
-    const { name, email, phone, date, time, zones, message } = req.body as AdminEmailProps;
 
     if (!name || !email || !date || !time || !Array.isArray(zones) || zones.length === 0) {
         return res.status(400).json({ error: 'Faltan campos obligatorios.' });
@@ -235,12 +276,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const { data: existingAppointment, error: existingAppointmentError } = await supabaseAdmin
-            .from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
+        const [appointmentRes, webAppointmentRes] = await Promise.all([
+            supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle(),
+            supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle()
+        ]);
+        
+        const { data: existingAppointment, error: existingAppointmentError } = appointmentRes;
         if (existingAppointmentError) throw existingAppointmentError;
 
-        const { data: existingWebAppoinment, error: existingWebAppoinmentError } = await supabaseAdmin
-            .from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
+        const { data: existingWebAppoinment, error: existingWebAppoinmentError } = webAppointmentRes;
         if (existingWebAppoinmentError) throw existingWebAppoinmentError;
 
         if (existingAppointment || existingWebAppoinment) {
