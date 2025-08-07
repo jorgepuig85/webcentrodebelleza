@@ -39,21 +39,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const webAppointmentsRes = await supabaseAdmin.from('web_appointments').select('time').eq('date', date);
         const rentalRes = await supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date);
         
-        const { data: appointments, error: appointmentsError } = appointmentsRes;
-        const { data: webAppointments, error: webAppointmentsError } = webAppointmentsRes;
-        const { data: rentalData, error: rentalError } = rentalRes;
-
-        if (appointmentsError) throw appointmentsError;
-        if (webAppointmentsError) throw webAppointmentsError;
-        if (rentalError) throw rentalError;
+        if (appointmentsRes.error) throw appointmentsRes.error;
+        if (webAppointmentsRes.error) throw webAppointmentsRes.error;
+        if (rentalRes.error) throw rentalRes.error;
 
         // If there's a rental for the day, no slots are available
-        if (rentalData && rentalData.length > 0) {
+        if (rentalRes.data && rentalRes.data.length > 0) {
             return res.status(200).json({ availableSlots: [] });
         }
         
-        const bookedAppointments = appointments || [];
-        const bookedWebAppointments = webAppointments || [];
+        const bookedAppointments = appointmentsRes.data || [];
+        const bookedWebAppointments = webAppointmentsRes.data || [];
 
         const bookedTimes = new Set([
             ...bookedAppointments

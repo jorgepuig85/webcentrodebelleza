@@ -104,7 +104,7 @@ const Services = () => {
         if (fetchError) throw fetchError;
         
         if (data) {
-           const formattedServices: Service[] = (data as FetchedItem[]).map((item) => ({
+           const formattedServices: Service[] = (data as any[]).map((item) => ({
             id: item.id,
             name: item.name,
             description: item.description || 'Consulta por más detalles de este servicio.',

@@ -66,7 +66,7 @@ const Promotions = () => {
             }
           }
 
-          const formattedPromotions: Promotion[] = typedPromotionsData.map((item) => ({
+          const formattedPromotions: Promotion[] = (typedPromotionsData as any[]).map((item) => ({
             id: item.id,
             title: item.name,
             price: item.price,
