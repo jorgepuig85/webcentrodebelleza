@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
-import { Send, Phone, MapPin, Instagram, Mail, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Send, Instagram, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
 // Types
@@ -452,23 +452,6 @@ const Contact: React.FC = () => {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Información de Contacto</h3>
-              <div className="space-y-4">
-                 <a href="https://wa.me/5492954391448?text=Hola!%20Quisiera%20hacer%20una%20consulta." target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-gray-600 hover:text-pink-500 transition-colors">
-                  <Phone className="w-6 h-6 text-pink-400" />
-                  <span>+54 9 2954 39-1448</span>
-                </a>
-                <a href="mailto:yani.2185@gmail.com" className="flex items-center gap-4 text-gray-600 hover:text-pink-500 transition-colors">
-                    <Mail className="w-6 h-6 text-pink-400" />
-                    <span>yani.2185@gmail.com</span>
-                </a>
-                <div className="flex items-start gap-4 text-gray-600">
-                  <MapPin className="w-6 h-6 text-pink-400 mt-1 flex-shrink-0" />
-                  <span>Neuquen 560, Miguel Riglos, La Pampa</span>
-                </div>
-              </div>
-            </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Seguinos en Redes</h3>
               <div className="flex gap-4">
