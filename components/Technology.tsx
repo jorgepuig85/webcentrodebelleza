@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Zap, ShieldCheck, Heart, Leaf } from 'lucide-react';
+import { BackgroundGradient } from './ui/BackgroundGradient';
 
 const MotionDiv = motion.div;
 
@@ -22,12 +23,14 @@ const Technology: React.FC = () => {
             viewport={{ once: true, amount: 0.5 }}
             transition={{ duration: 0.7 }}
           >
-            <img 
-              src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg" 
-              alt="Equipo de depilación láser de última generación"
-              className="rounded-lg shadow-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
-              loading="lazy"
-            />
+            <BackgroundGradient containerClassName="rounded-2xl">
+              <img 
+                src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg" 
+                alt="Equipo de depilación láser de última generación"
+                className="rounded-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
+                loading="lazy"
+              />
+            </BackgroundGradient>
           </MotionDiv>
           <MotionDiv
             initial={{ opacity: 0, x: 50 }}

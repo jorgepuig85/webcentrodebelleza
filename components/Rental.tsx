@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Zap, TrendingUp, LifeBuoy, CalendarDays } from 'lucide-react';
+import { BackgroundGradient } from './ui/BackgroundGradient';
 
 const MotionDiv = motion.div;
 
@@ -63,12 +64,14 @@ const Rental: React.FC = () => {
                         viewport={{ once: true, amount: 0.5 }}
                         transition={{ duration: 0.7, delay: 0.2 }}
                     >
-                        <img 
-                            src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/rental.png" 
-                            alt="Gráfico de alquiler de equipo de depilación láser para profesionales"
-                            className="rounded-lg shadow-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
-                            loading="lazy"
-                        />
+                        <BackgroundGradient containerClassName="rounded-2xl">
+                            <img 
+                                src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/rental.png" 
+                                alt="Gráfico de alquiler de equipo de depilación láser para profesionales"
+                                className="rounded-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
+                                loading="lazy"
+                            />
+                        </BackgroundGradient>
                     </MotionDiv>
                 </div>
             </div>
