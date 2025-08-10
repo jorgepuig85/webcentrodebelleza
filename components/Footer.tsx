@@ -1,8 +1,30 @@
-import React from 'react';
-import { Sparkles, Instagram } from 'lucide-react';
+
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Instagram, Eye } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 
 const Footer: React.FC = () => {
+  const [views, setViews] = useState<number | null>(null);
+
+  useEffect(() => {
+      const fetchViews = async () => {
+          try {
+              const response = await fetch('/api/get-views');
+              if (response.ok) {
+                  const data = await response.json();
+                  setViews(data.views);
+              } else {
+                  setViews(0);
+              }
+          } catch (error) {
+              console.error("Failed to fetch views:", error);
+              setViews(0);
+          }
+      };
+
+      fetchViews();
+  }, []);
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -50,6 +72,12 @@ const Footer: React.FC = () => {
               Acceso Profesional
             </a>
           </p>
+          {views !== null && (
+            <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-400">
+                <Eye className="w-4 h-4" />
+                <span>{views.toLocaleString('es-AR')} Visitas</span>
+            </div>
+          )}
         </div>
       </div>
     </footer>
