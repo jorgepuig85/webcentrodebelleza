@@ -114,11 +114,51 @@ const Contact: React.FC = () => {
     }
   }, [selectedDate, contactType, setValue]);
 
-  const onInquirySubmit: SubmitHandler<FormInputs> = data => {
-    const subject = encodeURIComponent(`Consulta desde la web de ${data.name}`);
-    const body = encodeURIComponent(`Nombre: ${data.name}\nWhatsApp: ${data.whatsapp}\n\nMensaje:\n${data.message}`);
-    window.location.href = `mailto:yani.2185@gmail.com?subject=${subject}&body=${body}`;
-    reset();
+  const onInquirySubmit: SubmitHandler<FormInputs> = async (data) => {
+    setFormStatus('loading');
+    setStatusMessage('');
+
+    if (!executeRecaptcha) {
+        console.error('reCAPTCHA no está listo.');
+        setFormStatus('error');
+        setStatusMessage('Error de reCAPTCHA. Por favor, recargá la página e intentalo de nuevo.');
+        return;
+    }
+
+    try {
+        const recaptchaToken = await executeRecaptcha('sendInquiry');
+
+        const response = await fetch('/api/send-inquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...data, recaptchaToken }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Ocurrió un error al enviar la consulta.');
+        }
+
+        await response.json();
+        setFormStatus('success');
+        setStatusMessage('¡Tu consulta fue enviada con éxito! Te responderemos a la brevedad.');
+      
+        reset({
+            contactType: 'inquiry',
+            name: '',
+            whatsapp: '',
+            email: '',
+            phone: '',
+            date: '',
+            time: '',
+            zones: [],
+            message: '',
+        });
+
+    } catch (error: any) {
+      setFormStatus('error');
+      setStatusMessage(error.message || 'Hubo un problema al enviar tu mensaje. Por favor, intentá de nuevo más tarde.');
+    }
   };
 
   const onAppointmentSubmit: SubmitHandler<FormInputs> = async (data) => {
