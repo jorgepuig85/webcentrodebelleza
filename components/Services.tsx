@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -104,7 +105,7 @@ const Services = () => {
         if (fetchError) throw fetchError;
         
         if (data) {
-           const formattedServices: Service[] = (data as any[]).map((item) => ({
+           const formattedServices: Service[] = (data as FetchedItem[]).map((item) => ({
             id: item.id,
             name: item.name,
             description: item.description || 'Consulta por más detalles de este servicio.',

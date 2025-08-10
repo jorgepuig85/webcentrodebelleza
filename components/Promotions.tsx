@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -66,7 +67,7 @@ const Promotions = () => {
             }
           }
 
-          const formattedPromotions: Promotion[] = (typedPromotionsData as any[]).map((item) => ({
+          const formattedPromotions: Promotion[] = typedPromotionsData.map((item) => ({
             id: item.id,
             title: item.name,
             price: item.price,

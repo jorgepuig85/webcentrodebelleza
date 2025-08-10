@@ -14,20 +14,34 @@ import FloatingWhatsApp from './components/FloatingWhatsApp';
 
 const App: React.FC = () => {
   useEffect(() => {
-    // This effect runs once when the app is first loaded.
-    // We'll call our API to log the page visit.
-    // This is a "fire-and-forget" call; we don't need the response.
-    const trackVisit = async () => {
-      try {
-        await fetch('/api/track-visit', { method: 'POST' });
-      } catch (error) {
-        // Log error for debugging, but don't bother the user.
-        console.error('Could not track visit:', error);
-      }
-    };
+    // This key will be used to check if a visit has already been tracked
+    // for the current browser session.
+    const visitTrackedKey = 'visitTracked';
 
-    trackVisit();
-  }, []); // Empty dependency array ensures it runs only once.
+    // Check if the key exists in sessionStorage.
+    const hasBeenTracked = sessionStorage.getItem(visitTrackedKey);
+
+    // If the visit has not been tracked in this session, proceed.
+    if (!hasBeenTracked) {
+      const trackVisit = async () => {
+        try {
+          // Call our API to log the page visit. This is a "fire-and-forget" call.
+          await fetch('/api/track-visit', { method: 'POST' });
+          
+          // After the call, set the key in sessionStorage to prevent
+          // tracking on subsequent reloads within the same session.
+          sessionStorage.setItem(visitTrackedKey, 'true');
+
+        } catch (error) {
+          // Log error for debugging, but don't bother the user.
+          // We don't set the sessionStorage key here, so it might try again on reload.
+          console.error('Could not track visit:', error);
+        }
+      };
+
+      trackVisit();
+    }
+  }, []); // Empty dependency array ensures it runs only once on initial mount.
 
   return (
     <div className="bg-white text-gray-700">

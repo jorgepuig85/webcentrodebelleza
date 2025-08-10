@@ -1,5 +1,6 @@
 
 
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
@@ -277,8 +278,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const appointmentRes = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
-        const webAppointmentRes = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
+        const appointmentRes = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle() as any;
+        const webAppointmentRes = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle() as any;
         
         if (appointmentRes.error) throw appointmentRes.error;
         if (webAppointmentRes.error) throw webAppointmentRes.error;
@@ -291,7 +292,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .from('web_appointments')
             .insert([{ name, email, phone: phone ?? null, date, time, zones, message: message ?? null, status: 'pendiente' }] as any)
             .select()
-            .single();
+            .single() as any;
 
         if (insertError) {
              throw new Error(`Supabase insert error: ${insertError.message}`);

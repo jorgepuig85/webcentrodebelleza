@@ -1,4 +1,6 @@
 
+
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 
@@ -18,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .from('site_metrics')
             .select('value')
             .eq('metric_name', 'page_views')
-            .single();
+            .single() as any;
 
         // If there's an error (e.g., table not found yet), return 0.
         if (error) {
