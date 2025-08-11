@@ -25,10 +25,12 @@ const Technology: React.FC = () => {
           >
             <BackgroundGradient containerClassName="rounded-2xl">
               <img 
-                src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg" 
+                src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg?format=webp&quality=75&width=600" 
                 alt="Equipo de depilación láser de última generación"
                 className="rounded-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
                 loading="lazy"
+                width="600"
+                height="450"
               />
             </BackgroundGradient>
           </MotionDiv>
@@ -39,7 +41,7 @@ const Technology: React.FC = () => {
             transition={{ duration: 0.7, delay: 0.2 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Tecnología de Vanguardia</h2>
-            <p className="text-lg text-gray-500 mb-8">
+            <p className="text-lg text-gray-600 mb-8">
               Utilizamos la última tecnología en depilación láser de diodo para ofrecerte un tratamiento seguro, rápido y prácticamente indoloro. Nuestra prioridad es tu comodidad y los mejores resultados.
             </p>
             <div className="space-y-6">
@@ -52,7 +54,7 @@ const Technology: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-gray-800">{feature.title}</h3>
-                      <p className="text-gray-500">{feature.description}</p>
+                      <p className="text-gray-600">{feature.description}</p>
                     </div>
                   </div>
                 );

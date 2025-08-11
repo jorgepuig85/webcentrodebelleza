@@ -20,9 +20,12 @@ const Hero: React.FC = () => {
     <section id="inicio" className="relative h-screen flex items-center justify-center text-center text-white overflow-hidden">
       <div className="absolute inset-0">
         <img 
-          src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio.png" 
-          alt="Fondo del centro de belleza" 
+          src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio.png?format=webp&quality=80" 
+          alt="Fondo del centro de belleza con una mujer sonriendo" 
           className="w-full h-full object-cover" 
+          width="1920"
+          height="1080"
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-black/40"></div>
       </div>

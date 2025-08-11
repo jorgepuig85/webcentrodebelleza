@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -31,6 +28,22 @@ const cardVariants: Variants = {
     }
   }
 };
+
+const PromotionCardSkeleton = () => (
+  <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center animate-pulse">
+    <div className="bg-gray-200 p-4 rounded-full mb-4 w-20 h-20"></div>
+    <div className="h-7 bg-gray-200 rounded w-3/4 mb-6"></div>
+    <div className="space-y-3 w-full flex-grow mb-6">
+      <div className="h-4 bg-gray-200 rounded w-5/6 mx-auto"></div>
+      <div className="h-4 bg-gray-200 rounded w-full mx-auto"></div>
+      <div className="h-4 bg-gray-200 rounded w-4/6 mx-auto"></div>
+    </div>
+    <div className="mt-auto w-full">
+      <div className="h-10 bg-gray-200 rounded w-1/2 mx-auto mb-6"></div>
+      <div className="h-12 bg-gray-200 rounded-full w-full"></div>
+    </div>
+  </div>
+);
 
 const Promotions = () => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -96,21 +109,26 @@ const Promotions = () => {
     }
   };
 
-  let content: JSX.Element;
-
-  if (loading) {
-    content = <div className="text-center text-gray-500 py-8">Cargando promociones...</div>;
-  } else if (error) {
-    content = <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">{error}</div>;
-  } else if (promotions.length === 0) {
-    content = (
-      <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
-          <h3 className="font-semibold text-lg mb-2">No se encontraron promociones.</h3>
-          <p>Asegúrese de que las promociones en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> marcado como <code className="bg-gray-200 px-1 rounded">true</code>.</p>
-      </div>
-    );
-  } else {
-    content = (
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="grid lg:grid-cols-3 gap-8">
+          {[...Array(3)].map((_, i) => <PromotionCardSkeleton key={i} />)}
+        </div>
+      );
+    }
+    if (error) {
+      return <div className="text-center text-red-500 bg-red-100 p-4 rounded-lg">{error}</div>;
+    }
+    if (promotions.length === 0) {
+      return (
+        <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+            <h3 className="font-semibold text-lg mb-2">No se encontraron promociones.</h3>
+            <p>Asegúrese de que las promociones en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> marcado como <code className="bg-gray-200 px-1 rounded">true</code>.</p>
+        </div>
+      );
+    }
+    return (
       <motion.div 
         className="grid lg:grid-cols-3 gap-8"
         initial="hidden"
@@ -129,7 +147,7 @@ const Promotions = () => {
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-4">{promo.title}</h3>
             
-            <ul className="mb-6 space-y-2 text-left w-full flex-grow">
+            <ul className="mb-6 space-y-2 text-left w-full flex-grow text-gray-700">
               {promo.includes.map((item, index) => (
                 <li key={index} className="flex items-center gap-2">
                   <CheckCircle className="text-green-500 w-5 h-5 flex-shrink-0" />
@@ -151,17 +169,17 @@ const Promotions = () => {
         ))}
       </motion.div>
     );
-  }
+  };
 
   return (
     <section id="promociones" className="py-20 bg-pink-50">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Promociones Exclusivas</h2>
-          <p className="text-lg text-gray-500 mt-2">Combiná zonas y obtené los mejores precios.</p>
+          <p className="text-lg text-gray-600 mt-2">Combiná zonas y obtené los mejores precios.</p>
           <div className="mt-4 w-24 h-1 bg-pink-400 mx-auto rounded"></div>
         </div>
-        {content}
+        {renderContent()}
       </div>
     </section>
   );

@@ -46,7 +46,7 @@ const Header: React.FC = () => {
         
         <nav className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map((link) => (
-            <button key={link.id} onClick={() => scrollToSection(link.id)} className="text-gray-600 hover:text-pink-400 transition-colors duration-300 font-medium">
+            <button key={link.id} onClick={() => scrollToSection(link.id)} className="text-gray-600 hover:text-pink-500 transition-colors duration-300 font-medium">
               {link.title}
             </button>
           ))}
@@ -59,7 +59,7 @@ const Header: React.FC = () => {
         </div>
 
         <div className="md:hidden">
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-800">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-800" aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}>
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
@@ -76,7 +76,7 @@ const Header: React.FC = () => {
           >
             <nav className="flex flex-col items-center gap-6 pt-4">
               {NAV_LINKS.map((link) => (
-                <MotionButton key={link.id} variants={menuItemVariants} onClick={() => scrollToSection(link.id)} className="text-gray-600 hover:text-pink-400 transition-colors duration-300 font-medium text-lg">
+                <MotionButton key={link.id} variants={menuItemVariants} onClick={() => scrollToSection(link.id)} className="text-gray-600 hover:text-pink-500 transition-colors duration-300 font-medium text-lg">
                   {link.title}
                 </MotionButton>
               ))}

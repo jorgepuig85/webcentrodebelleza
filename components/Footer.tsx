@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="font-bold text-lg mb-4">Seguinos</h4>
             <div className="flex justify-center md:justify-start gap-4">
-              <a href="https://www.instagram.com/centro_de_bellezays?igsh=N3IxanJicmJuOXc5" target="_blank" rel="noopener noreferrer" className="bg-gray-700 p-3 rounded-full hover:bg-pink-500 transition-colors"><Instagram /></a>
+              <a href="https://www.instagram.com/centro_de_bellezays?igsh=N3IxanJicmJuOXc5" target="_blank" rel="noopener noreferrer" aria-label="Seguinos en Instagram" className="bg-gray-700 p-3 rounded-full hover:bg-pink-500 transition-colors"><Instagram /></a>
             </div>
           </div>
         </div>

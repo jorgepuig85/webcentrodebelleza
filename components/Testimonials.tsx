@@ -50,7 +50,7 @@ const Testimonials: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Lo que dicen nuestras clientas</h2>
-          <p className="text-lg text-gray-500 mt-2">La satisfacción de nuestras clientas es nuestra mejor publicidad.</p>
+          <p className="text-lg text-gray-600 mt-2">La satisfacción de nuestras clientas es nuestra mejor publicidad.</p>
           <div className="mt-4 w-24 h-1 bg-pink-400 mx-auto rounded"></div>
         </div>
         
@@ -82,7 +82,7 @@ const Testimonials: React.FC = () => {
                       height="56"
                     />
                     <div>
-                        <h4 className="font-bold text-lg text-gray-800">{TESTIMONIALS[index].name}</h4>
+                        <p className="font-bold text-lg text-gray-800">{TESTIMONIALS[index].name}</p>
                         <p className="text-pink-500">{TESTIMONIALS[index].service}</p>
                     </div>
                 </div>
@@ -90,10 +90,10 @@ const Testimonials: React.FC = () => {
             </MotionDiv>
           </AnimatePresence>
           
-          <button onClick={handlePrev} className="absolute left-0 -translate-x-12 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-pink-100 transition-colors">
+          <button onClick={handlePrev} aria-label="Testimonio anterior" className="absolute left-0 -translate-x-12 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-pink-100 transition-colors">
             <ChevronLeft className="text-pink-500" />
           </button>
-          <button onClick={handleNext} className="absolute right-0 translate-x-12 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-pink-100 transition-colors">
+          <button onClick={handleNext} aria-label="Siguiente testimonio" className="absolute right-0 translate-x-12 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-pink-100 transition-colors">
             <ChevronRight className="text-pink-500" />
           </button>
         </div>

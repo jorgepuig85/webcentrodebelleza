@@ -32,7 +32,7 @@ const Rental: React.FC = () => {
                         transition={{ duration: 0.7 }}
                     >
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Alquiler para Profesionales</h2>
-                        <p className="text-lg text-gray-500 mb-8">
+                        <p className="text-lg text-gray-600 mb-8">
                             ¿Sos profesional de la estética? Potenciá tu negocio y ofrecé a tus clientes el tratamiento de depilación definitiva más avanzado. Te ofrecemos nuestro equipo por jornadas completas.
                         </p>
                         <div className="space-y-6 mb-8">
@@ -45,7 +45,7 @@ const Rental: React.FC = () => {
                                     </div>
                                     <div>
                                     <h3 className="text-xl font-semibold text-gray-800">{benefit.title}</h3>
-                                    <p className="text-gray-500">{benefit.description}</p>
+                                    <p className="text-gray-600">{benefit.description}</p>
                                     </div>
                                 </div>
                                 );
@@ -66,10 +66,12 @@ const Rental: React.FC = () => {
                     >
                         <BackgroundGradient containerClassName="rounded-2xl">
                             <img 
-                                src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/rental.png" 
+                                src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/rental.png?format=webp&quality=75&width=600" 
                                 alt="Gráfico de alquiler de equipo de depilación láser para profesionales"
                                 className="rounded-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
                                 loading="lazy"
+                                width="600"
+                                height="450"
                             />
                         </BackgroundGradient>
                     </MotionDiv>

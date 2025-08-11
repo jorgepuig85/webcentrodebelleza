@@ -24,6 +24,16 @@ const cardVariants: Variants = {
 
 const MotionDiv = motion.div;
 
+const LocationCardSkeleton = () => (
+  <div className="bg-gray-50 p-6 rounded-lg shadow-md flex items-center gap-4 animate-pulse">
+    <div className="bg-gray-200 w-12 h-12 rounded-full flex-shrink-0"></div>
+    <div className="w-full">
+      <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+    </div>
+  </div>
+);
+
 const Locations: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +68,11 @@ const Locations: React.FC = () => {
   
   const renderContent = () => {
     if (loading) {
-      return <div className="text-center text-gray-500 py-8">Cargando localidades...</div>;
+      return (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => <LocationCardSkeleton key={i} />)}
+        </div>
+      );
     }
 
     if (error) {
@@ -93,7 +107,7 @@ const Locations: React.FC = () => {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-800">{location.name}</h3>
-              <p className="text-gray-500">{location.province}</p>
+              <p className="text-gray-600">{location.province}</p>
             </div>
           </MotionDiv>
         ))}
@@ -106,7 +120,7 @@ const Locations: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Nuestras Localidades de Atención</h2>
-          <p className="text-lg text-gray-500 mt-2">Te acercamos la mejor tecnología estés donde estés.</p>
+          <p className="text-lg text-gray-600 mt-2">Te acercamos la mejor tecnología estés donde estés.</p>
           <div className="mt-4 w-24 h-1 bg-pink-400 mx-auto rounded"></div>
         </div>
         {renderContent()}

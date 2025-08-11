@@ -50,7 +50,6 @@ const Contact: React.FC = () => {
   const selectedZoneNames = watch('zones');
 
   const [zones, setZones] = useState<Zone[]>([]);
-  const [totalCost, setTotalCost] = useState(0);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [isFetchingTimes, setIsFetchingTimes] = useState(false);
   const [formStatus, setFormStatus] = useState<FormStatus>('idle');
@@ -77,17 +76,16 @@ const Contact: React.FC = () => {
   }, []);
 
   // Calculate total cost when selected zones or available zones change
-  useEffect(() => {
-    if (zones.length > 0 && selectedZoneNames?.length > 0) {
-      const cost = selectedZoneNames.reduce((acc, zoneName) => {
-        const selectedZone = zones.find(z => z.name === zoneName);
-        return acc + (selectedZone?.price || 0);
-      }, 0);
-      setTotalCost(cost);
-    } else {
-      setTotalCost(0);
+  const totalCost = useMemo(() => {
+    if (!zones || zones.length === 0 || !selectedZoneNames || selectedZoneNames.length === 0) {
+      return 0;
     }
+    return selectedZoneNames.reduce((acc, zoneName) => {
+      const selectedZone = zones.find(z => z.name === zoneName);
+      return acc + (selectedZone?.price || 0);
+    }, 0);
   }, [selectedZoneNames, zones]);
+
 
   // Fetch available times when date changes by calling the secure API endpoint
   useEffect(() => {
@@ -353,7 +351,7 @@ const Contact: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Contactanos</h2>
-          <p className="text-lg text-gray-500 mt-2">Resolvé tus dudas o agendá tu próxima visita.</p>
+          <p className="text-lg text-gray-600 mt-2">Resolvé tus dudas o agendá tu próxima visita.</p>
           <div className="mt-4 w-24 h-1 bg-pink-400 mx-auto rounded"></div>
         </div>
 
@@ -495,11 +493,12 @@ const Contact: React.FC = () => {
             <div>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Seguinos en Redes</h3>
               <div className="flex gap-4">
-                <a href="https://www.instagram.com/centro_de_bellezays?igsh=N3IxanJicmJuOXc5" target="_blank" rel="noopener noreferrer" className="bg-gray-100 p-3 rounded-full text-gray-600 hover:bg-pink-100 hover:text-pink-500 transition-colors"><Instagram /></a>
+                <a href="https://www.instagram.com/centro_de_bellezays?igsh=N3IxanJicmJuOXc5" target="_blank" rel="noopener noreferrer" aria-label="Seguinos en Instagram" className="bg-gray-100 p-3 rounded-full text-gray-600 hover:bg-pink-100 hover:text-pink-500 transition-colors"><Instagram /></a>
               </div>
             </div>
             <div>
               <iframe
+                title="Ubicación en Google Maps"
                 src="https://maps.google.com/maps?q=-36.85295661306252,-63.68863452311219&hl=es&z=15&output=embed"
                 width="100%"
                 height="300"
