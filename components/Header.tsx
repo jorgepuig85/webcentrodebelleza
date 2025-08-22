@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as fm, AnimatePresence } from 'framer-motion';
 import { Menu, X, Sparkles } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
-
-const MotionDiv = motion.div;
-const MotionButton = motion.button;
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -67,7 +64,7 @@ const Header: React.FC = () => {
       
       <AnimatePresence>
         {isMenuOpen && (
-          <MotionDiv 
+          <fm.div 
             initial="hidden"
             animate="visible"
             exit="hidden"
@@ -76,15 +73,15 @@ const Header: React.FC = () => {
           >
             <nav className="flex flex-col items-center gap-6 pt-4">
               {NAV_LINKS.map((link) => (
-                <MotionButton key={link.id} variants={menuItemVariants} onClick={() => scrollToSection(link.id)} className="text-gray-600 hover:text-pink-500 transition-colors duration-300 font-medium text-lg">
+                <fm.button key={link.id} variants={menuItemVariants} onClick={() => scrollToSection(link.id)} className="text-gray-600 hover:text-pink-500 transition-colors duration-300 font-medium text-lg">
                   {link.title}
-                </MotionButton>
+                </fm.button>
               ))}
-              <MotionButton variants={menuItemVariants} onClick={() => scrollToSection('contacto')} className="bg-pink-400 text-white w-full px-5 py-3 rounded-full font-semibold hover:bg-pink-500 transition-transform duration-300 hover:scale-105 mt-4">
+              <fm.button variants={menuItemVariants} onClick={() => scrollToSection('contacto')} className="bg-pink-400 text-white w-full px-5 py-3 rounded-full font-semibold hover:bg-pink-500 transition-transform duration-300 hover:scale-105 mt-4">
                 Reservar Turno
-              </MotionButton>
+              </fm.button>
             </nav>
-          </MotionDiv>
+          </fm.div>
         )}
       </AnimatePresence>
     </header>

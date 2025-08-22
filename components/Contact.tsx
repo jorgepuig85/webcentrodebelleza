@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { motion } from 'framer-motion';
+import { motion as fm } from 'framer-motion';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { Send, Instagram, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
@@ -25,8 +25,6 @@ type Zone = {
 };
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
-
-const MotionDiv = motion.div;
 
 const Contact: React.FC = () => {
   const { register, handleSubmit, formState: { errors }, reset, watch, setValue, trigger } = useForm<FormInputs>({
@@ -358,7 +356,7 @@ const Contact: React.FC = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          <MotionDiv
+          <fm.div
             className="bg-white p-8 rounded-lg shadow-md"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -388,7 +386,7 @@ const Contact: React.FC = () => {
               </div>
 
               {contactType === 'inquiry' && (
-                <motion.div initial={{opacity:0}} animate={{opacity:1}} className="space-y-4">
+                <fm.div initial={{opacity:0}} animate={{opacity:1}} className="space-y-4">
                   <div>
                     <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700">Número de WhatsApp</label>
                     <input type="tel" id="whatsapp" {...register("whatsapp", { required: "El WhatsApp es requerido" })} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
@@ -399,11 +397,11 @@ const Contact: React.FC = () => {
                     <textarea id="message" rows={4} {...register("message", { required: "Dejanos tu consulta" })} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500"></textarea>
                     {errors.message && <span className="text-red-500 text-sm mt-1">{errors.message.message}</span>}
                   </div>
-                </motion.div>
+                </fm.div>
               )}
               
               {contactType === 'appointment' && (
-                <motion.div
+                <fm.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   className="space-y-4 overflow-hidden"
@@ -445,7 +443,7 @@ const Contact: React.FC = () => {
                   </div>
                   
                   {totalCost > 0 && (
-                    <motion.div 
+                    <fm.div 
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="mt-4 p-4 bg-pink-50 border border-pink-200 rounded-lg text-right"
@@ -454,14 +452,14 @@ const Contact: React.FC = () => {
                       <span className="text-2xl font-bold text-pink-500 ml-3">
                         ${totalCost.toLocaleString('es-AR')}
                       </span>
-                    </motion.div>
+                    </fm.div>
                   )}
 
                    <div>
                     <label htmlFor="appointment_message" className="block text-sm font-medium text-gray-700">Mensaje adicional (Opcional)</label>
                     <textarea id="appointment_message" rows={3} {...register("message")} className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500"></textarea>
                   </div>
-                </motion.div>
+                </fm.div>
               )}
 
               {renderStatusMessage()}
@@ -483,9 +481,9 @@ const Contact: React.FC = () => {
                 )}
               </button>
             </form>
-          </MotionDiv>
+          </fm.div>
           
-          <MotionDiv
+          <fm.div
             className="space-y-8"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -511,7 +509,7 @@ const Contact: React.FC = () => {
                 className="rounded-lg shadow-md"
               ></iframe>
             </div>
-          </MotionDiv>
+          </fm.div>
         </div>
       </div>
     </section>

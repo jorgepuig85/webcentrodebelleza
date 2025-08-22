@@ -1,9 +1,7 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as fm } from 'framer-motion';
 import { Zap, ShieldCheck, Heart, Leaf } from 'lucide-react';
 import { BackgroundGradient } from './ui/BackgroundGradient';
-
-const MotionDiv = motion.div;
 
 const Technology: React.FC = () => {
   const features = [
@@ -17,7 +15,7 @@ const Technology: React.FC = () => {
     <section id="tecnologia" className="py-20 bg-white">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <MotionDiv
+          <fm.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.5 }}
@@ -33,8 +31,8 @@ const Technology: React.FC = () => {
                 height="450"
               />
             </BackgroundGradient>
-          </MotionDiv>
-          <MotionDiv
+          </fm.div>
+          <fm.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.5 }}
@@ -60,7 +58,7 @@ const Technology: React.FC = () => {
                 );
               })}
             </div>
-          </MotionDiv>
+          </fm.div>
         </div>
       </div>
     </section>

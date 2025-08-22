@@ -190,12 +190,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 
                 const emailPromises = [];
 
-                // Email to user (only if they provided an email)
-                if (email) {
+                // Email to user (only if they provided a non-empty email)
+                if (email && email.trim() !== '') {
                     emailPromises.push(
                         resend.emails.send({
                             from: fromEmail,
                             to: email,
+                            reply_to: adminEmailList[0],
                             subject: 'Aquí está tu premio de la Ruleta de la Belleza',
                             html: createUserPrizeEmailHtml({ email, prize }),
                         })

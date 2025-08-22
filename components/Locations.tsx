@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { motion, Variants } from 'framer-motion';
+import { motion as fm } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { MapPin } from 'lucide-react';
 
@@ -10,7 +10,7 @@ type Location = {
   province: string;
 };
 
-const cardVariants: Variants = {
+const cardVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
     opacity: 1, 
@@ -21,8 +21,6 @@ const cardVariants: Variants = {
     }
   }
 };
-
-const MotionDiv = motion.div;
 
 const LocationCardSkeleton = () => (
   <div className="bg-gray-50 p-6 rounded-lg shadow-md flex items-center gap-4 animate-pulse">
@@ -89,7 +87,7 @@ const Locations: React.FC = () => {
     }
 
     return (
-      <MotionDiv 
+      <fm.div 
         className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
         initial="hidden"
         whileInView="visible"
@@ -97,7 +95,7 @@ const Locations: React.FC = () => {
         transition={{ staggerChildren: 0.1 }}
       >
         {locations.map((location) => (
-          <MotionDiv
+          <fm.div
             key={location.id}
             className="bg-gray-50 p-6 rounded-lg shadow-md flex items-center gap-4 transform hover:-translate-y-1 transition-transform duration-300"
             variants={cardVariants}
@@ -109,9 +107,9 @@ const Locations: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-800">{location.name}</h3>
               <p className="text-gray-600">{location.province}</p>
             </div>
-          </MotionDiv>
+          </fm.div>
         ))}
-      </MotionDiv>
+      </fm.div>
     );
   };
 

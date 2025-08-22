@@ -1,13 +1,11 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as fm } from 'framer-motion';
 import { MessageCircle } from 'lucide-react'; // Using MessageCircle as a stand-in for WhatsApp icon
-
-const MotionA = motion.a;
 
 const FloatingWhatsApp: React.FC = () => {
   return (
-    <MotionA
+    <fm.a
       href="https://wa.me/5492954391448?text=Hola!%20Quisiera%20hacer%20una%20consulta."
       target="_blank"
       rel="noopener noreferrer"
@@ -21,7 +19,7 @@ const FloatingWhatsApp: React.FC = () => {
       aria-label="Contactar por WhatsApp"
     >
       <MessageCircle size={32} />
-    </MotionA>
+    </fm.a>
   );
 };
 

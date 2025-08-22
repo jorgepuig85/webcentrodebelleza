@@ -1,10 +1,8 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as fm } from 'framer-motion';
 import { Zap, TrendingUp, LifeBuoy, CalendarDays } from 'lucide-react';
 import { BackgroundGradient } from './ui/BackgroundGradient';
-
-const MotionDiv = motion.div;
 
 const Rental: React.FC = () => {
     const benefits = [
@@ -25,7 +23,7 @@ const Rental: React.FC = () => {
         <section id="alquiler" className="py-20 bg-pink-50">
             <div className="container mx-auto px-6">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    <MotionDiv
+                    <fm.div
                         initial={{ opacity: 0, x: -50 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, amount: 0.5 }}
@@ -57,8 +55,8 @@ const Rental: React.FC = () => {
                         >
                             Consultar Disponibilidad
                         </button>
-                    </MotionDiv>
-                     <MotionDiv
+                    </fm.div>
+                     <fm.div
                         initial={{ opacity: 0, x: 50 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, amount: 0.5 }}
@@ -74,7 +72,7 @@ const Rental: React.FC = () => {
                                 height="450"
                             />
                         </BackgroundGradient>
-                    </MotionDiv>
+                    </fm.div>
                 </div>
             </div>
         </section>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, Variants } from 'framer-motion';
+import { motion as fm } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { Sparkles, CheckCircle } from 'lucide-react';
 
@@ -17,7 +17,7 @@ type FetchedPromotion = {
   zones: string[] | null;
 };
 
-const cardVariants: Variants = {
+const cardVariants = {
   hidden: { opacity: 0, scale: 0.9 },
   visible: { 
     opacity: 1, 
@@ -131,7 +131,7 @@ const Promotions = () => {
       );
     }
     return (
-      <motion.div 
+      <fm.div 
         className="grid lg:grid-cols-3 gap-8"
         initial="hidden"
         whileInView="visible"
@@ -139,7 +139,7 @@ const Promotions = () => {
         transition={{ staggerChildren: 0.2 }}
       >
         {promotions.map((promo) => (
-          <motion.div
+          <fm.div
             key={promo.id}
             className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center transform hover:-translate-y-2 transition-transform duration-300 border-t-4 border-pink-400"
             variants={cardVariants}
@@ -167,9 +167,9 @@ const Promotions = () => {
                 ¡Lo quiero!
               </button>
             </div>
-          </motion.div>
+          </fm.div>
         ))}
-      </motion.div>
+      </fm.div>
     );
   };
 

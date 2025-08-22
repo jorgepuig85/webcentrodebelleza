@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, Variants } from 'framer-motion';
+import { motion as fm } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { ChevronRight } from 'lucide-react';
 
@@ -20,7 +20,7 @@ type FetchedItem = {
   image_url: string | null;
 };
 
-const cardVariants: Variants = {
+const cardVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { 
     opacity: 1, 
@@ -64,7 +64,7 @@ const ServiceCardSkeleton = () => (
 
 const ServiceCard = ({ service }: { service: Service }) => {
   return (
-    <motion.div
+    <fm.div
       className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex flex-col"
       variants={cardVariants}
       initial="hidden"
@@ -95,7 +95,7 @@ const ServiceCard = ({ service }: { service: Service }) => {
           </button>
         </div>
       </div>
-    </motion.div>
+    </fm.div>
   );
 };
 
