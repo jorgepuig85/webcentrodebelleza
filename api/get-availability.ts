@@ -1,6 +1,4 @@
 
-
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 
@@ -36,29 +34,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const allSlots = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => `${String(START_HOUR + i).padStart(2, '0')}:00`);
 
         // 2. Fetch all bookings for the day from all relevant tables using the admin client
-        const appointmentsRes = await supabaseAdmin.from('appointments').select('start_time').eq('date', date) as any;
-        const webAppointmentsRes = await supabaseAdmin.from('web_appointments').select('time').eq('date', date) as any;
-        const rentalRes = await supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date) as any;
-        
-        if (appointmentsRes.error) throw appointmentsRes.error;
-        if (webAppointmentsRes.error) throw webAppointmentsRes.error;
-        if (rentalRes.error) throw rentalRes.error;
+        const { data: appointmentsData, error: appointmentsError } = await supabaseAdmin.from('appointments').select('start_time').eq('date', date);
+        const { data: webAppointmentsData, error: webAppointmentsError } = await supabaseAdmin.from('web_appointments').select('time').eq('date', date);
+        const { data: rentalData, error: rentalError } = await supabaseAdmin.from('rentals').select('id').lte('start_date', date).gte('end_date', date);
+
+        if (appointmentsError) throw appointmentsError;
+        if (webAppointmentsError) throw webAppointmentsError;
+        if (rentalError) throw rentalError;
 
         // If there's a rental for the day, no slots are available
-        if (rentalRes.data && rentalRes.data.length > 0) {
+        if (rentalData && rentalData.length > 0) {
             return res.status(200).json({ availableSlots: [] });
         }
         
-        const bookedAppointments = appointmentsRes.data || [];
-        const bookedWebAppointments = webAppointmentsRes.data || [];
+        const bookedAppointments = appointmentsData || [];
+        const bookedWebAppointments = webAppointmentsData || [];
 
         const bookedTimes = new Set([
             ...bookedAppointments
-                .map((a: { start_time?: string | null }) => a.start_time?.substring(0, 5))
-                .filter((t): t is string => Boolean(t)),
+                .map((a: any) => a.start_time?.substring(0, 5))
+                .filter((t: any): t is string => Boolean(t)),
             ...bookedWebAppointments
-                .map((a: { time?: string | null }) => a.time?.substring(0, 5))
-                .filter((t): t is string => Boolean(t))
+                .map((a: any) => a.time?.substring(0, 5))
+                .filter((t: any): t is string => Boolean(t))
         ]);
 
         // 3. Filter out booked slots to find what's available
@@ -66,8 +64,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         return res.status(200).json({ availableSlots });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching availability:', error);
-        return res.status(500).json({ error: 'No se pudo obtener la disponibilidad.', details: error.message });
+        const message = error instanceof Error ? error.message : 'An unknown error occurred';
+        return res.status(500).json({ error: 'No se pudo obtener la disponibilidad.', details: message });
     }
 }

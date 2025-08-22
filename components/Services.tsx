@@ -117,7 +117,7 @@ const Services = () => {
         if (fetchError) throw fetchError;
         
         if (data) {
-           const formattedServices: Service[] = (data as FetchedItem[]).map((item) => {
+           const formattedServices: Service[] = data.map((item: FetchedItem) => {
             const imageUrl = item.image_url
               ? `${item.image_url}?format=webp&quality=75&width=400`
               : `https://picsum.photos/seed/${encodeURIComponent(item.name)}/400/300`;
@@ -133,7 +133,7 @@ const Services = () => {
           setServices(formattedServices);
         }
 
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error fetching services:", err);
         setError('No se pudieron cargar los servicios. Por favor, intente más tarde.');
       } finally {

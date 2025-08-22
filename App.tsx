@@ -1,5 +1,6 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
@@ -11,12 +12,16 @@ import Locations from './components/Locations';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
+import BeautyRoulette from './components/BeautyRoulette';
 
 const App: React.FC = () => {
+  const [showRoulette, setShowRoulette] = useState(false);
+
   useEffect(() => {
     // This key will be used to check if a visit has already been tracked
     // for the current browser session.
     const visitTrackedKey = 'visitTracked';
+    const rouletteShownKey = 'rouletteShown';
 
     // Check if the key exists in sessionStorage.
     const hasBeenTracked = sessionStorage.getItem(visitTrackedKey);
@@ -41,7 +46,58 @@ const App: React.FC = () => {
 
       trackVisit();
     }
+
+    // --- Roulette Logic with Remote Control ---
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    
+    // Checks the Supabase config to see if the roulette should be displayed.
+    const checkRouletteStatus = async () => {
+        try {
+            // Fetch the 'show_roulette' setting from Supabase.
+            const { data, error } = await supabase
+                .from('configuration')
+                .select('value')
+                .eq('key', 'show_roulette')
+                .single();
+                
+            if (error) {
+                // If there's an error (e.g., table doesn't exist, RLS), log it
+                // and simply don't show the roulette. This fails silently.
+                console.warn('Could not fetch roulette configuration:', error.message);
+                return;
+            }
+            
+            // Check if the roulette is enabled globally AND hasn't been shown to this user before.
+            if (data && data.value === true) {
+                const hasRouletteBeenShown = localStorage.getItem(rouletteShownKey);
+                if (!hasRouletteBeenShown) {
+                    // Show the roulette after a 7-second delay to not be intrusive.
+                    timer = setTimeout(() => {
+                        setShowRoulette(true);
+                    }, 7000);
+                }
+            }
+        } catch (err) {
+            console.error('Unexpected error checking roulette status:', err);
+        }
+    };
+    
+    checkRouletteStatus();
+
+    // Clean up the timer if the component unmounts to prevent memory leaks.
+    return () => {
+        if (timer) {
+            clearTimeout(timer);
+        }
+    };
+
   }, []); // Empty dependency array ensures it runs only once on initial mount.
+  
+  const handleRouletteClose = () => {
+    setShowRoulette(false);
+    localStorage.setItem('rouletteShown', 'true');
+  };
 
   return (
     <div className="bg-white text-gray-700">
@@ -58,6 +114,7 @@ const App: React.FC = () => {
       </main>
       <Footer />
       <FloatingWhatsApp />
+      <BeautyRoulette isOpen={showRoulette} onClose={handleRouletteClose} />
     </div>
   );
 };

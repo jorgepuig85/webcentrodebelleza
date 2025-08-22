@@ -1,6 +1,4 @@
 
-
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
@@ -278,13 +276,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const appointmentRes = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle() as any;
-        const webAppointmentRes = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle() as any;
+        const { data: existingAppointment, error: appointmentError } = await supabaseAdmin.from('appointments').select('id').eq('date', date).eq('start_time', `${time}:00`).maybeSingle();
         
-        if (appointmentRes.error) throw appointmentRes.error;
-        if (webAppointmentRes.error) throw webAppointmentRes.error;
+        const { data: existingWebAppointment, error: webAppointmentError } = await supabaseAdmin.from('web_appointments').select('id').eq('date', date).eq('time', time).maybeSingle();
+        
+        if (appointmentError) throw appointmentError;
+        if (webAppointmentError) throw webAppointmentError;
 
-        if (appointmentRes.data || webAppointmentRes.data) {
+        if (existingAppointment || existingWebAppointment) {
             return res.status(409).json({ error: 'Este horario acaba de ser reservado. Por favor, elegí otro.' });
         }
         
@@ -292,7 +291,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .from('web_appointments')
             .insert([{ name, email, phone: phone ?? null, date, time, zones, message: message ?? null, status: 'pendiente' }] as any)
             .select()
-            .single() as any;
+            .single();
 
         if (insertError) {
              throw new Error(`Supabase insert error: ${insertError.message}`);
@@ -337,8 +336,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         return res.status(201).json({ success: true, message: 'Appointment requested successfully!', appointment: newAppointment });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error booking appointment:', error);
-        return res.status(500).json({ error: 'No se pudo agendar el turno.', details: error.message });
+        const message = error instanceof Error ? error.message : 'An unknown error occurred';
+        return res.status(500).json({ error: 'No se pudo agendar el turno.', details: message });
     }
 }

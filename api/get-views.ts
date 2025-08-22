@@ -1,6 +1,4 @@
 
-
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 
@@ -20,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .from('site_metrics')
             .select('value')
             .eq('metric_name', 'page_views')
-            .single() as any;
+            .single();
 
         // If there's an error (e.g., table not found yet), return 0.
         if (error) {
@@ -29,8 +27,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         return res.status(200).json({ views: data?.value ?? 0 });
-    } catch (error: any) {
-        console.error('Error fetching views:', error.message);
+    } catch (error) {
+        console.error('Error fetching views:', error);
         return res.status(500).json({ error: 'Could not fetch view count.' });
     }
 }

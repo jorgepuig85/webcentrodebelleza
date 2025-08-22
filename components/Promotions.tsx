@@ -63,15 +63,17 @@ const Promotions = () => {
         if (promotionsError) throw promotionsError;
 
         if (promotionsData && promotionsData.length > 0) {
-          const typedPromotionsData = promotionsData as FetchedPromotion[];
+          const typedPromotionsData: FetchedPromotion[] = promotionsData as any;
           const uniqueZoneIds = [...new Set(typedPromotionsData.flatMap(promo => promo.zones || []))];
 
           let zoneNamesMap: Record<string, string> = {};
           if (uniqueZoneIds.length > 0) {
-            const { data: zonesData, error: zonesError } = await supabase
+            const zonesResponse = await supabase
               .from('items')
               .select('id, name')
               .in('id', uniqueZoneIds);
+            
+            const { data: zonesData, error: zonesError } = zonesResponse;
             
             if (zonesError) throw zonesError;
 
@@ -91,7 +93,7 @@ const Promotions = () => {
         } else {
             setPromotions([]);
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error fetching promotions:", err);
         setError('No se pudieron cargar las promociones. Por favor, intente más tarde.');
       } finally {

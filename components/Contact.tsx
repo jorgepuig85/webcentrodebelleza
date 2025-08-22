@@ -153,9 +153,10 @@ const Contact: React.FC = () => {
             message: '',
         });
 
-    } catch (error: any) {
+    } catch (error) {
       setFormStatus('error');
-      setStatusMessage(error.message || 'Hubo un problema al enviar tu mensaje. Por favor, intentá de nuevo más tarde.');
+      const message = error instanceof Error ? error.message : 'Hubo un problema al enviar tu mensaje. Por favor, intentá de nuevo más tarde.';
+      setStatusMessage(message);
     }
   };
 
@@ -191,9 +192,10 @@ const Contact: React.FC = () => {
         reset({ contactType: 'appointment', name: '', email: '', phone: '', date: '', time: '', zones: [], message: '' });
         setAvailableTimes([]);
 
-    } catch (error: any) {
+    } catch (error) {
       setFormStatus('error');
-      setStatusMessage(error.message);
+      const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+      setStatusMessage(message);
     }
   };
 

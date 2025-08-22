@@ -28,8 +28,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         return res.status(200).json({ success: true });
-    } catch (error: any) {
-        console.error('Error tracking visit:', error.message);
+    } catch (error) {
+        console.error('Error tracking visit:', error);
         // Fail silently to the client to not break the user experience.
         return res.status(200).json({ success: true, message: 'An error occurred while tracking.' });
     }
