@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { motion as fm } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { ChevronRight } from 'lucide-react';
 
@@ -27,16 +28,16 @@ const cardVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: [0, 0, 0.58, 1]
+      ease: [0, 0, 0.58, 1] as const
     }
   }
 };
 
 const SectionHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
   <div className="text-center mb-12">
-    <h2 className="text-3xl md:text-4xl font-bold text-gray-800">{title}</h2>
-    <p className="text-lg text-gray-600 mt-2">{subtitle}</p>
-    <div className="mt-4 w-24 h-1 bg-pink-400 mx-auto rounded"></div>
+    <h2 className="text-3xl md:text-4xl font-bold text-theme-text-strong">{title}</h2>
+    <p className="text-lg text-theme-text mt-2">{subtitle}</p>
+    <div className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></div>
   </div>
 );
 
@@ -64,7 +65,7 @@ const ServiceCardSkeleton = () => (
 
 const ServiceCard = ({ service }: { service: Service }) => {
   return (
-    <fm.div
+    <motion.div
       className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex flex-col"
       variants={cardVariants}
       initial="hidden"
@@ -86,16 +87,16 @@ const ServiceCard = ({ service }: { service: Service }) => {
         </div>
       </div>
       <div className="p-6 flex flex-col flex-grow">
-        <p className="text-gray-600 mb-4 flex-grow min-h-[4rem]">{service.description}</p>
+        <p className="text-theme-text mb-4 flex-grow min-h-[4rem]">{service.description}</p>
         <div className="flex justify-between items-center mt-auto">
-          <span className="text-2xl font-bold text-pink-500">${service.price.toLocaleString('es-AR')}</span>
-          <button onClick={() => scrollToSection('contacto')} className="text-pink-500 font-semibold flex items-center gap-1 group-hover:underline">
+          <span className="text-2xl font-bold text-theme-primary">${service.price.toLocaleString('es-AR')}</span>
+          <button onClick={() => scrollToSection('contacto')} className="text-theme-primary font-semibold flex items-center gap-1 group-hover:underline">
             Consultar
             <ChevronRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
           </button>
         </div>
       </div>
-    </fm.div>
+    </motion.div>
   );
 };
 
@@ -157,7 +158,7 @@ const Services = () => {
     }
     if (services.length === 0) {
       return (
-        <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+        <div className="text-center text-theme-text bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
           <h3 className="font-semibold text-lg mb-2">No se encontraron servicios.</h3>
           <p>Verifique que los servicios en la tabla <code className="bg-gray-200 px-1 rounded">items</code> de Supabase tengan el campo <code className="bg-gray-200 px-1 rounded">is_combo</code> como <code className="bg-gray-200 px-1 rounded">false</code>.</p>
         </div>
@@ -173,7 +174,7 @@ const Services = () => {
   };
 
   return (
-    <section id="servicios" className="py-20 bg-gray-50">
+    <section id="servicios" className="py-20 bg-theme-background-soft">
       <div className="container mx-auto px-6">
         <SectionHeader title="Nuestros Servicios" subtitle="Elegí la zona que querés tratar y empezá tu cambio." />
         {renderContent()}

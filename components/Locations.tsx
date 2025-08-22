@@ -1,6 +1,9 @@
 
+
+
+
 import React, { useState, useEffect } from 'react';
-import { motion as fm } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { MapPin } from 'lucide-react';
 
@@ -17,7 +20,7 @@ const cardVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: [0, 0, 0.58, 1]
+      ease: [0, 0, 0.58, 1] as const
     }
   }
 };
@@ -79,7 +82,7 @@ const Locations: React.FC = () => {
 
     if (locations.length === 0) {
       return (
-        <div className="text-center text-gray-600 bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+        <div className="text-center text-theme-text bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
           <h3 className="font-semibold text-lg mb-2">No se encontraron localidades de atención.</h3>
           <p>Verifique que la tabla <code className="bg-gray-200 px-1 rounded">locations</code> de Supabase tenga datos.</p>
         </div>
@@ -87,7 +90,7 @@ const Locations: React.FC = () => {
     }
 
     return (
-      <fm.div 
+      <motion.div 
         className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
         initial="hidden"
         whileInView="visible"
@@ -95,31 +98,31 @@ const Locations: React.FC = () => {
         transition={{ staggerChildren: 0.1 }}
       >
         {locations.map((location) => (
-          <fm.div
+          <motion.div
             key={location.id}
-            className="bg-gray-50 p-6 rounded-lg shadow-md flex items-center gap-4 transform hover:-translate-y-1 transition-transform duration-300"
+            className="bg-theme-background-soft p-6 rounded-lg shadow-md flex items-center gap-4 transform hover:-translate-y-1 transition-transform duration-300"
             variants={cardVariants}
           >
-            <div className="bg-pink-100 text-pink-500 p-3 rounded-full flex-shrink-0">
+            <div className="bg-theme-primary-soft text-theme-primary p-3 rounded-full flex-shrink-0">
               <MapPin size={24} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-800">{location.name}</h3>
-              <p className="text-gray-600">{location.province}</p>
+              <h3 className="text-lg font-semibold text-theme-text-strong">{location.name}</h3>
+              <p className="text-theme-text">{location.province}</p>
             </div>
-          </fm.div>
+          </motion.div>
         ))}
-      </fm.div>
+      </motion.div>
     );
   };
 
   return (
-    <section id="ubicaciones" className="py-20 bg-white">
+    <section id="ubicaciones" className="py-20 bg-theme-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Nuestras Localidades de Atención</h2>
-          <p className="text-lg text-gray-600 mt-2">Te acercamos la mejor tecnología estés donde estés.</p>
-          <div className="mt-4 w-24 h-1 bg-pink-400 mx-auto rounded"></div>
+          <h2 className="text-3xl md:text-4xl font-bold text-theme-text-strong">Nuestras Localidades de Atención</h2>
+          <p className="text-lg text-theme-text mt-2">Te acercamos la mejor tecnología estés donde estés.</p>
+          <div className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></div>
         </div>
         {renderContent()}
       </div>

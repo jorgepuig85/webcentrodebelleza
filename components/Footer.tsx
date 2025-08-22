@@ -33,22 +33,22 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-gray-800 text-white">
+    <footer className="bg-theme-text-strong text-theme-text-inverted">
       <div className="container mx-auto px-6 py-12">
         <div className="grid md:grid-cols-3 gap-8 text-center md:text-left">
           <div>
             <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-              <Sparkles className="text-pink-400" size={28} />
+              <Sparkles className="text-theme-primary" size={28} />
               <span className="text-xl font-bold">Centro de Belleza</span>
             </div>
-            <p className="text-gray-400">Depilación definitiva para sentirte libre y segura.</p>
+            <p className="text-theme-text-light">Depilación definitiva para sentirte libre y segura.</p>
           </div>
           <div>
             <h4 className="font-bold text-lg mb-4">Navegación</h4>
             <ul className="space-y-2">
               {NAV_LINKS.map(link => (
                 <li key={link.id}>
-                  <button onClick={() => scrollToSection(link.id)} className="text-gray-400 hover:text-white transition-colors">{link.title}</button>
+                  <button onClick={() => scrollToSection(link.id)} className="text-theme-text-light hover:text-white transition-colors">{link.title}</button>
                 </li>
               ))}
             </ul>
@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="font-bold text-lg mb-4">Seguinos</h4>
             <div className="flex justify-center md:justify-start gap-4">
-              <a href="https://www.instagram.com/centro_de_bellezays?igsh=N3IxanJicmJuOXc5" target="_blank" rel="noopener noreferrer" aria-label="Seguinos en Instagram" className="bg-gray-700 p-3 rounded-full hover:bg-pink-500 transition-colors"><Instagram /></a>
+              <a href="https://www.instagram.com/centro_de_bellezays?igsh=N3IxanJicmJuOXc5" target="_blank" rel="noopener noreferrer" aria-label="Seguinos en Instagram" className="bg-gray-700 p-3 rounded-full hover:bg-theme-primary transition-colors"><Instagram /></a>
             </div>
           </div>
         </div>

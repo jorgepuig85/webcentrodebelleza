@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion as fm, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { X, Gift, Mail, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
@@ -106,7 +106,7 @@ const PrizeResultDisplay: React.FC<PrizeResultDisplayProps> = React.memo(({
   
   return (
     <AnimatePresence>
-      <fm.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
         <h3 className="text-xl font-bold text-gray-800">
           {prizeResult.text === '+1 Giro' ? '¡Genial!' : prizeResult.isWinner ? '¡Felicitaciones!' : '¡Qué pena!'}
         </h3>
@@ -140,7 +140,7 @@ const PrizeResultDisplay: React.FC<PrizeResultDisplayProps> = React.memo(({
             Cerrar
           </button>
         )}
-      </fm.div>
+      </motion.div>
     </AnimatePresence>
   );
 });
@@ -266,13 +266,13 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
                     </svg>
                 </div>
 
-                <fm.div
+                <motion.div
                     className="w-full h-full"
                     animate={{ rotate: rotation }}
                     transition={{ type: "spring", damping: 15, stiffness: 20, duration: 5 }}
                 >
                     <Wheel />
-                </fm.div>
+                </motion.div>
             </div>
 
             {!prizeResult && (
@@ -300,7 +300,7 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <fm.div
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -317,7 +317,7 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
             
             {renderContent()}
 
-          </fm.div>
+          </motion.div>
         </div>
       )}
     </AnimatePresence>

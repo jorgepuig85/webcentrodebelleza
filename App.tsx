@@ -13,6 +13,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import BeautyRoulette from './components/BeautyRoulette';
+import { ThemeProvider } from './context/ThemeContext';
 
 const App: React.FC = () => {
   const [showRoulette, setShowRoulette] = useState(false);
@@ -100,22 +101,24 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="bg-white text-gray-700">
-      <Header />
-      <main>
-        <Hero />
-        <Services />
-        <Promotions />
-        <Technology />
-        <Rental />
-        <Testimonials />
-        <Locations />
-        <Contact />
-      </main>
-      <Footer />
-      <FloatingWhatsApp />
-      <BeautyRoulette isOpen={showRoulette} onClose={handleRouletteClose} />
-    </div>
+    <ThemeProvider>
+      <div className="bg-theme-background text-theme-text">
+        <Header />
+        <main>
+          <Hero />
+          <Services />
+          <Promotions />
+          <Technology />
+          <Rental />
+          <Testimonials />
+          <Locations />
+          <Contact />
+        </main>
+        <Footer />
+        <FloatingWhatsApp />
+        <BeautyRoulette isOpen={showRoulette} onClose={handleRouletteClose} />
+      </div>
+    </ThemeProvider>
   );
 };
 

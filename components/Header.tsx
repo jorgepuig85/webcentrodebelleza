@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion as fm, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Sparkles } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 
@@ -34,29 +34,29 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-theme-background/80 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection('inicio')}>
-          <Sparkles className="text-pink-400" size={28} />
-          <span className="text-xl font-bold text-gray-800">Centro de Belleza</span>
+          <Sparkles className="text-theme-primary" size={28} />
+          <span className="text-xl font-bold text-theme-text-strong">Centro de Belleza</span>
         </div>
         
         <nav className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map((link) => (
-            <button key={link.id} onClick={() => scrollToSection(link.id)} className="text-gray-600 hover:text-pink-500 transition-colors duration-300 font-medium">
+            <button key={link.id} onClick={() => scrollToSection(link.id)} className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium">
               {link.title}
             </button>
           ))}
         </nav>
 
         <div className="hidden md:block">
-          <button onClick={() => scrollToSection('contacto')} className="bg-pink-400 text-white px-5 py-2 rounded-full font-semibold hover:bg-pink-500 transition-transform duration-300 hover:scale-105">
+          <button onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted px-5 py-2 rounded-full font-semibold hover:bg-theme-primary-hover transition-transform duration-300 hover:scale-105">
             Reservar Turno
           </button>
         </div>
 
         <div className="md:hidden">
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-800" aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}>
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-theme-text-strong" aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}>
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
@@ -64,24 +64,24 @@ const Header: React.FC = () => {
       
       <AnimatePresence>
         {isMenuOpen && (
-          <fm.div 
+          <motion.div 
             initial="hidden"
             animate="visible"
             exit="hidden"
             variants={menuVariants}
-            className="md:hidden bg-white shadow-lg absolute top-full left-0 right-0 px-6 pb-6"
+            className="md:hidden bg-theme-background shadow-lg absolute top-full left-0 right-0 px-6 pb-6"
           >
             <nav className="flex flex-col items-center gap-6 pt-4">
               {NAV_LINKS.map((link) => (
-                <fm.button key={link.id} variants={menuItemVariants} onClick={() => scrollToSection(link.id)} className="text-gray-600 hover:text-pink-500 transition-colors duration-300 font-medium text-lg">
+                <motion.button key={link.id} variants={menuItemVariants} onClick={() => scrollToSection(link.id)} className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium text-lg">
                   {link.title}
-                </fm.button>
+                </motion.button>
               ))}
-              <fm.button variants={menuItemVariants} onClick={() => scrollToSection('contacto')} className="bg-pink-400 text-white w-full px-5 py-3 rounded-full font-semibold hover:bg-pink-500 transition-transform duration-300 hover:scale-105 mt-4">
+              <motion.button variants={menuItemVariants} onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted w-full px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover transition-transform duration-300 hover:scale-105 mt-4">
                 Reservar Turno
-              </fm.button>
+              </motion.button>
             </nav>
-          </fm.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </header>
