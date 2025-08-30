@@ -19,10 +19,11 @@ interface EffectComponentProps extends Required<Omit<SeasonalHeroEffectsProps, '
 }
 
 const INTENSITY_MAP = {
-  low: { base: 15, mobile: 8 },
-  medium: { base: 30, mobile: 15 },
-  high: { base: 50, mobile: 25 },
+  low: { base: 15, mobile: 8, summer: 2 },
+  medium: { base: 30, mobile: 15, summer: 4 },
+  high: { base: 50, mobile: 25, summer: 6 },
 };
+
 
 // --- HELPER HOOKS ---
 
@@ -211,38 +212,60 @@ const SpringEffect: React.FC<EffectComponentProps> = ({ intensity, mobileIntensi
 };
 
 
-// ☀️ SUMMER: Heat Waves
+// ☀️ SUMMER: Heat Waves (V2 - Organic & Atmospheric)
 const SummerEffect: React.FC<EffectComponentProps> = ({ intensity, mobileIntensityOverride, colors, seed }) => {
-    const waveCount = 3;
+    const waveCount = useMemo(() => {
+      const finalIntensity = window.innerWidth < 768 ? mobileIntensityOverride : intensity;
+      return INTENSITY_MAP[finalIntensity].summer;
+    }, [intensity, mobileIntensityOverride]);
     
     const initialize = useCallback((canvas: HTMLCanvasElement, random: () => number) => {
         return Array.from({ length: waveCount }, (_, i) => ({
-            y: (canvas.height / (waveCount + 1)) * (i + 1),
-            amplitude: (random() * 0.5 + 0.5) * (canvas.height * 0.02),
-            frequency: (random() * 0.2 + 0.1) * 0.01,
-            speed: (random() * 0.5 + 0.2) * 0.0005,
+            // Core wave properties
+            y: random() * canvas.height,
+            frequency: (random() * 0.2 + 0.1) * 0.005,
+            speed: (random() * 0.3 + 0.1) * 0.00015,
             offset: random() * Math.PI * 2,
-            opacity: random() * 0.05 + 0.02,
+            
+            // Properties for organic animation
+            baseAmplitude: (random() * 0.4 + 0.3) * (canvas.height * 0.03),
+            baseOpacity: random() * 0.04 + 0.02,
+            oscillationTime: random() * 1000,
+            oscillationSpeed: 0.001 + random() * 0.001,
         }));
-    }, []);
+    }, [waveCount]);
 
     const update = useCallback((canvas: HTMLCanvasElement, waves: any[]) => {
         waves.forEach(w => {
             w.offset += w.speed * canvas.width;
+            w.oscillationTime += w.oscillationSpeed * 16; // 16ms is ~60fps
         });
     }, []);
 
     const draw = useCallback((ctx: CanvasRenderingContext2D, waves: any[]) => {
-        const dpr = window.devicePixelRatio || 1;
         waves.forEach(w => {
+            // Calculate current amplitude and opacity based on the oscillator
+            const oscillation = Math.sin(w.oscillationTime);
+            const currentAmplitude = w.baseAmplitude + oscillation * (w.baseAmplitude * 0.2);
+            const currentOpacity = w.baseOpacity + (oscillation * 0.5 + 0.5) * (w.baseOpacity * 0.5);
+
+            // Create a soft gradient for the wave
+            const gradient = ctx.createLinearGradient(0, w.y - currentAmplitude * 2, 0, w.y + currentAmplitude * 2);
+            const colorRgb = `${parseInt(colors.soft.slice(1, 3), 16)}, ${parseInt(colors.soft.slice(3, 5), 16)}, ${parseInt(colors.soft.slice(5, 7), 16)}`;
+            
+            gradient.addColorStop(0, `rgba(${colorRgb}, 0)`);
+            gradient.addColorStop(0.5, `rgba(${colorRgb}, ${currentOpacity})`);
+            gradient.addColorStop(1, `rgba(${colorRgb}, 0)`);
+            
             ctx.beginPath();
             ctx.moveTo(0, w.y);
-            for (let x = 0; x < ctx.canvas.width; x++) {
-                const y = w.y + Math.sin(x * w.frequency + w.offset) * w.amplitude;
+            for (let x = 0; x <= ctx.canvas.width; x += 10) {
+                const y = w.y + Math.sin(x * w.frequency + w.offset) * currentAmplitude;
                 ctx.lineTo(x, y);
             }
-            ctx.lineWidth = 1.5 * dpr;
-            ctx.strokeStyle = `rgba(${parseInt(colors.soft.slice(1, 3), 16)}, ${parseInt(colors.soft.slice(3, 5), 16)}, ${parseInt(colors.soft.slice(5, 7), 16)}, ${w.opacity * 3})`;
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = currentAmplitude * 1.5;
             ctx.stroke();
         });
     }, [colors.soft]);
