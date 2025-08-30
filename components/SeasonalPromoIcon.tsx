@@ -58,24 +58,6 @@ const SeasonalPromoIcon: React.FC<SeasonalPromoIconProps> = ({ isVisible, onHide
   
   const selectedIcon = icons[season] || icons['spring'];
 
-  // Define a slow-spin animation for the winter snowflake
-  useEffect(() => {
-      const styleSheet = document.styleSheets[0];
-      if (styleSheet) {
-          const keyframes = `@keyframes spin-slow {
-              from { transform: rotate(0deg); }
-              to { transform: rotate(360deg); }
-          }`;
-          const animationClass = `.animate-spin-slow { animation: spin-slow 15s linear infinite; }`;
-
-          // A simple check to avoid inserting the same rules multiple times
-          if (!styleSheet.cssRules[0] || !Array.from(styleSheet.cssRules).some(rule => rule.cssText.includes('spin-slow'))) {
-            styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
-            styleSheet.insertRule(animationClass, styleSheet.cssRules.length);
-          }
-      }
-  }, []);
-
   // --- Render ---
   return (
     <AnimatePresence>
