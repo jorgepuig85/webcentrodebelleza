@@ -14,15 +14,18 @@ import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import BeautyRoulette from './components/BeautyRoulette';
 import { ThemeProvider } from './context/ThemeContext';
+import { SeasonalCursor } from './components/SeasonalCursor';
+import SeasonalPromoIcon from './components/SeasonalPromoIcon';
+import FloatingActionCluster from './components/FloatingActionCluster';
 
 const App: React.FC = () => {
   const [showRoulette, setShowRoulette] = useState(false);
+  const [showPromoIcon, setShowPromoIcon] = useState(false);
 
   useEffect(() => {
     // This key will be used to check if a visit has already been tracked
     // for the current browser session.
     const visitTrackedKey = 'visitTracked';
-    const rouletteShownKey = 'rouletteShown';
 
     // Check if the key exists in sessionStorage.
     const hasBeenTracked = sessionStorage.getItem(visitTrackedKey);
@@ -48,14 +51,13 @@ const App: React.FC = () => {
       trackVisit();
     }
 
-    // --- Roulette Logic with Remote Control ---
-
-    let timer: ReturnType<typeof setTimeout> | null = null;
+    // --- Gamification Logic (Roulette has priority) ---
+    let rouletteTimer: ReturnType<typeof setTimeout> | null = null;
+    let promoIconTimer: ReturnType<typeof setTimeout> | null = null;
     
-    // Checks the Supabase config to see if the roulette should be displayed.
-    const checkRouletteStatus = async () => {
+    const checkGamificationStatus = async () => {
         try {
-            // Fetch the 'show_roulette' setting from Supabase.
+            const rouletteShownKey = 'rouletteShown';
             const { data, error } = await supabase
                 .from('configuration')
                 .select('value')
@@ -63,37 +65,43 @@ const App: React.FC = () => {
                 .single();
                 
             if (error) {
-                // If there's an error (e.g., table doesn't exist, RLS), log it
-                // and simply don't show the roulette. This fails silently.
                 console.warn('Could not fetch roulette configuration:', error.message);
+                // If roulette config fails, fallback to showing promo icon
+                promoIconTimer = setTimeout(() => setShowPromoIcon(true), 3000);
                 return;
             }
             
-            // Check if the roulette is enabled globally AND hasn't been shown to this user before.
-            if (data && data.value === true) {
-                const hasRouletteBeenShown = localStorage.getItem(rouletteShownKey);
-                if (!hasRouletteBeenShown) {
-                    // Show the roulette after a 7-second delay to not be intrusive.
-                    timer = setTimeout(() => {
-                        setShowRoulette(true);
-                    }, 7000);
-                }
+            const isRouletteEnabled = data?.value === true;
+            const hasRouletteBeenShown = localStorage.getItem(rouletteShownKey);
+
+            if (isRouletteEnabled && !hasRouletteBeenShown) {
+                // Priority: Show roulette, ensure promo icon is hidden.
+                setShowPromoIcon(false);
+                rouletteTimer = setTimeout(() => {
+                    setShowRoulette(true);
+                }, 7000);
+            } else {
+                // Fallback: Show promo icon since roulette conditions aren't met.
+                promoIconTimer = setTimeout(() => {
+                    setShowPromoIcon(true);
+                }, 3000);
             }
         } catch (err) {
-            console.error('Unexpected error checking roulette status:', err);
+            console.error('Unexpected error checking gamification status:', err);
+            // On any unexpected error, default to showing the promo icon.
+            promoIconTimer = setTimeout(() => setShowPromoIcon(true), 3000);
         }
     };
     
-    checkRouletteStatus();
+    checkGamificationStatus();
 
-    // Clean up the timer if the component unmounts to prevent memory leaks.
+    // Cleanup timers on unmount
     return () => {
-        if (timer) {
-            clearTimeout(timer);
-        }
+        if (rouletteTimer) clearTimeout(rouletteTimer);
+        if (promoIconTimer) clearTimeout(promoIconTimer);
     };
 
-  }, []); // Empty dependency array ensures it runs only once on initial mount.
+  }, []); // Empty dependency array ensures it runs only once.
   
   const handleRouletteClose = () => {
     setShowRoulette(false);
@@ -102,6 +110,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
+      <SeasonalCursor />
       <div className="bg-theme-background text-theme-text">
         <Header />
         <main>
@@ -115,9 +124,15 @@ const App: React.FC = () => {
           <Contact />
         </main>
         <Footer />
-        <FloatingWhatsApp />
         <BeautyRoulette isOpen={showRoulette} onClose={handleRouletteClose} />
       </div>
+      <FloatingActionCluster>
+        <SeasonalPromoIcon 
+          isVisible={showPromoIcon}
+          onHide={() => setShowPromoIcon(false)}
+        />
+        <FloatingWhatsApp />
+      </FloatingActionCluster>
     </ThemeProvider>
   );
 };

@@ -1,8 +1,42 @@
 
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Zap, TrendingUp, LifeBuoy, CalendarDays } from 'lucide-react';
 import { BackgroundGradient } from './ui/BackgroundGradient';
+import AnimatedTitle from './ui/AnimatedTitle';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.3 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -50 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" as const } }
+};
+
+const textContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2, delayChildren: 0.1 }
+  }
+};
+
+const textItemVariants = {
+  hidden: { opacity: 0, x: -30 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
+};
+
+const imageVariants = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" as const } }
+};
+
 
 const Rental: React.FC = () => {
     const benefits = [
@@ -20,48 +54,47 @@ const Rental: React.FC = () => {
     };
 
     return (
-        <section id="alquiler" className="py-20 bg-theme-primary-soft">
+        <section id="alquiler" className="py-20 animated-gradient-primary-soft">
             <div className="container mx-auto px-6">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true, amount: 0.5 }}
-                        transition={{ duration: 0.7 }}
-                    >
-                        <h2 className="text-3xl md:text-4xl font-bold text-theme-text-strong mb-4">Alquiler para Profesionales</h2>
-                        <p className="text-lg text-theme-text mb-8">
+                <motion.div
+                    className="grid lg:grid-cols-2 gap-12 items-center"
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.4 }}
+                >
+                    <motion.div variants={textContainerVariants}>
+                        <motion.div variants={textItemVariants}>
+                          <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong mb-4">Alquiler para Profesionales</AnimatedTitle>
+                        </motion.div>
+                        <motion.p variants={textItemVariants} className="text-lg text-theme-text mb-8">
                             ¿Sos profesional de la estética? Potenciá tu negocio y ofrecé a tus clientes el tratamiento de depilación definitiva más avanzado. Te ofrecemos nuestro equipo por jornadas completas.
-                        </p>
-                        <div className="space-y-6 mb-8">
+                        </motion.p>
+                        <motion.div variants={textContainerVariants} className="space-y-6 mb-8">
                             {benefits.map((benefit, index) => {
                                 const Icon = benefit.icon;
                                 return (
-                                <div key={index} className="flex items-start gap-4">
+                                <motion.div key={index} className="flex items-start gap-4" variants={textItemVariants}>
                                     <div className="bg-theme-primary-soft/80 text-theme-primary p-3 rounded-full">
                                     <Icon size={24} />
                                     </div>
                                     <div>
-                                    <h3 className="text-xl font-semibold text-theme-text-strong">{benefit.title}</h3>
+                                    <AnimatedTitle as="h3" className="text-xl font-semibold text-theme-text-strong">{benefit.title}</AnimatedTitle>
                                     <p className="text-theme-text">{benefit.description}</p>
                                     </div>
-                                </div>
+                                </motion.div>
                                 );
                             })}
-                        </div>
-                        <button 
+                        </motion.div>
+                        <motion.button 
+                            variants={textItemVariants}
                             onClick={() => scrollToSection('contacto')}
-                            className="w-full sm:w-auto bg-theme-primary text-theme-text-inverted px-8 py-3 rounded-full font-semibold hover:bg-theme-primary-hover transition-transform duration-300 hover:scale-105"
+                            className="w-full sm:w-auto bg-theme-primary text-theme-text-inverted px-8 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat"
                         >
                             Consultar Disponibilidad
-                        </button>
+                        </motion.button>
                     </motion.div>
-                     <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true, amount: 0.5 }}
-                        transition={{ duration: 0.7, delay: 0.2 }}
-                    >
+                     <motion.div variants={imageVariants}>
                         <BackgroundGradient containerClassName="rounded-2xl">
                             <img 
                                 src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/rental.png?format=webp&quality=75&width=600" 
@@ -73,7 +106,7 @@ const Rental: React.FC = () => {
                             />
                         </BackgroundGradient>
                     </motion.div>
-                </div>
+                </motion.div>
             </div>
         </section>
     );

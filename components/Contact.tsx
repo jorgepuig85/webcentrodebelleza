@@ -1,9 +1,12 @@
+
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { Send, Instagram, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
+import AnimatedTitle from './ui/AnimatedTitle';
 
 // Types
 type FormInputs = {
@@ -25,6 +28,33 @@ type Zone = {
 };
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
+
+const headerContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 }
+  }
+};
+
+const headerItemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
+};
+
+const contentContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.3 }
+  }
+}
+
+const contentItemVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" as const } }
+};
+
 
 const Contact: React.FC = () => {
   const { register, handleSubmit, formState: { errors }, reset, watch, setValue, trigger } = useForm<FormInputs>({
@@ -347,23 +377,34 @@ const Contact: React.FC = () => {
 
 
   return (
-    <section id="contacto" className="py-20 bg-theme-background-soft">
+    <section id="contacto" className="py-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-theme-text-strong">Contactanos</h2>
-          <p className="text-lg text-theme-text mt-2">Resolvé tus dudas o agendá tu próxima visita.</p>
-          <div className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></div>
-        </div>
+        <motion.div
+          className="text-center mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={headerContainerVariants}
+        >
+          <motion.div variants={headerItemVariants}>
+            <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Contactanos</AnimatedTitle>
+          </motion.div>
+          <motion.p variants={headerItemVariants} className="text-lg text-theme-text mt-2">Resolvé tus dudas o agendá tu próxima visita.</motion.p>
+          <motion.div variants={headerItemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
+        </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
+        <motion.div
+          className="grid lg:grid-cols-2 gap-12 items-start"
+          variants={contentContainerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
           <motion.div
             className="bg-theme-background p-8 rounded-lg shadow-md"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7 }}
+            variants={contentItemVariants}
           >
-            <h3 className="text-2xl font-bold text-theme-text-strong mb-6">Envianos tu Mensaje</h3>
+            <AnimatedTitle as="h3" className="text-2xl font-bold text-theme-text-strong mb-6">Envianos tu Mensaje</AnimatedTitle>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-theme-text-strong mb-2">Quiero...</label>
@@ -466,7 +507,7 @@ const Contact: React.FC = () => {
               
               <button 
                 type="submit" 
-                className="w-full flex items-center justify-center gap-2 bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover transition-transform duration-300 hover:scale-105 disabled:bg-theme-primary/70 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover disabled:bg-theme-primary/70 disabled:cursor-not-allowed seasonal-glow-hover animate-heartbeat"
                 disabled={formStatus === 'loading'}
               >
                 {formStatus === 'loading' ? (
@@ -485,13 +526,10 @@ const Contact: React.FC = () => {
           
           <motion.div
             className="space-y-8"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            variants={contentItemVariants}
           >
             <div>
-              <h3 className="text-xl font-semibold text-theme-text-strong mb-4">Seguinos en Redes</h3>
+              <AnimatedTitle as="h3" className="text-xl font-semibold text-theme-text-strong mb-4">Seguinos en Redes</AnimatedTitle>
               <div className="flex gap-4">
                 <a href="https://www.instagram.com/centro_de_bellezays?igsh=N3IxanJicmJuOXc5" target="_blank" rel="noopener noreferrer" aria-label="Seguinos en Instagram" className="bg-theme-background-soft p-3 rounded-full text-theme-text hover:bg-theme-primary-soft hover:text-theme-primary transition-colors"><Instagram /></a>
               </div>
@@ -510,7 +548,7 @@ const Contact: React.FC = () => {
               ></iframe>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

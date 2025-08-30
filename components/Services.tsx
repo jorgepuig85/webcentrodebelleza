@@ -1,8 +1,10 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { ChevronRight } from 'lucide-react';
+import AnimatedTitle from './ui/AnimatedTitle';
 
 // Updated type to match the component's needs, will be populated from DB data
 type Service = {
@@ -21,6 +23,20 @@ type FetchedItem = {
   image_url: string | null;
 };
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2, delayChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
+};
+
+
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { 
@@ -32,14 +48,6 @@ const cardVariants = {
     }
   }
 };
-
-const SectionHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
-  <div className="text-center mb-12">
-    <h2 className="text-3xl md:text-4xl font-bold text-theme-text-strong">{title}</h2>
-    <p className="text-lg text-theme-text mt-2">{subtitle}</p>
-    <div className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></div>
-  </div>
-);
 
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id);
@@ -83,7 +91,7 @@ const ServiceCard = ({ service }: { service: Service }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         <div className="absolute bottom-4 left-4 text-white">
-          <h3 className="text-2xl font-bold">{service.name}</h3>
+          <AnimatedTitle as="h3" className="text-2xl font-bold">{service.name}</AnimatedTitle>
         </div>
       </div>
       <div className="p-6 flex flex-col flex-grow">
@@ -174,9 +182,21 @@ const Services = () => {
   };
 
   return (
-    <section id="servicios" className="py-20 bg-theme-background-soft">
+    <section id="servicios" className="py-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
-        <SectionHeader title="Nuestros Servicios" subtitle="Elegí la zona que querés tratar y empezá tu cambio." />
+        <motion.div
+          className="text-center mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.div variants={itemVariants}>
+            <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Nuestros Servicios</AnimatedTitle>
+          </motion.div>
+          <motion.p variants={itemVariants} className="text-lg text-theme-text mt-2">Elegí la zona que querés tratar y empezá tu cambio.</motion.p>
+          <motion.div variants={itemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
+        </motion.div>
         {renderContent()}
       </div>
     </section>

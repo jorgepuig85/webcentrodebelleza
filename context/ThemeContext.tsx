@@ -6,14 +6,16 @@ import { Theme, DEFAULT_THEME } from '../lib/themes';
 
 interface ThemeContextType {
   activeTheme: Theme;
+  season: string;
 }
 
 export const ThemeContext = createContext<ThemeContextType>({
   activeTheme: DEFAULT_THEME,
+  season: 'spring',
 });
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const activeTheme = useSeasonalTheme();
+  const { activeTheme, season } = useSeasonalTheme();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -47,7 +49,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, [activeTheme]);
 
   return (
-    <ThemeContext.Provider value={{ activeTheme }}>
+    <ThemeContext.Provider value={{ activeTheme, season }}>
       {children}
     </ThemeContext.Provider>
   );

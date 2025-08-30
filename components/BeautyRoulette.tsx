@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { X, Gift, Mail, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import AnimatedTitle from './ui/AnimatedTitle';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -167,10 +168,23 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
     const selectedPrize = prizes[randomPrizeIndex];
     const segmentAngle = 360 / prizes.length;
     
-    const middleOfSegment = (randomPrizeIndex * segmentAngle) + (segmentAngle / 2);
-    const finalRotation = (360 * 5) - middleOfSegment;
-    
-    setRotation(finalRotation);
+    setRotation(currentRotation => {
+      // 1. Calculate the final target angle for the prize. The pointer is at 3 o'clock (0 deg).
+      //    Prizes are laid out counter-clockwise. A positive rotation in `framer-motion` is clockwise.
+      //    We need to rotate so the prize's angle lands at the 360/0 degree mark.
+      const targetStopAngle = (randomPrizeIndex * segmentAngle) + (segmentAngle / 2);
+      const targetVisualAngle = 360 - targetStopAngle;
+
+      // 2. Calculate the distance from the current visual position to the target.
+      const currentVisualAngle = currentRotation % 360;
+      // The clockwise distance needed to travel, ensuring it's always a positive value.
+      const distance = (360 - (currentVisualAngle - targetVisualAngle)) % 360;
+
+      // 3. Add 5 full spins for visual effect.
+      const spinAmount = (5 * 360) + distance;
+      
+      return currentRotation + spinAmount;
+    });
     
     setTimeout(() => {
       setIsSpinning(false);
@@ -249,7 +263,7 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-gray-800">¡Éxito!</h3>
             <p className="text-gray-600 mt-2">{statusMessage}</p>
-            <button onClick={onClose} className="mt-6 w-full bg-pink-400 text-white px-4 py-2 rounded-full font-semibold hover:bg-pink-500 transition-colors">Cerrar</button>
+            <button onClick={onClose} className="mt-6 w-full bg-theme-primary text-theme-text-inverted px-4 py-2 rounded-full font-semibold hover:bg-theme-primary-hover transition-colors seasonal-glow-hover">Cerrar</button>
         </div>
       );
     }
@@ -276,7 +290,7 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
             </div>
 
             {!prizeResult && (
-                <button onClick={handleSpin} disabled={isSpinning} className="w-full bg-pink-400 text-white px-6 py-3 rounded-full font-bold text-lg hover:bg-pink-500 transition-transform duration-300 hover:scale-105 disabled:bg-pink-300 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                <button onClick={handleSpin} disabled={isSpinning} className="w-full bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-bold text-lg hover:bg-theme-primary-hover disabled:bg-theme-primary/70 disabled:cursor-not-allowed flex items-center justify-center gap-2 seasonal-glow-hover">
                     {isSpinning ? <><Loader2 className="animate-spin" /> Girando...</> : <><Gift /> ¡Girar la Ruleta!</>}
                 </button>
             )}
@@ -311,7 +325,7 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
               <X size={24} />
             </button>
             <div className="text-center mb-4">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Ruleta de la Belleza</h2>
+              <AnimatedTitle as="h2" className="text-2xl md:text-3xl font-bold text-gray-800">Ruleta de la Belleza</AnimatedTitle>
               <p className="text-gray-600 mt-1">¡Girá y ganá un premio exclusivo!</p>
             </div>
             

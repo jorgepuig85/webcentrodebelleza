@@ -1,7 +1,23 @@
+
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TESTIMONIALS } from '../constants';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import AnimatedTitle from './ui/AnimatedTitle';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
+};
 
 const Testimonials: React.FC = () => {
   const [index, setIndex] = useState(0);
@@ -44,15 +60,29 @@ const Testimonials: React.FC = () => {
   };
   
   return (
-    <section id="testimonios" className="py-20 bg-theme-background-soft">
+    <section id="testimonios" className="py-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-theme-text-strong">Lo que dicen nuestras clientas</h2>
-          <p className="text-lg text-theme-text mt-2">La satisfacción de nuestras clientas es nuestra mejor publicidad.</p>
-          <div className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></div>
-        </div>
+        <motion.div
+          className="text-center mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={containerVariants}
+        >
+          <motion.div variants={itemVariants}>
+            <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Lo que dicen nuestras clientas</AnimatedTitle>
+          </motion.div>
+          <motion.p variants={itemVariants} className="text-lg text-theme-text mt-2">La satisfacción de nuestras clientas es nuestra mejor publicidad.</motion.p>
+          <motion.div variants={itemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
+        </motion.div>
         
-        <div className="relative max-w-3xl mx-auto h-80 md:h-64 flex items-center justify-center">
+        <motion.div
+          className="relative max-w-3xl mx-auto h-80 md:h-64 flex items-center justify-center"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, delay: 0.4 }}
+        >
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={index}
@@ -94,7 +124,7 @@ const Testimonials: React.FC = () => {
           <button onClick={handleNext} aria-label="Siguiente testimonio" className="absolute right-0 translate-x-12 top-1/2 -translate-y-1/2 bg-theme-background p-3 rounded-full shadow-md hover:bg-theme-primary-soft transition-colors">
             <ChevronRight className="text-theme-primary" />
           </button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

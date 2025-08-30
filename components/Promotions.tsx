@@ -1,8 +1,10 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { Sparkles, CheckCircle } from 'lucide-react';
+import AnimatedTitle from './ui/AnimatedTitle';
 
 type Promotion = {
   id: string;
@@ -16,6 +18,19 @@ type FetchedPromotion = {
   name: string;
   price: number;
   zones: string[] | null;
+};
+
+const headerContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 }
+  }
+};
+
+const headerItemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
 };
 
 const cardVariants = {
@@ -148,7 +163,7 @@ const Promotions = () => {
             <div className="bg-theme-primary-soft p-4 rounded-full mb-4">
               <Sparkles className="text-theme-primary" size={32} />
             </div>
-            <h3 className="text-2xl font-bold text-theme-text-strong mb-4">{promo.title}</h3>
+            <AnimatedTitle as="h3" className="text-2xl font-bold text-theme-text-strong mb-4">{promo.title}</AnimatedTitle>
             
             <ul className="mb-6 space-y-2 text-left w-full flex-grow text-theme-text">
               {promo.includes.map((item, index) => (
@@ -163,7 +178,7 @@ const Promotions = () => {
               <p className="text-4xl font-bold text-theme-primary mb-6">${promo.price.toLocaleString('es-AR')}</p>
               <button 
                 onClick={() => scrollToSection('contacto')}
-                className="w-full bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover transition-transform duration-300 hover:scale-105"
+                className="w-full bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover"
               >
                 ¡Lo quiero!
               </button>
@@ -175,13 +190,21 @@ const Promotions = () => {
   };
 
   return (
-    <section id="promociones" className="py-20 bg-theme-primary-soft">
+    <section id="promociones" className="py-20 animated-gradient-primary-soft">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-theme-text-strong">Promociones Exclusivas</h2>
-          <p className="text-lg text-theme-text mt-2">Combiná zonas y obtené los mejores precios.</p>
-          <div className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></div>
-        </div>
+        <motion.div
+          className="text-center mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={headerContainerVariants}
+        >
+          <motion.div variants={headerItemVariants}>
+            <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Promociones Exclusivas</AnimatedTitle>
+          </motion.div>
+          <motion.p variants={headerItemVariants} className="text-lg text-theme-text mt-2">Combiná zonas y obtené los mejores precios.</motion.p>
+          <motion.div variants={headerItemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
+        </motion.div>
         {renderContent()}
       </div>
     </section>

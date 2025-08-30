@@ -50,7 +50,7 @@ const Header: React.FC = () => {
         </nav>
 
         <div className="hidden md:block">
-          <button onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted px-5 py-2 rounded-full font-semibold hover:bg-theme-primary-hover transition-transform duration-300 hover:scale-105">
+          <button onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted px-5 py-2 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat">
             Reservar Turno
           </button>
         </div>
@@ -77,7 +77,7 @@ const Header: React.FC = () => {
                   {link.title}
                 </motion.button>
               ))}
-              <motion.button variants={menuItemVariants} onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted w-full px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover transition-transform duration-300 hover:scale-105 mt-4">
+              <motion.button variants={menuItemVariants} onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted w-full px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat mt-4">
                 Reservar Turno
               </motion.button>
             </nav>

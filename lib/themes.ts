@@ -16,10 +16,13 @@ export interface Theme {
     '--color-border': string;
     '--color-success': string;
     '--color-accent': string;
+    '--color-glow': string;
   };
   images: {
     hero: string;
   };
+  seasonalSlogan: string;
+  ctaText: string;
 }
 
 const SUPABASE_URL = 'https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/';
@@ -41,10 +44,13 @@ export const DEFAULT_THEME: Theme = {
     '--color-border': '#d1d5db', // gray-300
     '--color-success': '#22c55e', // green-500
     '--color-accent': '#f59e0b', // amber-500
+    '--color-glow': 'rgba(244, 114, 182, 0.4)', // pink-400 with alpha
   },
   images: {
     hero: `${SUPABASE_URL}fondo_inicio_primavera.png?format=webp&quality=80`,
   },
+  seasonalSlogan: 'Renová tu piel y florecé con la frescura de la primavera.',
+  ctaText: 'Renová tu piel',
 };
 
 export const THEMES: { [key: string]: Theme } = {
@@ -59,10 +65,13 @@ export const THEMES: { [key: string]: Theme } = {
       '--color-text': '#57534e', // stone-600
       '--color-text-strong': '#292524', // stone-800
       '--color-background-soft': '#fef2f2', // red-50
+      '--color-glow': 'rgba(251, 113, 133, 0.4)', // rose-400 with alpha
     },
     images: {
       hero: `${SUPABASE_URL}fondo_inicio_verano.png?format=webp&quality=80`,
     },
+    seasonalSlogan: 'Mostrá tu piel libre y luminosa, lista para brillar este verano.',
+    ctaText: 'Mostrá tu mejor piel',
   },
   autumn: {
     name: 'Otoño',
@@ -76,10 +85,13 @@ export const THEMES: { [key: string]: Theme } = {
       '--color-text-strong': '#1c1917', // stone-900
       '--color-background': '#fffaf0', // floralwhite
       '--color-background-soft': '#fefce8', // yellow-50
+      '--color-glow': 'rgba(249, 115, 22, 0.4)', // orange-500 with alpha
     },
     images: {
       hero: `${SUPABASE_URL}fondo_inicio_otono.png?format=webp&quality=80`,
     },
+    seasonalSlogan: 'Prepará tu piel con la calidez y el cuidado que merece esta temporada.',
+    ctaText: 'Prepará tu piel',
   },
   winter: {
     name: 'Invierno',
@@ -93,10 +105,13 @@ export const THEMES: { [key: string]: Theme } = {
       '--color-text-strong': '#111827', // gray-900
       '--color-background': '#ffffff', // white
       '--color-background-soft': '#f3f4f6', // gray-100
+      '--color-glow': 'rgba(167, 139, 250, 0.4)', // violet-400 with alpha
     },
     images: {
       hero: `${SUPABASE_URL}fondo_inicio_invierno.png?format=webp&quality=80`,
     },
+    seasonalSlogan: 'Descubrí el placer de una piel suave y radiante incluso en los días más fríos.',
+    ctaText: 'Cuidá tu piel hoy',
   },
   spring: DEFAULT_THEME,
 };

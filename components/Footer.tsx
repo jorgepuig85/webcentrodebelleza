@@ -1,7 +1,9 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Instagram, Eye } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
+import AnimatedTitle from './ui/AnimatedTitle';
 
 const Footer: React.FC = () => {
   const [views, setViews] = useState<number | null>(null);
@@ -44,7 +46,7 @@ const Footer: React.FC = () => {
             <p className="text-theme-text-light">Depilación definitiva para sentirte libre y segura.</p>
           </div>
           <div>
-            <h4 className="font-bold text-lg mb-4">Navegación</h4>
+            <AnimatedTitle as="h4" className="font-bold text-lg mb-4">Navegación</AnimatedTitle>
             <ul className="space-y-2">
               {NAV_LINKS.map(link => (
                 <li key={link.id}>
@@ -54,7 +56,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-lg mb-4">Seguinos</h4>
+            <AnimatedTitle as="h4" className="font-bold text-lg mb-4">Seguinos</AnimatedTitle>
             <div className="flex justify-center md:justify-start gap-4">
               <a href="https://www.instagram.com/centro_de_bellezays?igsh=N3IxanJicmJuOXc5" target="_blank" rel="noopener noreferrer" aria-label="Seguinos en Instagram" className="bg-gray-700 p-3 rounded-full hover:bg-theme-primary transition-colors"><Instagram /></a>
             </div>

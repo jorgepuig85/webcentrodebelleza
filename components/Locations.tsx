@@ -1,16 +1,28 @@
 
 
-
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { MapPin } from 'lucide-react';
+import AnimatedTitle from './ui/AnimatedTitle';
 
 type Location = {
   id: number;
   name: string;
   province: string;
+};
+
+const headerContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 }
+  }
+};
+
+const headerItemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
 };
 
 const cardVariants = {
@@ -107,7 +119,7 @@ const Locations: React.FC = () => {
               <MapPin size={24} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-theme-text-strong">{location.name}</h3>
+              <AnimatedTitle as="h3" className="text-lg font-semibold text-theme-text-strong">{location.name}</AnimatedTitle>
               <p className="text-theme-text">{location.province}</p>
             </div>
           </motion.div>
@@ -119,11 +131,19 @@ const Locations: React.FC = () => {
   return (
     <section id="ubicaciones" className="py-20 bg-theme-background">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-theme-text-strong">Nuestras Localidades de Atención</h2>
-          <p className="text-lg text-theme-text mt-2">Te acercamos la mejor tecnología estés donde estés.</p>
-          <div className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></div>
-        </div>
+        <motion.div
+          className="text-center mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={headerContainerVariants}
+        >
+          <motion.div variants={headerItemVariants}>
+            <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Nuestras Localidades de Atención</AnimatedTitle>
+          </motion.div>
+          <motion.p variants={headerItemVariants} className="text-lg text-theme-text mt-2">Te acercamos la mejor tecnología estés donde estés.</motion.p>
+          <motion.div variants={headerItemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
+        </motion.div>
         {renderContent()}
       </div>
     </section>
