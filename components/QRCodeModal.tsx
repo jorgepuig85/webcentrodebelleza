@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import QRCode from 'react-qr-code';
-import { X, Download } from 'lucide-react';
+import { X, Download, Share2 } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
 interface QRCodeModalProps {
@@ -11,7 +11,7 @@ interface QRCodeModalProps {
 
 const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose }) => {
   const qrCodeRef = useRef<HTMLDivElement>(null);
-  // Use the canonical, static URL to ensure the QR code is always correct.
+  const [shareText, setShareText] = useState('Compartir'); // State for button text feedback
   const siteUrl = "https://www.centrodebelleza.com.ar/";
   const logoUrl = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/Logo.svg";
 
@@ -67,6 +67,37 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose }) => {
     qrImage.src = url;
   };
 
+  // Handles sharing the site URL using the Web Share API or copying to clipboard.
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Centro de Belleza',
+      text: 'Descubrí los mejores tratamientos de depilación definitiva.',
+      url: siteUrl,
+    };
+
+    // Use Web Share API if available (mostly on mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // User might cancel the share action, so we just log the error.
+        console.error('Error al usar la API de compartir:', err);
+      }
+    } else {
+      // Fallback to clipboard for desktop browsers
+      try {
+        await navigator.clipboard.writeText(siteUrl);
+        setShareText('¡Enlace copiado!');
+        setTimeout(() => setShareText('Compartir'), 2000); // Reset text after 2s
+      } catch (err) {
+        console.error('Error al copiar el enlace al portapapeles:', err);
+        setShareText('Error al copiar');
+        setTimeout(() => setShareText('Compartir'), 2000);
+      }
+    }
+  };
+
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -113,13 +144,22 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            <button
-              onClick={handleDownload}
-              className="mt-6 w-full flex items-center justify-center gap-2 bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover"
-            >
-              <Download size={20} />
-              Descargar PNG
-            </button>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={handleDownload}
+                className="flex-1 flex items-center justify-center gap-2 bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover"
+              >
+                <Download size={20} />
+                Descargar PNG
+              </button>
+              <button
+                onClick={handleShare}
+                className="flex-1 flex items-center justify-center gap-2 bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover"
+              >
+                <Share2 size={20} />
+                {shareText}
+              </button>
+            </div>
           </motion.div>
         </div>
       )}

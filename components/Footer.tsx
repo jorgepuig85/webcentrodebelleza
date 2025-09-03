@@ -1,14 +1,15 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Instagram, Eye, QrCode } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 import AnimatedTitle from './ui/AnimatedTitle';
 import QRCodeModal from './QRCodeModal';
+import Legal from './Legal';
 
 const Footer: React.FC = () => {
   const [views, setViews] = useState<number | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
 
   useEffect(() => {
       const fetchViews = async () => {
@@ -76,7 +77,13 @@ const Footer: React.FC = () => {
                 Acceso Profesional
               </a>
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsLegalModalOpen(true)}
+                className="text-sm text-gray-500 hover:text-white hover:underline transition-colors"
+              >
+                Políticas y Términos
+              </button>
+              <button
+                onClick={() => setIsQrModalOpen(true)}
                 className="flex items-center gap-2 text-sm text-gray-500 hover:text-white hover:underline transition-colors"
               >
                 <QrCode size={16} />
@@ -93,7 +100,8 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </footer>
-      <QRCodeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <QRCodeModal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} />
+      <Legal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
     </>
   );
 };
