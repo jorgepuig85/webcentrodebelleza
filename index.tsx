@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import App from './App';
@@ -23,8 +23,10 @@ const reCaptchaKey = isProduction ? PRODUCTION_SITE_KEY : TEST_SITE_KEY;
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <GoogleReCaptchaProvider reCaptchaKey={reCaptchaKey}>
-      <App />
-    </GoogleReCaptchaProvider>
+    <Suspense fallback={<div className="initial-loader" aria-label="Cargando..."></div>}>
+      <GoogleReCaptchaProvider reCaptchaKey={reCaptchaKey}>
+        <App />
+      </GoogleReCaptchaProvider>
+    </Suspense>
   </React.StrictMode>
 );

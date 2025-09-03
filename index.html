@@ -127,6 +127,31 @@
       .animate-spin-slow {
         animation: spin-slow 15s linear infinite;
       }
+
+      /* Styles for Suspense Fallback Loader */
+      .initial-loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: #f9fafb; /* gray-50 */
+      }
+      .initial-loader::after {
+        content: '';
+        width: 48px;
+        height: 48px;
+        border: 5px solid #e5e7eb; /* gray-200 */
+        border-bottom-color: #f472b6; /* pink-400 */
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+      }
+      @keyframes rotation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
     </style>
 
     <!-- Google Analytics (Placeholder) -->
@@ -167,7 +192,8 @@
     "@vercel/node": "https://esm.sh//@vercel/node@^5.3.10",
     "react-google-recaptcha-v3": "https://esm.sh/react-google-recaptcha-v3@^1.10.1",
     "clsx": "https://esm.sh/clsx@^2.1.1",
-    "tailwind-merge": "https://esm.sh/tailwind-merge@^2.4.0"
+    "tailwind-merge": "https://esm.sh/tailwind-merge@^2.4.0",
+    "react-qr-code": "https://esm.sh/react-qr-code@^2.0.12"
   }
 }
 </script>

@@ -4,13 +4,14 @@ import { cn } from '../../lib/utils';
 
 type As = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
-interface AnimatedTitleProps {
+// FIX: Extend React.HTMLAttributes<HTMLHeadingElement> to allow standard HTML attributes like 'id' to be passed to the component.
+interface AnimatedTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   as: As;
   children: React.ReactNode;
   className?: string;
 }
 
-const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ as: Component, children, className }) => {
+const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ as: Component, children, className, ...rest }) => {
   const isMainTitle = Component === 'h1' || Component === 'h2';
 
   const subtitleVariants: Variants = {
@@ -22,7 +23,7 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ as: Component, children, 
     // For main titles, we use a CSS-based underline for performance and simplicity
     return (
       <div className="group inline-block cursor-pointer">
-        <Component className={cn('animated-underline', className)}>
+        <Component className={cn('animated-underline', className)} {...rest}>
           {children}
         </Component>
       </div>
@@ -38,7 +39,7 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ as: Component, children, 
       transition={{ duration: 0.3, ease: 'easeOut' }}
       className="cursor-pointer inline-block"
     >
-      <Component className={className}>
+      <Component className={className} {...rest}>
         {children}
       </Component>
     </motion.div>
