@@ -15,12 +15,10 @@ import FloatingWhatsApp from './components/FloatingWhatsApp';
 import BeautyRoulette from './components/BeautyRoulette';
 import { ThemeProvider } from './context/ThemeContext';
 import { SeasonalCursor } from './components/SeasonalCursor';
-import SeasonalPromoIcon from './components/SeasonalPromoIcon';
 import FloatingActionCluster from './components/FloatingActionCluster';
 
 const App: React.FC = () => {
   const [showRoulette, setShowRoulette] = useState(false);
-  const [showPromoIcon, setShowPromoIcon] = useState(false);
 
   useEffect(() => {
     // This key will be used to check if a visit has already been tracked
@@ -51,9 +49,8 @@ const App: React.FC = () => {
       trackVisit();
     }
 
-    // --- Gamification Logic (Roulette has priority) ---
+    // --- Gamification Logic ---
     let rouletteTimer: ReturnType<typeof setTimeout> | null = null;
-    let promoIconTimer: ReturnType<typeof setTimeout> | null = null;
     
     const checkGamificationStatus = async () => {
         try {
@@ -66,8 +63,6 @@ const App: React.FC = () => {
                 
             if (error) {
                 console.warn('Could not fetch roulette configuration:', error.message);
-                // If roulette config fails, fallback to showing promo icon
-                promoIconTimer = setTimeout(() => setShowPromoIcon(true), 3000);
                 return;
             }
             
@@ -75,21 +70,12 @@ const App: React.FC = () => {
             const hasRouletteBeenShown = localStorage.getItem(rouletteShownKey);
 
             if (isRouletteEnabled && !hasRouletteBeenShown) {
-                // Priority: Show roulette, ensure promo icon is hidden.
-                setShowPromoIcon(false);
                 rouletteTimer = setTimeout(() => {
                     setShowRoulette(true);
                 }, 7000);
-            } else {
-                // Fallback: Show promo icon since roulette conditions aren't met.
-                promoIconTimer = setTimeout(() => {
-                    setShowPromoIcon(true);
-                }, 3000);
             }
         } catch (err) {
             console.error('Unexpected error checking gamification status:', err);
-            // On any unexpected error, default to showing the promo icon.
-            promoIconTimer = setTimeout(() => setShowPromoIcon(true), 3000);
         }
     };
     
@@ -98,7 +84,6 @@ const App: React.FC = () => {
     // Cleanup timers on unmount
     return () => {
         if (rouletteTimer) clearTimeout(rouletteTimer);
-        if (promoIconTimer) clearTimeout(promoIconTimer);
     };
 
   }, []); // Empty dependency array ensures it runs only once.
@@ -127,10 +112,6 @@ const App: React.FC = () => {
         <BeautyRoulette isOpen={showRoulette} onClose={handleRouletteClose} />
       </div>
       <FloatingActionCluster>
-        <SeasonalPromoIcon 
-          isVisible={showPromoIcon}
-          onHide={() => setShowPromoIcon(false)}
-        />
         <FloatingWhatsApp />
       </FloatingActionCluster>
     </ThemeProvider>
