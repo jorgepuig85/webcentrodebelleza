@@ -123,7 +123,10 @@ const PrizeResultDisplay: React.FC<PrizeResultDisplayProps> = React.memo(({
            <p className="text-sm text-gray-600">¡Tenés otra oportunidad para ganar!</p>
         ) : prizeResult.isWinner ? (
           <form onSubmit={handleClaimSubmit} className="space-y-3">
-            <p className="text-sm text-gray-600">Ingresá tu email o WhatsApp para reclamar tu premio.</p>
+            <p className="text-sm text-gray-600 p-2 bg-yellow-50 border border-yellow-200 rounded-md mb-3">
+              <span className="font-bold">¡Importante!</span> Tu premio tiene una validez de <span className="font-bold">15 días</span>.
+            </p>
+            <p className="text-sm text-gray-600">Ingresá tu email o WhatsApp para recibirlo y activarlo.</p>
             <div>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu.email@ejemplo.com" className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
             </div>

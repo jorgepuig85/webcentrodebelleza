@@ -12,6 +12,7 @@ interface PrizeClaimProps {
 
 interface AdminNotificationProps extends PrizeClaimProps {
     date: string;
+    expirationDate: string;
 }
 
 // --- Email HTML Templates ---
@@ -36,7 +37,7 @@ const createUserPrizeEmailHtml = ({ email, prize }: PrizeClaimProps) => {
             </div>
             <h3 style="color: #db2777;">¿Cómo canjear tu premio?</h3>
             <p>Simplemente <strong>mencioná este premio y tu información de contacto (${email})</strong> cuando reserves tu próximo turno o nos contactes por WhatsApp.</p>
-            <p>Este premio es válido por 30 días.</p>
+            <p style="margin-top: 15px; padding: 12px; background-color: #fefce8; border-left: 4px solid #facc15; border-radius: 4px; font-size: 14px; color: #713f12;"><strong>Importante:</strong> Tu premio tiene una validez de <strong>15 días</strong> a partir de la fecha de emisión de este correo. ¡No te olvides de usarlo!</p>
             <p style="margin-top: 20px;">¡Te esperamos!</p>
             <p style="font-weight: bold; color: #db2777;">El equipo de Centro de Belleza</p>
         </div>
@@ -48,7 +49,7 @@ const createUserPrizeEmailHtml = ({ email, prize }: PrizeClaimProps) => {
     </html>`;
 };
 
-const createAdminLeadNotificationHtml = ({ email, whatsapp, prize, date }: AdminNotificationProps) => {
+const createAdminLeadNotificationHtml = ({ email, whatsapp, prize, date, expirationDate }: AdminNotificationProps) => {
     const emailHtml = email ? `<p><strong>Email:</strong> <a href="mailto:${email}" style="color: #4338ca;">${email}</a></p>` : '';
     const whatsappHtml = whatsapp ? `<p><strong>WhatsApp:</strong> ${whatsapp}</p>` : '';
 
@@ -71,6 +72,7 @@ const createAdminLeadNotificationHtml = ({ email, whatsapp, prize, date }: Admin
                     ${emailHtml}
                     ${whatsappHtml}
                     <p><strong>Premio Ganado:</strong> ${prize}</p>
+                    <p style="font-weight: bold; color: #c026d3;">Vencimiento del Premio: ${expirationDate}</p>
                 </div>
                 <div style="margin-top: 30px; padding: 15px; background-color: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; text-align: center;">
                     <p style="margin: 0; font-weight: bold; color: #15803d;">
@@ -166,11 +168,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // --- 4. Save lead to Database ---
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + 15);
+        const expirationDateISO = expirationDate.toISOString();
+
         const leadData = {
             email: email || null,
             whatsapp: whatsapp || null,
             prize_won: prize,
-            source: 'roulette'
+            source: 'roulette',
+            expires_at: expirationDateISO,
         };
 
         const { error: insertError } = await supabaseAdmin
@@ -187,6 +194,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const adminEmailList = adminEmailsEnv.split(',').map(e => e.trim()).filter(Boolean);
             if (adminEmailList.length > 0) {
                 const currentDate = new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
+                const expirationDateString = expirationDate.toLocaleDateString('es-AR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    timeZone: 'America/Argentina/Buenos_Aires'
+                });
                 
                 const emailPromises = [];
 
@@ -196,7 +209,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         resend.emails.send({
                             from: fromEmail,
                             to: email,
-                            reply_to: adminEmailList[0],
+                            // FIX: Corrected typo from reply_to to replyTo
+                            replyTo: adminEmailList[0],
                             subject: 'Aquí está tu premio de la Ruleta de la Belleza',
                             html: createUserPrizeEmailHtml({ email, prize }),
                         })
@@ -209,7 +223,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         from: fromEmail,
                         to: adminEmailList,
                         subject: `Nuevo Lead de la Ruleta: ${email || whatsapp}`,
-                        html: createAdminLeadNotificationHtml({ email, whatsapp, prize, date: currentDate }),
+                        html: createAdminLeadNotificationHtml({ email, whatsapp, prize, date: currentDate, expirationDate: expirationDateString }),
                     })
                 );
                 
