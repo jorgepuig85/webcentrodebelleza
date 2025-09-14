@@ -6,6 +6,10 @@ import { supabase } from '../lib/supabaseClient';
 import { MapPin } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+const MotionP = motion.p;
+
 type Location = {
   id: number;
   name: string;
@@ -102,7 +106,7 @@ const Locations: React.FC = () => {
     }
 
     return (
-      <motion.div 
+      <MotionDiv 
         className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
         initial="hidden"
         whileInView="visible"
@@ -110,7 +114,7 @@ const Locations: React.FC = () => {
         transition={{ staggerChildren: 0.1 }}
       >
         {locations.map((location) => (
-          <motion.div
+          <MotionDiv
             key={location.id}
             className="bg-theme-background-soft p-6 rounded-lg shadow-md flex items-center gap-4 transform hover:-translate-y-1 transition-transform duration-300"
             variants={cardVariants}
@@ -122,28 +126,28 @@ const Locations: React.FC = () => {
               <AnimatedTitle as="h3" className="text-lg font-semibold text-theme-text-strong">{location.name}</AnimatedTitle>
               <p className="text-theme-text">{location.province}</p>
             </div>
-          </motion.div>
+          </MotionDiv>
         ))}
-      </motion.div>
+      </MotionDiv>
     );
   };
 
   return (
     <section id="ubicaciones" className="py-20 bg-theme-background">
       <div className="container mx-auto px-6">
-        <motion.div
+        <MotionDiv
           className="text-center mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={headerContainerVariants}
         >
-          <motion.div variants={headerItemVariants}>
+          <MotionDiv variants={headerItemVariants}>
             <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Nuestras Localidades de Atención</AnimatedTitle>
-          </motion.div>
-          <motion.p variants={headerItemVariants} className="text-lg text-theme-text mt-2">Te acercamos la mejor tecnología estés donde estés.</motion.p>
-          <motion.div variants={headerItemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
-        </motion.div>
+          </MotionDiv>
+          <MotionP variants={headerItemVariants} className="text-lg text-theme-text mt-2">Te acercamos la mejor tecnología estés donde estés.</MotionP>
+          <MotionDiv variants={headerItemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></MotionDiv>
+        </MotionDiv>
         {renderContent()}
       </div>
     </section>

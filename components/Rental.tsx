@@ -6,6 +6,11 @@ import { Zap, TrendingUp, LifeBuoy, CalendarDays } from 'lucide-react';
 import { BackgroundGradient } from './ui/BackgroundGradient';
 import AnimatedTitle from './ui/AnimatedTitle';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+const MotionP = motion.p;
+const MotionButton = motion.button;
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -56,25 +61,25 @@ const Rental: React.FC = () => {
     return (
         <section id="alquiler" className="py-20 animated-gradient-primary-soft">
             <div className="container mx-auto px-6">
-                <motion.div
+                <MotionDiv
                     className="grid lg:grid-cols-2 gap-12 items-center"
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.4 }}
                 >
-                    <motion.div variants={textContainerVariants}>
-                        <motion.div variants={textItemVariants}>
+                    <MotionDiv variants={textContainerVariants}>
+                        <MotionDiv variants={textItemVariants}>
                           <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong mb-4">Alquiler para Profesionales</AnimatedTitle>
-                        </motion.div>
-                        <motion.p variants={textItemVariants} className="text-lg text-theme-text mb-8">
+                        </MotionDiv>
+                        <MotionP variants={textItemVariants} className="text-lg text-theme-text mb-8">
                             ¿Sos profesional de la estética? Potenciá tu negocio y ofrecé a tus clientes el tratamiento de depilación definitiva más avanzado. Te ofrecemos nuestro equipo por jornadas completas.
-                        </motion.p>
-                        <motion.div variants={textContainerVariants} className="space-y-6 mb-8">
+                        </MotionP>
+                        <MotionDiv variants={textContainerVariants} className="space-y-6 mb-8">
                             {benefits.map((benefit, index) => {
                                 const Icon = benefit.icon;
                                 return (
-                                <motion.div key={index} className="flex items-start gap-4" variants={textItemVariants}>
+                                <MotionDiv key={index} className="flex items-start gap-4" variants={textItemVariants}>
                                     <div className="bg-theme-primary-soft/80 text-theme-primary p-3 rounded-full">
                                     <Icon size={24} />
                                     </div>
@@ -82,19 +87,19 @@ const Rental: React.FC = () => {
                                     <AnimatedTitle as="h3" className="text-xl font-semibold text-theme-text-strong">{benefit.title}</AnimatedTitle>
                                     <p className="text-theme-text">{benefit.description}</p>
                                     </div>
-                                </motion.div>
+                                </MotionDiv>
                                 );
                             })}
-                        </motion.div>
-                        <motion.button 
+                        </MotionDiv>
+                        <MotionButton 
                             variants={textItemVariants}
                             onClick={() => scrollToSection('contacto')}
                             className="w-full sm:w-auto bg-theme-primary text-theme-text-inverted px-8 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat"
                         >
                             Consultar Disponibilidad
-                        </motion.button>
-                    </motion.div>
-                     <motion.div variants={imageVariants}>
+                        </MotionButton>
+                    </MotionDiv>
+                     <MotionDiv variants={imageVariants}>
                         <BackgroundGradient containerClassName="rounded-2xl">
                             <img 
                                 src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/rental.png?format=webp&quality=75&width=600" 
@@ -105,8 +110,8 @@ const Rental: React.FC = () => {
                                 height="450"
                             />
                         </BackgroundGradient>
-                    </motion.div>
-                </motion.div>
+                    </MotionDiv>
+                </MotionDiv>
             </div>
         </section>
     );

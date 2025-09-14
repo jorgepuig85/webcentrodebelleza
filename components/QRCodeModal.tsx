@@ -4,6 +4,9 @@ import QRCode from 'react-qr-code';
 import { X, Download, Share2 } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+
 interface QRCodeModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -107,7 +110,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose }) => {
           role="dialog"
           aria-modal="true"
         >
-          <motion.div
+          <MotionDiv
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -160,7 +163,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose }) => {
                 {shareText}
               </button>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
       )}
     </AnimatePresence>

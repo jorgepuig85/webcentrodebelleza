@@ -3,6 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Sparkles } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+const MotionButton = motion.button;
+
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -64,7 +68,7 @@ const Header: React.FC = () => {
       
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div 
+          <MotionDiv 
             initial="hidden"
             animate="visible"
             exit="hidden"
@@ -73,15 +77,15 @@ const Header: React.FC = () => {
           >
             <nav className="flex flex-col items-center gap-6 pt-4">
               {NAV_LINKS.map((link) => (
-                <motion.button key={link.id} variants={menuItemVariants} onClick={() => scrollToSection(link.id)} className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium text-lg">
+                <MotionButton key={link.id} variants={menuItemVariants} onClick={() => scrollToSection(link.id)} className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium text-lg">
                   {link.title}
-                </motion.button>
+                </MotionButton>
               ))}
-              <motion.button variants={menuItemVariants} onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted w-full px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat mt-4">
+              <MotionButton variants={menuItemVariants} onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted w-full px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat mt-4">
                 Reservar Turno
-              </motion.button>
+              </MotionButton>
             </nav>
-          </motion.div>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </header>

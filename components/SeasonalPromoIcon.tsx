@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeContext } from '../context/ThemeContext';
 import { Flower2, Sun, Leaf, Snowflake } from 'lucide-react';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+
 interface SeasonalPromoIconProps {
   isVisible: boolean;
   onHide: () => void;
@@ -62,7 +65,7 @@ const SeasonalPromoIcon: React.FC<SeasonalPromoIconProps> = ({ isVisible, onHide
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, scale: 0.8, y: 50 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 50 }}
@@ -84,7 +87,7 @@ const SeasonalPromoIcon: React.FC<SeasonalPromoIconProps> = ({ isVisible, onHide
           <div className="bg-theme-background p-4 rounded-full shadow-lg cursor-pointer border-2 border-theme-primary/50 hover:border-theme-primary transition-all duration-300">
             {selectedIcon}
           </div>
-        </motion.div>
+        </MotionDiv>
       )}
     </AnimatePresence>
   );

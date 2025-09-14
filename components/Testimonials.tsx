@@ -6,6 +6,10 @@ import { TESTIMONIALS } from '../constants';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+const MotionP = motion.p;
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -62,21 +66,21 @@ const Testimonials: React.FC = () => {
   return (
     <section id="testimonios" className="py-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
-        <motion.div
+        <MotionDiv
           className="text-center mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants}>
+          <MotionDiv variants={itemVariants}>
             <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Lo que dicen nuestras clientas</AnimatedTitle>
-          </motion.div>
-          <motion.p variants={itemVariants} className="text-lg text-theme-text mt-2">La satisfacción de nuestras clientas es nuestra mejor publicidad.</motion.p>
-          <motion.div variants={itemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
-        </motion.div>
+          </MotionDiv>
+          <MotionP variants={itemVariants} className="text-lg text-theme-text mt-2">La satisfacción de nuestras clientas es nuestra mejor publicidad.</MotionP>
+          <MotionDiv variants={itemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></MotionDiv>
+        </MotionDiv>
         
-        <motion.div
+        <MotionDiv
           className="relative max-w-3xl mx-auto h-80 md:h-64 flex items-center justify-center"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -84,7 +88,7 @@ const Testimonials: React.FC = () => {
           transition={{ duration: 0.7, delay: 0.4 }}
         >
           <AnimatePresence initial={false} custom={direction}>
-            <motion.div
+            <MotionDiv
               key={index}
               custom={direction}
               variants={slideVariants}
@@ -115,7 +119,7 @@ const Testimonials: React.FC = () => {
                     </div>
                 </div>
               </div>
-            </motion.div>
+            </MotionDiv>
           </AnimatePresence>
           
           <button onClick={handlePrev} aria-label="Testimonio anterior" className="absolute left-0 -translate-x-12 top-1/2 -translate-y-1/2 bg-theme-background p-3 rounded-full shadow-md hover:bg-theme-primary-soft transition-colors">
@@ -124,7 +128,7 @@ const Testimonials: React.FC = () => {
           <button onClick={handleNext} aria-label="Siguiente testimonio" className="absolute right-0 translate-x-12 top-1/2 -translate-y-1/2 bg-theme-background p-3 rounded-full shadow-md hover:bg-theme-primary-soft transition-colors">
             <ChevronRight className="text-theme-primary" />
           </button>
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );

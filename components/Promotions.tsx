@@ -6,6 +6,10 @@ import { supabase } from '../lib/supabaseClient';
 import { Sparkles, CheckCircle } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+const MotionP = motion.p;
+
 type Promotion = {
   id: string;
   title: string;
@@ -65,6 +69,11 @@ const Promotions = () => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const titleIconMap: { [key: string]: string } = {
+    'Combo Free': '✨',
+    'Cuerpo Completo Mujer': '⭐',
+  };
 
   useEffect(() => {
     const fetchPromotions = async () => {
@@ -147,64 +156,70 @@ const Promotions = () => {
       );
     }
     return (
-      <motion.div 
+      <MotionDiv 
         className="grid lg:grid-cols-3 gap-8"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         transition={{ staggerChildren: 0.2 }}
       >
-        {promotions.map((promo) => (
-          <motion.div
-            key={promo.id}
-            className="bg-theme-background rounded-xl shadow-lg p-8 flex flex-col items-center text-center transform hover:-translate-y-2 transition-transform duration-300 border-t-4 border-theme-primary"
-            variants={cardVariants}
-          >
-            <div className="bg-theme-primary-soft p-4 rounded-full mb-4">
-              <Sparkles className="text-theme-primary" size={32} />
-            </div>
-            <AnimatedTitle as="h3" className="text-2xl font-bold text-theme-text-strong mb-4">{promo.title}</AnimatedTitle>
-            
-            <ul className="mb-6 space-y-2 text-left w-full flex-grow text-theme-text">
-              {promo.includes.map((item, index) => (
-                <li key={index} className="flex items-center gap-2">
-                  <CheckCircle className="text-theme-success w-5 h-5 flex-shrink-0" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+        {promotions.map((promo) => {
+          const promoTitle = promo.title;
+          const icon = titleIconMap[promoTitle];
+          const displayTitle = icon ? `${promoTitle} ${icon}` : promoTitle;
 
-            <div className="mt-auto w-full">
-              <p className="text-4xl font-bold text-theme-primary mb-6">${promo.price.toLocaleString('es-AR')}</p>
-              <button 
-                onClick={() => scrollToSection('contacto')}
-                className="w-full bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover"
-              >
-                ¡Lo quiero!
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
+          return (
+            <MotionDiv
+              key={promo.id}
+              className="bg-theme-background rounded-xl shadow-lg p-8 flex flex-col items-center text-center transform hover:-translate-y-2 transition-transform duration-300 border-t-4 border-theme-primary"
+              variants={cardVariants}
+            >
+              <div className="bg-theme-primary-soft p-4 rounded-full mb-4">
+                <Sparkles className="text-theme-primary" size={32} />
+              </div>
+              <AnimatedTitle as="h3" className="text-2xl font-bold text-theme-text-strong mb-4">{displayTitle}</AnimatedTitle>
+              
+              <ul className="mb-6 space-y-2 text-left w-full flex-grow text-theme-text">
+                {promo.includes.map((item, index) => (
+                  <li key={index} className="flex items-center gap-2">
+                    <CheckCircle className="text-theme-success w-5 h-5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto w-full">
+                <p className="text-4xl font-bold text-theme-primary mb-6">${promo.price.toLocaleString('es-AR')}</p>
+                <button 
+                  onClick={() => scrollToSection('contacto')}
+                  className="w-full bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover"
+                >
+                  ¡Lo quiero!
+                </button>
+              </div>
+            </MotionDiv>
+          );
+        })}
+      </MotionDiv>
     );
   };
 
   return (
     <section id="promociones" className="py-20 animated-gradient-primary-soft">
       <div className="container mx-auto px-6">
-        <motion.div
+        <MotionDiv
           className="text-center mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={headerContainerVariants}
         >
-          <motion.div variants={headerItemVariants}>
+          <MotionDiv variants={headerItemVariants}>
             <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Promociones Exclusivas</AnimatedTitle>
-          </motion.div>
-          <motion.p variants={headerItemVariants} className="text-lg text-theme-text mt-2">Combiná zonas y obtené los mejores precios.</motion.p>
-          <motion.div variants={headerItemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
-        </motion.div>
+          </MotionDiv>
+          <MotionP variants={headerItemVariants} className="text-lg text-theme-text mt-2">Combiná zonas y obtené los mejores precios.</MotionP>
+          <MotionDiv variants={headerItemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></MotionDiv>
+        </MotionDiv>
         {renderContent()}
       </div>
     </section>

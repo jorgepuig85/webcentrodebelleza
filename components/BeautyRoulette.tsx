@@ -4,6 +4,9 @@ import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { X, Gift, Mail, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
 interface Prize {
@@ -107,7 +110,7 @@ const PrizeResultDisplay: React.FC<PrizeResultDisplayProps> = React.memo(({
   
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+      <MotionDiv initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
         <h3 className="text-xl font-bold text-gray-800">
           {prizeResult.text === '+1 Giro' ? '¡Genial!' : prizeResult.isWinner ? '¡Felicitaciones!' : '¡Qué pena!'}
         </h3>
@@ -144,7 +147,7 @@ const PrizeResultDisplay: React.FC<PrizeResultDisplayProps> = React.memo(({
             Cerrar
           </button>
         )}
-      </motion.div>
+      </MotionDiv>
     </AnimatePresence>
   );
 });
@@ -283,13 +286,13 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
                     </svg>
                 </div>
 
-                <motion.div
+                <MotionDiv
                     className="w-full h-full"
                     animate={{ rotate: rotation }}
                     transition={{ type: "spring", damping: 15, stiffness: 20, duration: 5 }}
                 >
                     <Wheel />
-                </motion.div>
+                </MotionDiv>
             </div>
 
             {!prizeResult && (
@@ -317,7 +320,7 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <motion.div
+          <MotionDiv
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -334,7 +337,7 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
             
             {renderContent()}
 
-          </motion.div>
+          </MotionDiv>
         </div>
       )}
     </AnimatePresence>

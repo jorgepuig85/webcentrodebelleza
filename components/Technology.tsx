@@ -6,6 +6,10 @@ import { Zap, ShieldCheck, Heart, Leaf } from 'lucide-react';
 import { BackgroundGradient } from './ui/BackgroundGradient';
 import AnimatedTitle from './ui/AnimatedTitle';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+const MotionP = motion.p;
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -48,14 +52,14 @@ const Technology: React.FC = () => {
   return (
     <section id="tecnologia" className="py-20 bg-theme-background">
       <div className="container mx-auto px-6">
-        <motion.div
+        <MotionDiv
           className="grid lg:grid-cols-2 gap-12 items-center"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.4 }}
         >
-          <motion.div variants={itemVariants}>
+          <MotionDiv variants={itemVariants}>
             <BackgroundGradient containerClassName="rounded-2xl">
               <img 
                 src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg?format=webp&quality=75&width=600" 
@@ -66,19 +70,19 @@ const Technology: React.FC = () => {
                 height="450"
               />
             </BackgroundGradient>
-          </motion.div>
-          <motion.div variants={textContainerVariants}>
-            <motion.div variants={textItemVariants}>
+          </MotionDiv>
+          <MotionDiv variants={textContainerVariants}>
+            <MotionDiv variants={textItemVariants}>
               <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong mb-4">Tecnología de Vanguardia</AnimatedTitle>
-            </motion.div>
-            <motion.p variants={textItemVariants} className="text-lg text-theme-text mb-8">
+            </MotionDiv>
+            <MotionP variants={textItemVariants} className="text-lg text-theme-text mb-8">
               Utilizamos la última tecnología en depilación láser de diodo para ofrecerte un tratamiento seguro, rápido y prácticamente indoloro. Nuestra prioridad es tu comodidad y los mejores resultados.
-            </motion.p>
-            <motion.div variants={textContainerVariants} className="space-y-6">
+            </MotionP>
+            <MotionDiv variants={textContainerVariants} className="space-y-6">
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
-                  <motion.div key={index} className="flex items-start gap-4" variants={featureItemVariants}>
+                  <MotionDiv key={index} className="flex items-start gap-4" variants={featureItemVariants}>
                     <div className="bg-theme-primary-soft text-theme-primary p-3 rounded-full">
                       <Icon size={24} />
                     </div>
@@ -86,12 +90,12 @@ const Technology: React.FC = () => {
                       <AnimatedTitle as="h3" className="text-xl font-semibold text-theme-text-strong">{feature.title}</AnimatedTitle>
                       <p className="text-theme-text">{feature.description}</p>
                     </div>
-                  </motion.div>
+                  </MotionDiv>
                 );
               })}
-            </motion.div>
-          </motion.div>
-        </motion.div>
+            </MotionDiv>
+          </MotionDiv>
+        </MotionDiv>
       </div>
     </section>
   );

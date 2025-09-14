@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
@@ -7,6 +6,10 @@ import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { Send, Instagram, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import AnimatedTitle from './ui/AnimatedTitle';
+
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+const MotionP = motion.p;
 
 // Types
 type FormInputs = {
@@ -84,6 +87,7 @@ const Contact: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState('');
   
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedGender, setSelectedGender] = useState<'woman' | 'man'>('woman');
 
   // Fetch treatment zones for checkboxes
   useEffect(() => {
@@ -102,6 +106,10 @@ const Contact: React.FC = () => {
     };
     fetchZones();
   }, []);
+
+  const womanZones = useMemo(() => zones.filter(z => z.name.startsWith('Mujer - ') || z.name.startsWith('Unisex - ')), [zones]);
+  const manZones = useMemo(() => zones.filter(z => z.name.startsWith('Hombre - ') || z.name.startsWith('Unisex - ')), [zones]);
+  const zonesToDisplay = selectedGender === 'woman' ? womanZones : manZones;
 
   // Calculate total cost when selected zones or available zones change
   const totalCost = useMemo(() => {
@@ -379,28 +387,28 @@ const Contact: React.FC = () => {
   return (
     <section id="contacto" className="py-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
-        <motion.div
+        <MotionDiv
           className="text-center mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={headerContainerVariants}
         >
-          <motion.div variants={headerItemVariants}>
+          <MotionDiv variants={headerItemVariants}>
             <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Contactanos</AnimatedTitle>
-          </motion.div>
-          <motion.p variants={headerItemVariants} className="text-lg text-theme-text mt-2">Resolvé tus dudas o agendá tu próxima visita.</motion.p>
-          <motion.div variants={headerItemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
-        </motion.div>
+          </MotionDiv>
+          <MotionP variants={headerItemVariants} className="text-lg text-theme-text mt-2">Resolvé tus dudas o agendá tu próxima visita.</MotionP>
+          <MotionDiv variants={headerItemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></MotionDiv>
+        </MotionDiv>
 
-        <motion.div
+        <MotionDiv
           className="grid lg:grid-cols-2 gap-12 items-start"
           variants={contentContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
         >
-          <motion.div
+          <MotionDiv
             className="bg-theme-background p-8 rounded-lg shadow-md"
             variants={contentItemVariants}
           >
@@ -427,7 +435,7 @@ const Contact: React.FC = () => {
               </div>
 
               {contactType === 'inquiry' && (
-                <motion.div initial={{opacity:0}} animate={{opacity:1}} className="space-y-4">
+                <MotionDiv initial={{opacity:0}} animate={{opacity:1}} className="space-y-4">
                   <div>
                     <label htmlFor="whatsapp" className="block text-sm font-medium text-theme-text-strong">Número de WhatsApp</label>
                     <input type="tel" id="whatsapp" {...register("whatsapp", { required: "El WhatsApp es requerido" })} className="mt-1 block w-full px-3 py-2 bg-theme-background border border-theme-border rounded-md shadow-sm focus:outline-none focus:ring-theme-primary focus:border-theme-primary" />
@@ -438,11 +446,11 @@ const Contact: React.FC = () => {
                     <textarea id="message" rows={4} {...register("message", { required: "Dejanos tu consulta" })} className="mt-1 block w-full px-3 py-2 bg-theme-background border border-theme-border rounded-md shadow-sm focus:outline-none focus:ring-theme-primary focus:border-theme-primary"></textarea>
                     {errors.message && <span className="text-red-500 text-sm mt-1">{errors.message.message}</span>}
                   </div>
-                </motion.div>
+                </MotionDiv>
               )}
               
               {contactType === 'appointment' && (
-                <motion.div
+                <MotionDiv
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   className="space-y-4 overflow-hidden"
@@ -472,19 +480,41 @@ const Contact: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-theme-text-strong mb-2">3. Zonas a tratar</label>
+                    <div className="flex mb-3">
+                      <div className="bg-theme-background-soft p-1 rounded-full flex gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedGender('woman')}
+                          className={`px-4 py-1 rounded-full font-medium text-sm transition-colors duration-300 ${selectedGender === 'woman' ? 'bg-white text-theme-primary shadow-sm' : 'text-theme-text hover:bg-gray-200'}`}
+                        >
+                          Mujer
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedGender('man')}
+                          className={`px-4 py-1 rounded-full font-medium text-sm transition-colors duration-300 ${selectedGender === 'man' ? 'bg-white text-theme-primary shadow-sm' : 'text-theme-text hover:bg-gray-200'}`}
+                        >
+                          Hombre
+                        </button>
+                      </div>
+                    </div>
                     <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 max-h-48 overflow-y-auto bg-theme-background-soft p-3 rounded-md border">
-                      {zones.length > 0 ? zones.map(zone => (
+                      {zonesToDisplay.length > 0 ? zonesToDisplay.map(zone => (
                         <label key={zone.id} className="flex items-center gap-2 cursor-pointer text-sm">
                           <input type="checkbox" value={zone.name} {...register("zones", { required: "Seleccioná al menos una zona" })} className="focus:ring-theme-primary h-4 w-4 text-theme-primary border-theme-border rounded"/>
-                          {zone.name}
+                          {zone.name.replace(/^(Mujer - |Hombre - |Unisex - )/, '')}
                         </label>
-                      )) : <span className="text-sm text-theme-text">Cargando zonas...</span>}
+                      )) : (
+                        zones.length > 0 
+                        ? <span className="text-sm text-theme-text col-span-2">No hay zonas para esta categoría.</span>
+                        : <span className="text-sm text-theme-text col-span-2">Cargando zonas...</span>
+                      )}
                     </div>
                      {errors.zones && <span className="text-red-500 text-sm mt-1">{errors.zones.message}</span>}
                   </div>
                   
                   {totalCost > 0 && (
-                    <motion.div 
+                    <MotionDiv 
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="mt-4 p-4 bg-theme-primary-soft border border-theme-primary/20 rounded-lg text-right"
@@ -493,14 +523,14 @@ const Contact: React.FC = () => {
                       <span className="text-2xl font-bold text-theme-primary ml-3">
                         ${totalCost.toLocaleString('es-AR')}
                       </span>
-                    </motion.div>
+                    </MotionDiv>
                   )}
 
                    <div>
                     <label htmlFor="appointment_message" className="block text-sm font-medium text-theme-text-strong">Mensaje adicional (Opcional)</label>
                     <textarea id="appointment_message" rows={3} {...register("message")} className="mt-1 block w-full px-3 py-2 bg-theme-background border border-theme-border rounded-md shadow-sm focus:outline-none focus:ring-theme-primary focus:border-theme-primary"></textarea>
                   </div>
-                </motion.div>
+                </MotionDiv>
               )}
 
               {renderStatusMessage()}
@@ -522,9 +552,9 @@ const Contact: React.FC = () => {
                 )}
               </button>
             </form>
-          </motion.div>
+          </MotionDiv>
           
-          <motion.div
+          <MotionDiv
             className="space-y-8"
             variants={contentItemVariants}
           >
@@ -547,8 +577,8 @@ const Contact: React.FC = () => {
                 className="rounded-lg shadow-md"
               ></iframe>
             </div>
-          </motion.div>
-        </motion.div>
+          </MotionDiv>
+        </MotionDiv>
       </div>
     </section>
   );

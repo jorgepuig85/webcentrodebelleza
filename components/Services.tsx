@@ -1,10 +1,13 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { ChevronRight } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
+
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+const MotionP = motion.p;
 
 // Updated type to match the component's needs, will be populated from DB data
 type Service = {
@@ -73,7 +76,7 @@ const ServiceCardSkeleton = () => (
 
 const ServiceCard = ({ service }: { service: Service }) => {
   return (
-    <motion.div
+    <MotionDiv
       className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex flex-col"
       variants={cardVariants}
       initial="hidden"
@@ -91,7 +94,7 @@ const ServiceCard = ({ service }: { service: Service }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         <div className="absolute bottom-4 left-4 text-white">
-          <AnimatedTitle as="h3" className="text-2xl font-bold">{service.name}</AnimatedTitle>
+          <AnimatedTitle as="h3" className="text-2xl font-bold">{service.name.replace(/^(Mujer - |Hombre - |Unisex - )/, '')}</AnimatedTitle>
         </div>
       </div>
       <div className="p-6 flex flex-col flex-grow">
@@ -104,7 +107,7 @@ const ServiceCard = ({ service }: { service: Service }) => {
           </button>
         </div>
       </div>
-    </motion.div>
+    </MotionDiv>
   );
 };
 
@@ -112,6 +115,7 @@ const Services = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'woman' | 'man'>('woman');
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -153,6 +157,10 @@ const Services = () => {
     fetchServices();
   }, []);
   
+  const womanServices = services.filter(s => s.name.startsWith('Mujer - ') || s.name.startsWith('Unisex - '));
+  const manServices = services.filter(s => s.name.startsWith('Hombre - ') || s.name.startsWith('Unisex - '));
+  const servicesToDisplay = activeTab === 'woman' ? womanServices : manServices;
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -172,9 +180,17 @@ const Services = () => {
         </div>
       );
     }
+    if (servicesToDisplay.length === 0) {
+      return (
+        <div className="text-center text-theme-text bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+          <h3 className="font-semibold text-lg mb-2">No se encontraron servicios para esta categoría.</h3>
+          <p>Pronto agregaremos nuevos servicios aquí.</p>
+        </div>
+      );
+    }
     return (
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {services.map((service) => (
+        {servicesToDisplay.map((service) => (
           <ServiceCard key={service.id} service={service} />
         ))}
       </div>
@@ -184,19 +200,39 @@ const Services = () => {
   return (
     <section id="servicios" className="py-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
-        <motion.div
+        <MotionDiv
           className="text-center mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants}>
+          <MotionDiv variants={itemVariants}>
             <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Nuestros Servicios</AnimatedTitle>
-          </motion.div>
-          <motion.p variants={itemVariants} className="text-lg text-theme-text mt-2">Elegí la zona que querés tratar y empezá tu cambio.</motion.p>
-          <motion.div variants={itemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></motion.div>
-        </motion.div>
+          </MotionDiv>
+          <MotionP variants={itemVariants} className="text-lg text-theme-text mt-2">Elegí la zona que querés tratar y empezá tu cambio.</MotionP>
+          <MotionDiv variants={itemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></MotionDiv>
+        </MotionDiv>
+        
+        <div className="flex justify-center mb-8">
+          <div className="bg-theme-background p-1 rounded-full flex gap-1 shadow-sm">
+            <button
+              onClick={() => setActiveTab('woman')}
+              className={`px-8 py-2 rounded-full font-semibold transition-colors duration-300 text-sm md:text-base ${activeTab === 'woman' ? 'bg-theme-primary text-theme-text-inverted shadow' : 'text-theme-text hover:bg-theme-primary-soft'}`}
+              aria-pressed={activeTab === 'woman'}
+            >
+              Mujer
+            </button>
+            <button
+              onClick={() => setActiveTab('man')}
+              className={`px-8 py-2 rounded-full font-semibold transition-colors duration-300 text-sm md:text-base ${activeTab === 'man' ? 'bg-theme-primary text-theme-text-inverted shadow' : 'text-theme-text hover:bg-theme-primary-soft'}`}
+              aria-pressed={activeTab === 'man'}
+            >
+              Hombre
+            </button>
+          </div>
+        </div>
+
         {renderContent()}
       </div>
     </section>

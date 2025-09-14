@@ -1,6 +1,10 @@
 import React from 'react';
-import { motion, Variants } from 'framer-motion';
+// FIX: Changed import to be type-only for Variants to potentially fix module resolution issues.
+import { motion, type Variants } from 'framer-motion';
 import { cn } from '../../lib/utils';
+
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
 
 type As = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
@@ -32,7 +36,7 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ as: Component, children, 
 
   // For subtitles, we use Framer Motion for the letter-spacing effect
   return (
-    <motion.div
+    <MotionDiv
       variants={subtitleVariants}
       initial="rest"
       whileHover="hover"
@@ -42,7 +46,7 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ as: Component, children, 
       <Component className={className} {...rest}>
         {children}
       </Component>
-    </motion.div>
+    </MotionDiv>
   );
 };
 

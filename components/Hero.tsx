@@ -7,6 +7,11 @@ import { ThemeContext } from '../context/ThemeContext';
 import { SeasonalHeroEffects } from './SeasonalHeroEffects';
 import AnimatedTitle from './ui/AnimatedTitle';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+const MotionP = motion.p;
+const MotionButton = motion.button;
+
 const Hero: React.FC = () => {
     const { activeTheme } = useContext(ThemeContext);
 
@@ -30,13 +35,13 @@ const Hero: React.FC = () => {
       {/* Seasonal animations overlay */}
       <SeasonalHeroEffects />
 
-      <motion.div 
+      <MotionDiv 
         className="relative z-10 px-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0, 0, 0.58, 1] }}
       >
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0, 0, 0.58, 1] }}
@@ -44,9 +49,9 @@ const Hero: React.FC = () => {
           <AnimatedTitle as="h1" className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">
             Descubrí tu mejor piel.
           </AnimatedTitle>
-        </motion.div>
+        </MotionDiv>
 
-        <motion.p
+        <MotionP
           className="text-lg md:text-xl lg:text-2xl font-light text-white/90 mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -54,17 +59,17 @@ const Hero: React.FC = () => {
           key={activeTheme.seasonalSlogan} // Re-animate when season changes
         >
           {activeTheme.seasonalSlogan}
-        </motion.p>
+        </MotionP>
         
-        <motion.p 
+        <MotionP 
           className="text-lg md:text-xl max-w-2xl mx-auto mb-8 font-light"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0, 0, 0.58, 1] }}
         >
           Depilación láser definitiva con tecnología de vanguardia para resultados visibles y duraderos. Sentite libre, sentite renovada.
-        </motion.p>
-        <motion.button 
+        </MotionP>
+        <MotionButton 
           onClick={() => scrollToSection('servicios')}
           className="bg-white text-theme-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-theme-primary-soft transition-all duration-300 group flex items-center gap-2 mx-auto seasonal-glow-hover animate-heartbeat"
           key={activeTheme.ctaText} // Add key to re-animate button text on change
@@ -74,8 +79,8 @@ const Hero: React.FC = () => {
         >
           {activeTheme.ctaText}
           <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
-        </motion.button>
-      </motion.div>
+        </MotionButton>
+      </MotionDiv>
     </section>
   );
 };

@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
+// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
+const MotionDiv = motion.div;
+
 interface LegalModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,7 +22,7 @@ const Legal: React.FC<LegalModalProps> = ({ isOpen, onClose }) => {
           role="dialog"
           aria-modal="true"
         >
-          <motion.div
+          <MotionDiv
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
@@ -97,7 +100,7 @@ const Legal: React.FC<LegalModalProps> = ({ isOpen, onClose }) => {
 
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
       )}
     </AnimatePresence>
