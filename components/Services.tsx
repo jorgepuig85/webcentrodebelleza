@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { ChevronRight } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
@@ -52,14 +52,8 @@ const cardVariants = {
   }
 };
 
-const scrollToSection = (id: string) => {
-  const element = document.getElementById(id);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
-  }
-};
-
-const ServiceCardSkeleton = () => (
+// FIX: Explicitly type as React.FC to handle 'key' prop correctly.
+const ServiceCardSkeleton: React.FC = () => (
   <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col animate-pulse">
     <div className="relative h-56 bg-gray-200"></div>
     <div className="p-6 flex flex-col flex-grow">
@@ -74,7 +68,8 @@ const ServiceCardSkeleton = () => (
   </div>
 );
 
-const ServiceCard = ({ service }: { service: Service }) => {
+// FIX: Explicitly type as React.FC to handle 'key' prop correctly.
+const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
   return (
     <MotionDiv
       className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex flex-col"
@@ -101,10 +96,10 @@ const ServiceCard = ({ service }: { service: Service }) => {
         <p className="text-theme-text mb-4 flex-grow min-h-[4rem]">{service.description}</p>
         <div className="flex justify-between items-center mt-auto">
           <span className="text-2xl font-bold text-theme-primary">${service.price.toLocaleString('es-AR')}</span>
-          <button onClick={() => scrollToSection('contacto')} className="text-theme-primary font-semibold flex items-center gap-1 group-hover:underline">
+          <Link to="/contacto" className="text-theme-primary font-semibold flex items-center gap-1 group-hover:underline">
             Consultar
             <ChevronRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-          </button>
+          </Link>
         </div>
       </div>
     </MotionDiv>
@@ -165,7 +160,7 @@ const Services = () => {
     if (loading) {
       return (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[...Array(3)].map((_, i) => <ServiceCardSkeleton key={i} />)}
+          {[...Array(6)].map((_, i) => <ServiceCardSkeleton key={i} />)}
         </div>
       );
     }
@@ -198,7 +193,7 @@ const Services = () => {
   };
 
   return (
-    <section id="servicios" className="py-20 animated-gradient-background-soft">
+    <section className="pt-32 pb-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
         <MotionDiv
           className="text-center mb-12"

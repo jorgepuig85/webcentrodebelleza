@@ -1,12 +1,12 @@
 export const NAV_LINKS = [
-  { id: 'inicio', title: 'Inicio' },
-  { id: 'servicios', title: 'Servicios' },
-  { id: 'promociones', title: 'Promociones' },
-  { id: 'tecnologia', title: 'Tecnología' },
-  { id: 'alquiler', title: 'Alquiler' },
-  { id: 'testimonios', title: 'Testimonios' },
-  { id: 'ubicaciones', title: 'Ubicaciones' },
-  { id: 'contacto', title: 'Contacto' },
+  { path: '/', title: 'Inicio' },
+  { path: '/servicios', title: 'Servicios' },
+  { path: '/promociones', title: 'Promociones' },
+  { path: '/tecnologia', title: 'Tecnología' },
+  { path: '/alquiler', title: 'Alquiler' },
+  { path: '/testimonios', title: 'Testimonios' },
+  { path: '/ubicaciones', title: 'Ubicaciones' },
+  { path: '/contacto', title: 'Contacto' },
 ];
 
 export const TESTIMONIALS = [

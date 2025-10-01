@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Menu, X, Sparkles } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 
-// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
 const MotionDiv = motion.div;
-const MotionButton = motion.button;
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,14 +17,6 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMenuOpen(false);
-  };
 
   const menuVariants = {
     hidden: { opacity: 0, y: -20 },
@@ -40,25 +31,32 @@ const Header: React.FC = () => {
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-theme-background/80 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection('inicio')}>
+        <Link to="/" className="flex items-center gap-2 cursor-pointer">
           <Sparkles className="text-theme-primary" size={28} />
           <span className="text-xl font-bold text-theme-text-strong">Centro de Belleza</span>
-        </div>
+        </Link>
         
-        <nav className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map((link) => (
-            <button key={link.id} onClick={() => scrollToSection(link.id)} className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium">
-              {link.title}
-            </button>
-          ))}
-        </nav>
-
-        <div className="hidden md:block">
-          <button onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted px-5 py-2 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat">
-            Reservar Turno
-          </button>
+        {/* Desktop Navigation Group */}
+        <div className="hidden md:flex items-center">
+          <nav className="flex items-center gap-8">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium"
+              >
+                {link.title}
+              </Link>
+            ))}
+          </nav>
+          <div className="ml-8">
+            <Link to="/contacto" className="bg-theme-primary text-theme-text-inverted px-5 py-2 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat whitespace-nowrap">
+              Reservar Turno
+            </Link>
+          </div>
         </div>
 
+        {/* Mobile Menu Button */}
         <div className="md:hidden">
           <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-theme-text-strong" aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}>
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -66,6 +64,7 @@ const Header: React.FC = () => {
         </div>
       </div>
       
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <MotionDiv 
@@ -77,13 +76,21 @@ const Header: React.FC = () => {
           >
             <nav className="flex flex-col items-center gap-6 pt-4">
               {NAV_LINKS.map((link) => (
-                <MotionButton key={link.id} variants={menuItemVariants} onClick={() => scrollToSection(link.id)} className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium text-lg">
-                  {link.title}
-                </MotionButton>
+                <MotionDiv key={link.path} variants={menuItemVariants}>
+                  <Link
+                    to={link.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium text-lg"
+                  >
+                    {link.title}
+                  </Link>
+                </MotionDiv>
               ))}
-              <MotionButton variants={menuItemVariants} onClick={() => scrollToSection('contacto')} className="bg-theme-primary text-theme-text-inverted w-full px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat mt-4">
-                Reservar Turno
-              </MotionButton>
+              <MotionDiv variants={menuItemVariants} className="w-full mt-4">
+                <Link to="/contacto" onClick={() => setIsMenuOpen(false)} className="bg-theme-primary text-theme-text-inverted w-full block text-center px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat">
+                  Reservar Turno
+                </Link>
+              </MotionDiv>
             </nav>
           </MotionDiv>
         )}

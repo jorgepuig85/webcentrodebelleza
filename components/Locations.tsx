@@ -133,7 +133,7 @@ const Locations: React.FC = () => {
   };
 
   return (
-    <section id="ubicaciones" className="py-20 bg-theme-background">
+    <section className="pt-32 pb-20 bg-theme-background">
       <div className="container mx-auto px-6">
         <MotionDiv
           className="text-center mb-12"

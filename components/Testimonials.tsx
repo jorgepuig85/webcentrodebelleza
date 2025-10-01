@@ -1,12 +1,11 @@
 
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { TESTIMONIALS } from '../constants';
-import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { Quote } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
-// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
 const MotionDiv = motion.div;
 const MotionP = motion.p;
 
@@ -23,48 +22,46 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
 };
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1] as const
+    }
+  }
+};
+
+const TestimonialCard: React.FC<{ testimonial: typeof TESTIMONIALS[0] }> = ({ testimonial }) => (
+  <MotionDiv
+    className="bg-theme-background p-8 rounded-lg shadow-lg text-center h-full flex flex-col"
+    variants={cardVariants}
+  >
+    <Quote className="text-theme-primary/50 w-12 h-12 mx-auto mb-4" />
+    <p className="text-theme-text italic mb-6 flex-grow">"{testimonial.quote}"</p>
+    <div className="flex items-center justify-center gap-4 mt-auto">
+      <img
+        src={testimonial.image}
+        alt={testimonial.name}
+        className="w-14 h-14 rounded-full object-cover"
+        loading="lazy"
+        width="56"
+        height="56"
+      />
+      <div>
+        <p className="font-bold text-lg text-theme-text-strong">{testimonial.name}</p>
+        <p className="text-theme-primary">{testimonial.service}</p>
+      </div>
+    </div>
+  </MotionDiv>
+);
+
+
 const Testimonials: React.FC = () => {
-  const [index, setIndex] = useState(0);
-
-  const nextTestimonial = () => {
-    setIndex((prevIndex) => (prevIndex + 1) % TESTIMONIALS.length);
-  };
-
-  const prevTestimonial = () => {
-    setIndex((prevIndex) => (prevIndex - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
-  };
-
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 100 : -100,
-      opacity: 0,
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 100 : -100,
-      opacity: 0,
-    }),
-  };
-
-  const [direction, setDirection] = useState(0);
-
-  const handleNext = () => {
-    setDirection(1);
-    nextTestimonial();
-  };
-
-  const handlePrev = () => {
-    setDirection(-1);
-    prevTestimonial();
-  };
-  
   return (
-    <section id="testimonios" className="py-20 animated-gradient-background-soft">
+    <section className="pt-32 pb-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
         <MotionDiv
           className="text-center mb-12"
@@ -81,53 +78,15 @@ const Testimonials: React.FC = () => {
         </MotionDiv>
         
         <MotionDiv
-          className="relative max-w-3xl mx-auto h-80 md:h-64 flex items-center justify-center"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
         >
-          <AnimatePresence initial={false} custom={direction}>
-            <MotionDiv
-              key={index}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2 }
-              }}
-              className="absolute w-full"
-            >
-              <div className="bg-theme-background p-8 rounded-lg shadow-lg text-center">
-                <Quote className="text-theme-primary/50 w-12 h-12 mx-auto mb-4" />
-                <p className="text-theme-text italic mb-6">"{TESTIMONIALS[index].quote}"</p>
-                <div className="flex items-center justify-center gap-4">
-                    <img 
-                      src={TESTIMONIALS[index].image} 
-                      alt={TESTIMONIALS[index].name} 
-                      className="w-14 h-14 rounded-full object-cover" 
-                      loading="lazy"
-                      width="56"
-                      height="56"
-                    />
-                    <div>
-                        <p className="font-bold text-lg text-theme-text-strong">{TESTIMONIALS[index].name}</p>
-                        <p className="text-theme-primary">{TESTIMONIALS[index].service}</p>
-                    </div>
-                </div>
-              </div>
-            </MotionDiv>
-          </AnimatePresence>
-          
-          <button onClick={handlePrev} aria-label="Testimonio anterior" className="absolute left-0 -translate-x-12 top-1/2 -translate-y-1/2 bg-theme-background p-3 rounded-full shadow-md hover:bg-theme-primary-soft transition-colors">
-            <ChevronLeft className="text-theme-primary" />
-          </button>
-          <button onClick={handleNext} aria-label="Siguiente testimonio" className="absolute right-0 translate-x-12 top-1/2 -translate-y-1/2 bg-theme-background p-3 rounded-full shadow-md hover:bg-theme-primary-soft transition-colors">
-            <ChevronRight className="text-theme-primary" />
-          </button>
+          {TESTIMONIALS.map((testimonial) => (
+            <TestimonialCard key={testimonial.id} testimonial={testimonial} />
+          ))}
         </MotionDiv>
       </div>
     </section>

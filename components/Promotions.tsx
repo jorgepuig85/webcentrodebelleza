@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { Sparkles, CheckCircle } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
@@ -129,13 +130,6 @@ const Promotions = () => {
     fetchPromotions();
   }, []);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   const renderContent = () => {
     if (loading) {
       return (
@@ -190,12 +184,12 @@ const Promotions = () => {
 
               <div className="mt-auto w-full">
                 <p className="text-4xl font-bold text-theme-primary mb-6">${promo.price.toLocaleString('es-AR')}</p>
-                <button 
-                  onClick={() => scrollToSection('contacto')}
-                  className="w-full bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover"
+                <Link 
+                  to="/contacto"
+                  className="w-full block text-center bg-theme-primary text-theme-text-inverted px-6 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover"
                 >
                   ¡Lo quiero!
-                </button>
+                </Link>
               </div>
             </MotionDiv>
           );
@@ -205,7 +199,7 @@ const Promotions = () => {
   };
 
   return (
-    <section id="promociones" className="py-20 animated-gradient-primary-soft">
+    <section className="pt-32 pb-20 animated-gradient-primary-soft">
       <div className="container mx-auto px-6">
         <MotionDiv
           className="text-center mb-12"

@@ -2,14 +2,15 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Zap, TrendingUp, LifeBuoy, CalendarDays } from 'lucide-react';
 import { BackgroundGradient } from './ui/BackgroundGradient';
 import AnimatedTitle from './ui/AnimatedTitle';
+import RentalSchedule from './RentalSchedule';
 
-// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
 const MotionDiv = motion.div;
 const MotionP = motion.p;
-const MotionButton = motion.button;
+const MotionLink = motion(Link);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -51,15 +52,8 @@ const Rental: React.FC = () => {
         { icon: CalendarDays, title: "Flexibilidad de Fechas", description: "Consultá por nuestras jornadas de alquiler y encontrá la que mejor se adapte a tu agenda." },
     ];
 
-    const scrollToSection = (id: string) => {
-        const element = document.getElementById(id);
-        if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
-
     return (
-        <section id="alquiler" className="py-20 animated-gradient-primary-soft">
+        <section id="alquiler" className="pt-32 pb-20 animated-gradient-primary-soft">
             <div className="container mx-auto px-6">
                 <MotionDiv
                     className="grid lg:grid-cols-2 gap-12 items-center"
@@ -91,13 +85,13 @@ const Rental: React.FC = () => {
                                 );
                             })}
                         </MotionDiv>
-                        <MotionButton 
+                        <MotionLink 
                             variants={textItemVariants}
-                            onClick={() => scrollToSection('contacto')}
+                            to="/contacto"
                             className="w-full sm:w-auto bg-theme-primary text-theme-text-inverted px-8 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat"
                         >
                             Consultar Disponibilidad
-                        </MotionButton>
+                        </MotionLink>
                     </MotionDiv>
                      <MotionDiv variants={imageVariants}>
                         <BackgroundGradient containerClassName="rounded-2xl">
@@ -112,6 +106,10 @@ const Rental: React.FC = () => {
                         </BackgroundGradient>
                     </MotionDiv>
                 </MotionDiv>
+                
+                {/* New Rental Schedule Section */}
+                <RentalSchedule />
+
             </div>
         </section>
     );

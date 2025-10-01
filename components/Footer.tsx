@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Sparkles, Instagram, Eye, QrCode } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 import AnimatedTitle from './ui/AnimatedTitle';
@@ -30,13 +31,6 @@ const Footer: React.FC = () => {
       fetchViews();
   }, []);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <>
       <footer className="bg-theme-text-strong text-theme-text-inverted">
@@ -47,14 +41,19 @@ const Footer: React.FC = () => {
                 <Sparkles className="text-theme-primary" size={28} />
                 <span className="text-xl font-bold">Centro de Belleza</span>
               </div>
-              <p className="text-theme-text-light">Depilación definitiva para sentirte libre y segura.</p>
+              <p className="text-theme-text-light max-w-xs mx-auto md:mx-0">Depilación definitiva para sentirte libre y segura.</p>
             </div>
             <div>
               <AnimatedTitle as="h4" className="font-bold text-lg mb-4">Navegación</AnimatedTitle>
               <ul className="space-y-2">
                 {NAV_LINKS.map(link => (
-                  <li key={link.id}>
-                    <button onClick={() => scrollToSection(link.id)} className="text-theme-text-light hover:text-white transition-colors">{link.title}</button>
+                  <li key={link.path}>
+                    <Link
+                      to={link.path}
+                      className="text-gray-300 hover:text-white transition-colors"
+                    >
+                      {link.title}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -66,25 +65,25 @@ const Footer: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-500">
+          <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-400">
             <div className="flex flex-col sm:flex-row justify-center items-center gap-x-6 gap-y-2">
               <a 
                 href="https://centrodebelleza.vercel.app/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-sm text-gray-500 hover:text-white hover:underline transition-colors"
+                className="text-sm text-gray-400 hover:text-white hover:underline transition-colors"
               >
                 Acceso Profesional
               </a>
               <button
                 onClick={() => setIsLegalModalOpen(true)}
-                className="text-sm text-gray-500 hover:text-white hover:underline transition-colors"
+                className="text-sm text-gray-400 hover:text-white hover:underline transition-colors"
               >
                 Políticas y Términos
               </button>
               <button
                 onClick={() => setIsQrModalOpen(true)}
-                className="flex items-center gap-2 text-sm text-gray-500 hover:text-white hover:underline transition-colors"
+                className="flex items-center gap-2 text-sm text-gray-400 hover:text-white hover:underline transition-colors"
               >
                 <QrCode size={16} />
                 Código QR
@@ -92,7 +91,7 @@ const Footer: React.FC = () => {
             </div>
             <p className="mt-4">&copy; {new Date().getFullYear()} Centro de Belleza. Todos los derechos reservados.</p>
             {views !== null && (
-              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-400">
+              <div className="mt-4 flex items-center justify-center gap-2 text-sm">
                   <Eye className="w-4 h-4" />
                   <span>{views.toLocaleString('es-AR')} Visitas</span>
               </div>

@@ -1,7 +1,6 @@
-
-
 import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ThemeContext } from '../context/ThemeContext';
 import { SeasonalHeroEffects } from './SeasonalHeroEffects';
@@ -10,17 +9,10 @@ import AnimatedTitle from './ui/AnimatedTitle';
 // FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
 const MotionDiv = motion.div;
 const MotionP = motion.p;
-const MotionButton = motion.button;
+const MotionLink = motion(Link);
 
 const Hero: React.FC = () => {
     const { activeTheme } = useContext(ThemeContext);
-
-    const scrollToSection = (id: string) => {
-        const element = document.getElementById(id);
-        if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
 
   return (
     <section id="inicio" className="relative h-screen flex items-center justify-center text-center text-white overflow-hidden">
@@ -69,8 +61,8 @@ const Hero: React.FC = () => {
         >
           Depilación láser definitiva con tecnología de vanguardia para resultados visibles y duraderos. Sentite libre, sentite renovada.
         </MotionP>
-        <MotionButton 
-          onClick={() => scrollToSection('servicios')}
+        <MotionLink 
+          to="/servicios"
           className="bg-white text-theme-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-theme-primary-soft transition-all duration-300 group flex items-center gap-2 mx-auto seasonal-glow-hover animate-heartbeat"
           key={activeTheme.ctaText} // Add key to re-animate button text on change
           initial={{ opacity: 0, scale: 0.9 }}
@@ -79,7 +71,7 @@ const Hero: React.FC = () => {
         >
           {activeTheme.ctaText}
           <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
-        </MotionButton>
+        </MotionLink>
       </MotionDiv>
     </section>
   );

@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
+import { HashRouter } from 'react-router-dom';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import App from './App';
 
@@ -25,7 +26,9 @@ root.render(
   <React.StrictMode>
     <Suspense fallback={<div className="initial-loader" aria-label="Cargando..."></div>}>
       <GoogleReCaptchaProvider reCaptchaKey={reCaptchaKey}>
-        <App />
+        <HashRouter>
+          <App />
+        </HashRouter>
       </GoogleReCaptchaProvider>
     </Suspense>
   </React.StrictMode>

@@ -1,15 +1,13 @@
-
-
-
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Zap, ShieldCheck, Heart, Leaf } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Zap, ShieldCheck, ArrowRight } from 'lucide-react';
 import { BackgroundGradient } from './ui/BackgroundGradient';
 import AnimatedTitle from './ui/AnimatedTitle';
 
-// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
 const MotionDiv = motion.div;
 const MotionP = motion.p;
+const MotionLink = motion(Link);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -42,16 +40,14 @@ const featureItemVariants = {
   visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
 }
 
-const Technology: React.FC = () => {
+const TechnologyPreview: React.FC = () => {
   const features = [
-    { icon: Zap, title: "Máxima Eficacia", description: "Elimina el vello de forma rápida y efectiva, con resultados visibles desde la primera sesión." },
-    { icon: ShieldCheck, title: "Seguridad Garantizada", description: "Nuestros equipos cuentan con certificaciones internacionales y son operados por profesionales." },
-    { icon: Heart, title: "Tratamiento Indoloro", description: "Sistema de refrigeración avanzado que protege tu piel y asegura una experiencia confortable." },
-    { icon: Leaf, title: "Apto para tu Piel", description: "Tecnología versátil que se adapta a diferentes tipos de piel y vello, todo el año." },
+    { icon: Zap, title: "Máxima Eficacia", description: "Resultados visibles desde la primera sesión." },
+    { icon: ShieldCheck, title: "Seguridad Garantizada", description: "Equipos certificados operados por profesionales." },
   ];
 
   return (
-    <section className="pt-32 pb-20 bg-theme-background">
+    <section id="tecnologia" className="py-20 bg-theme-background">
       <div className="container mx-auto px-6">
         <MotionDiv
           className="grid lg:grid-cols-2 gap-12 items-center"
@@ -77,9 +73,9 @@ const Technology: React.FC = () => {
               <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong mb-4">Tecnología de Vanguardia</AnimatedTitle>
             </MotionDiv>
             <MotionP variants={textItemVariants} className="text-lg text-theme-text mb-8">
-              Utilizamos la última tecnología en depilación láser de diodo para ofrecerte un tratamiento seguro, rápido y prácticamente indoloro. Nuestra prioridad es tu comodidad y los mejores resultados.
+              Utilizamos la última tecnología en depilación láser para ofrecerte un tratamiento seguro, rápido y prácticamente indoloro.
             </MotionP>
-            <MotionDiv variants={textContainerVariants} className="space-y-6">
+            <MotionDiv variants={textContainerVariants} className="space-y-6 mb-8">
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
@@ -95,6 +91,14 @@ const Technology: React.FC = () => {
                 );
               })}
             </MotionDiv>
+             <MotionLink
+                to="/tecnologia"
+                variants={textItemVariants}
+                className="inline-flex items-center gap-2 bg-theme-primary text-theme-text-inverted px-8 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover"
+            >
+                Conocé nuestra tecnología
+                <ArrowRight />
+            </MotionLink>
           </MotionDiv>
         </MotionDiv>
       </div>
@@ -102,4 +106,4 @@ const Technology: React.FC = () => {
   );
 };
 
-export default Technology;
+export default TechnologyPreview;

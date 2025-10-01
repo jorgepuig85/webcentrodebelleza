@@ -1,24 +1,43 @@
-
 import React, { useEffect, useState } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
-import Hero from './components/Hero';
-import Services from './components/Services';
-import Promotions from './components/Promotions';
-import Technology from './components/Technology';
-import Rental from './components/Rental';
-import Testimonials from './components/Testimonials';
-import Locations from './components/Locations';
-import Contact from './components/Contact';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import BeautyRoulette from './components/BeautyRoulette';
 import { ThemeProvider } from './context/ThemeContext';
 import { SeasonalCursor } from './components/SeasonalCursor';
 import FloatingActionCluster from './components/FloatingActionCluster';
+import Home from './pages/Home';
+import RentalPage from './pages/RentalPage';
+import ContactPage from './pages/ContactPage';
+import ServicesPage from './pages/ServicesPage';
+import PromotionsPage from './pages/PromotionsPage';
+import TechnologyPage from './pages/TechnologyPage';
+import TestimonialsPage from './pages/TestimonialsPage';
+import LocationsPage from './pages/LocationsPage';
 
 const App: React.FC = () => {
   const [showRoulette, setShowRoulette] = useState(false);
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    // This effect handles scrolling.
+    // If there's a hash, it means we want to scroll to an anchor.
+    if (hash) {
+      const id = hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        // Use a slight timeout to ensure the element is rendered before scrolling.
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    } else {
+      // If there's no hash, just scroll to the top of the page.
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, hash]); // Rerun this effect whenever the path or hash changes.
 
   useEffect(() => {
     // This key will be used to check if a visit has already been tracked
@@ -99,14 +118,16 @@ const App: React.FC = () => {
       <div className="bg-theme-background text-theme-text">
         <Header />
         <main>
-          <Hero />
-          <Services />
-          <Promotions />
-          <Technology />
-          <Rental />
-          <Testimonials />
-          <Locations />
-          <Contact />
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/servicios" element={<ServicesPage />} />
+                <Route path="/promociones" element={<PromotionsPage />} />
+                <Route path="/tecnologia" element={<TechnologyPage />} />
+                <Route path="/testimonios" element={<TestimonialsPage />} />
+                <Route path="/alquiler" element={<RentalPage />} />
+                <Route path="/ubicaciones" element={<LocationsPage />} />
+                <Route path="/contacto" element={<ContactPage />} />
+            </Routes>
         </main>
         <Footer />
         <BeautyRoulette isOpen={showRoulette} onClose={handleRouletteClose} />

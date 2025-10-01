@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
@@ -385,7 +386,7 @@ const Contact: React.FC = () => {
 
 
   return (
-    <section id="contacto" className="py-20 animated-gradient-background-soft">
+    <section id="contacto" className="pt-32 pb-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
         <MotionDiv
           className="text-center mb-12"
