@@ -1,6 +1,7 @@
 
 
 
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Zap, ShieldCheck, Heart, Leaf } from 'lucide-react';
@@ -49,6 +50,7 @@ const Technology: React.FC = () => {
     { icon: Heart, title: "Tratamiento Indoloro", description: "Sistema de refrigeración avanzado que protege tu piel y asegura una experiencia confortable." },
     { icon: Leaf, title: "Apto para tu Piel", description: "Tecnología versátil que se adapta a diferentes tipos de piel y vello, todo el año." },
   ];
+  const baseUrl = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg";
 
   return (
     <section className="pt-32 pb-20 bg-theme-background">
@@ -63,12 +65,19 @@ const Technology: React.FC = () => {
           <MotionDiv variants={itemVariants}>
             <BackgroundGradient containerClassName="rounded-2xl">
               <img 
-                src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg?format=webp&quality=75&width=600" 
+                src={`${baseUrl}?format=webp&quality=75&width=600`} 
                 alt="Equipo de depilación láser de última generación"
                 className="rounded-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
                 loading="lazy"
+                decoding="async"
                 width="600"
                 height="450"
+                srcSet={`
+                  ${baseUrl}?format=webp&quality=75&width=400 400w,
+                  ${baseUrl}?format=webp&quality=75&width=800 800w,
+                  ${baseUrl}?format=webp&quality=75&width=1200 1200w
+                `}
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </BackgroundGradient>
           </MotionDiv>

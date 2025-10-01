@@ -56,6 +56,7 @@ const ServiceCardSkeleton: React.FC = () => (
 );
 
 const ServicePreviewCard: React.FC<{ service: Service }> = ({ service }) => {
+  const baseUrl = service.image.split('?')[0];
   return (
     <MotionDiv
       className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300"
@@ -68,8 +69,15 @@ const ServicePreviewCard: React.FC<{ service: Service }> = ({ service }) => {
             alt={service.name} 
             className="w-full h-full object-cover" 
             loading="lazy"
+            decoding="async"
             width="400"
             height="256"
+            srcSet={`
+              ${baseUrl}?format=webp&quality=75&width=400 400w,
+              ${baseUrl}?format=webp&quality=75&width=600 600w,
+              ${baseUrl}?format=webp&quality=75&width=800 800w
+            `}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent transition-opacity duration-300 group-hover:from-black/50"></div>
           <div className="absolute bottom-4 left-4 text-white">

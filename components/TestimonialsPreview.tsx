@@ -1,5 +1,7 @@
 
 
+
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -64,6 +66,9 @@ const TestimonialsPreview: React.FC = () => {
     prevTestimonial();
   };
   
+  const currentTestimonial = TESTIMONIALS[index];
+  const baseUrl = currentTestimonial.image.substring(0, currentTestimonial.image.lastIndexOf('/') + 1);
+
   return (
     <section id="testimonios" className="py-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
@@ -104,19 +109,21 @@ const TestimonialsPreview: React.FC = () => {
             >
               <div className="bg-theme-background p-8 rounded-lg shadow-lg text-center">
                 <Quote className="text-theme-primary/50 w-12 h-12 mx-auto mb-4" />
-                <p className="text-theme-text italic mb-6">"{TESTIMONIALS[index].quote}"</p>
+                <p className="text-theme-text italic mb-6">"{currentTestimonial.quote}"</p>
                 <div className="flex items-center justify-center gap-4">
                     <img 
-                      src={TESTIMONIALS[index].image} 
-                      alt={TESTIMONIALS[index].name} 
+                      src={currentTestimonial.image} 
+                      alt={currentTestimonial.name} 
                       className="w-14 h-14 rounded-full object-cover" 
                       loading="lazy"
+                      decoding="async"
                       width="56"
                       height="56"
+                      srcSet={`${baseUrl}56/56 1x, ${baseUrl}112/112 2x`}
                     />
                     <div>
-                        <p className="font-bold text-lg text-theme-text-strong">{TESTIMONIALS[index].name}</p>
-                        <p className="text-theme-primary">{TESTIMONIALS[index].service}</p>
+                        <p className="font-bold text-lg text-theme-text-strong">{currentTestimonial.name}</p>
+                        <p className="text-theme-primary">{currentTestimonial.service}</p>
                     </div>
                 </div>
               </div>

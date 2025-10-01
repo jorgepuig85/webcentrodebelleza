@@ -1,5 +1,7 @@
 
 
+
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { TESTIMONIALS } from '../constants';
@@ -34,29 +36,34 @@ const cardVariants = {
   }
 };
 
-const TestimonialCard: React.FC<{ testimonial: typeof TESTIMONIALS[0] }> = ({ testimonial }) => (
-  <MotionDiv
-    className="bg-theme-background p-8 rounded-lg shadow-lg text-center h-full flex flex-col"
-    variants={cardVariants}
-  >
-    <Quote className="text-theme-primary/50 w-12 h-12 mx-auto mb-4" />
-    <p className="text-theme-text italic mb-6 flex-grow">"{testimonial.quote}"</p>
-    <div className="flex items-center justify-center gap-4 mt-auto">
-      <img
-        src={testimonial.image}
-        alt={testimonial.name}
-        className="w-14 h-14 rounded-full object-cover"
-        loading="lazy"
-        width="56"
-        height="56"
-      />
-      <div>
-        <p className="font-bold text-lg text-theme-text-strong">{testimonial.name}</p>
-        <p className="text-theme-primary">{testimonial.service}</p>
+const TestimonialCard: React.FC<{ testimonial: typeof TESTIMONIALS[0] }> = ({ testimonial }) => {
+  const baseUrl = testimonial.image.substring(0, testimonial.image.lastIndexOf('/') + 1);
+  return (
+    <MotionDiv
+      className="bg-theme-background p-8 rounded-lg shadow-lg text-center h-full flex flex-col"
+      variants={cardVariants}
+    >
+      <Quote className="text-theme-primary/50 w-12 h-12 mx-auto mb-4" />
+      <p className="text-theme-text italic mb-6 flex-grow">"{testimonial.quote}"</p>
+      <div className="flex items-center justify-center gap-4 mt-auto">
+        <img
+          src={testimonial.image}
+          alt={testimonial.name}
+          className="w-14 h-14 rounded-full object-cover"
+          loading="lazy"
+          decoding="async"
+          width="56"
+          height="56"
+          srcSet={`${baseUrl}56/56 1x, ${baseUrl}112/112 2x`}
+        />
+        <div>
+          <p className="font-bold text-lg text-theme-text-strong">{testimonial.name}</p>
+          <p className="text-theme-primary">{testimonial.service}</p>
+        </div>
       </div>
-    </div>
-  </MotionDiv>
-);
+    </MotionDiv>
+  );
+};
 
 
 const Testimonials: React.FC = () => {

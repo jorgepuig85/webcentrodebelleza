@@ -45,6 +45,7 @@ const TechnologyPreview: React.FC = () => {
     { icon: Zap, title: "Máxima Eficacia", description: "Resultados visibles desde la primera sesión." },
     { icon: ShieldCheck, title: "Seguridad Garantizada", description: "Equipos certificados operados por profesionales." },
   ];
+  const baseUrl = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg";
 
   return (
     <section id="tecnologia" className="py-20 bg-theme-background">
@@ -59,12 +60,19 @@ const TechnologyPreview: React.FC = () => {
           <MotionDiv variants={itemVariants}>
             <BackgroundGradient containerClassName="rounded-2xl">
               <img 
-                src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/equipo_depilacion.jpg?format=webp&quality=75&width=600" 
+                src={`${baseUrl}?format=webp&quality=75&width=600`}
                 alt="Equipo de depilación láser de última generación"
                 className="rounded-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
                 loading="lazy"
+                decoding="async"
                 width="600"
                 height="450"
+                srcSet={`
+                  ${baseUrl}?format=webp&quality=75&width=400 400w,
+                  ${baseUrl}?format=webp&quality=75&width=800 800w,
+                  ${baseUrl}?format=webp&quality=75&width=1200 1200w
+                `}
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </BackgroundGradient>
           </MotionDiv>

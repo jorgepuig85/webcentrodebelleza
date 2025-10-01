@@ -1,5 +1,7 @@
 
 
+
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -51,6 +53,7 @@ const Rental: React.FC = () => {
         { icon: LifeBuoy, title: "Soporte y Capacitación", description: "Te brindamos la formación necesaria para que operes el equipo con total seguridad." },
         { icon: CalendarDays, title: "Flexibilidad de Fechas", description: "Consultá por nuestras jornadas de alquiler y encontrá la que mejor se adapte a tu agenda." },
     ];
+    const baseUrl = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/rental.png";
 
     return (
         <section id="alquiler" className="pt-32 pb-20 animated-gradient-primary-soft">
@@ -96,12 +99,19 @@ const Rental: React.FC = () => {
                      <MotionDiv variants={imageVariants}>
                         <BackgroundGradient containerClassName="rounded-2xl">
                             <img 
-                                src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/rental.png?format=webp&quality=75&width=600" 
+                                src={`${baseUrl}?format=webp&quality=75&width=600`}
                                 alt="Gráfico de alquiler de equipo de depilación láser para profesionales"
                                 className="rounded-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
                                 loading="lazy"
+                                decoding="async"
                                 width="600"
                                 height="450"
+                                srcSet={`
+                                  ${baseUrl}?format=webp&quality=75&width=400 400w,
+                                  ${baseUrl}?format=webp&quality=75&width=800 800w,
+                                  ${baseUrl}?format=webp&quality=75&width=1200 1200w
+                                `}
+                                sizes="(max-width: 1024px) 100vw, 50vw"
                             />
                         </BackgroundGradient>
                     </MotionDiv>

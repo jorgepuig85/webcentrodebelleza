@@ -70,6 +70,7 @@ const ServiceCardSkeleton: React.FC = () => (
 
 // FIX: Explicitly type as React.FC to handle 'key' prop correctly.
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
+  const baseUrl = service.image.split('?')[0];
   return (
     <MotionDiv
       className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex flex-col"
@@ -84,8 +85,15 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
           alt={service.name} 
           className="w-full h-full object-cover" 
           loading="lazy"
+          decoding="async"
           width="400"
           height="224"
+          srcSet={`
+            ${baseUrl}?format=webp&quality=75&width=400 400w,
+            ${baseUrl}?format=webp&quality=75&width=600 600w,
+            ${baseUrl}?format=webp&quality=75&width=800 800w
+          `}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         <div className="absolute bottom-4 left-4 text-white">

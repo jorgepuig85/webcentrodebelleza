@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
@@ -8,14 +8,16 @@ import BeautyRoulette from './components/BeautyRoulette';
 import { ThemeProvider } from './context/ThemeContext';
 import { SeasonalCursor } from './components/SeasonalCursor';
 import FloatingActionCluster from './components/FloatingActionCluster';
-import Home from './pages/Home';
-import RentalPage from './pages/RentalPage';
-import ContactPage from './pages/ContactPage';
-import ServicesPage from './pages/ServicesPage';
-import PromotionsPage from './pages/PromotionsPage';
-import TechnologyPage from './pages/TechnologyPage';
-import TestimonialsPage from './pages/TestimonialsPage';
-import LocationsPage from './pages/LocationsPage';
+
+// Lazy load page components for code splitting
+const Home = lazy(() => import('./pages/Home'));
+const RentalPage = lazy(() => import('./pages/RentalPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const ServicesPage = lazy(() => import('./pages/ServicesPage'));
+const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
+const TechnologyPage = lazy(() => import('./pages/TechnologyPage'));
+const TestimonialsPage = lazy(() => import('./pages/TestimonialsPage'));
+const LocationsPage = lazy(() => import('./pages/LocationsPage'));
 
 const App: React.FC = () => {
   const [showRoulette, setShowRoulette] = useState(false);

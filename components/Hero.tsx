@@ -13,15 +13,26 @@ const MotionLink = motion(Link);
 
 const Hero: React.FC = () => {
     const { activeTheme } = useContext(ThemeContext);
+    const baseUrl = activeTheme.images.hero.split('?')[0];
 
   return (
     <section id="inicio" className="relative h-screen flex items-center justify-center text-center text-white overflow-hidden">
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
-        style={{ backgroundImage: `url(${activeTheme.images.hero})` }}
-        role="img"
-        aria-label="Fondo del centro de belleza con una mujer sonriendo"
-      ></div>
+      <img
+        src={`${baseUrl}?format=webp&quality=80&width=1920`}
+        srcSet={`
+          ${baseUrl}?format=webp&quality=75&width=480 480w,
+          ${baseUrl}?format=webp&quality=75&width=800 800w,
+          ${baseUrl}?format=webp&quality=80&width=1280 1280w,
+          ${baseUrl}?format=webp&quality=80&width=1920 1920w
+        `}
+        sizes="100vw"
+        alt="Fondo del centro de belleza con una mujer sonriendo"
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+        aria-hidden="true"
+      />
       <div className="absolute inset-0 bg-black/40"></div>
       
       {/* Seasonal animations overlay */}
