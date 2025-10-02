@@ -1,12 +1,12 @@
-
-
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { Send, Instagram, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import AnimatedTitle from './ui/AnimatedTitle';
+import VCardQRCode from './VCardQRCode';
+import { ThemeContext } from '../context/ThemeContext';
 
 // FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
 const MotionDiv = motion.div;
@@ -89,6 +89,11 @@ const Contact: React.FC = () => {
   
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedGender, setSelectedGender] = useState<'woman' | 'man'>('woman');
+
+  const { activeTheme } = useContext(ThemeContext);
+  const primaryColor = activeTheme.colors['--color-primary'];
+  const logoUrl = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/Logo.svg";
+
 
   // Fetch treatment zones for checkboxes
   useEffect(() => {
@@ -580,6 +585,37 @@ const Contact: React.FC = () => {
             </div>
           </MotionDiv>
         </MotionDiv>
+
+        {/* --- VCARD QR CODE SECTION --- */}
+        <MotionDiv
+          className="mt-20 pt-12 border-t border-theme-border/20"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <div className="text-center mb-12">
+            <AnimatedTitle as="h3" className="text-3xl font-bold text-theme-text-strong">Contacto Directo</AnimatedTitle>
+            <p className="text-lg text-theme-text mt-2">Agendá nuestro contacto directo para una atención personalizada.</p>
+            <div className="mt-4 w-20 h-1 bg-theme-primary mx-auto rounded"></div>
+          </div>
+          <div className="flex justify-center">
+            <div className="max-w-sm w-full">
+              <VCardQRCode
+                name="Yanina Sandoval"
+                title="Directora"
+                photoUrl="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/FotoYani.jpeg"
+                phone="+5492954391448"
+                email="notificaciones@centrodebelleza.com.ar"
+                company="Centro de Belleza"
+                fgColor={primaryColor}
+                logoUrl={logoUrl}
+              />
+            </div>
+          </div>
+        </MotionDiv>
+        {/* --- END OF SECTION --- */}
+
       </div>
     </section>
   );
