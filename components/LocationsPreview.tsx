@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
-import { MapPin, ArrowRight } from 'lucide-react';
+import { MapPin, ArrowRight, Calendar } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
 const MotionDiv = motion.div;
@@ -14,6 +14,12 @@ type Location = {
   id: number;
   name: string;
   province: string;
+};
+
+type Rental = {
+  location_id: number;
+  start_date: string;
+  end_date: string;
 };
 
 const headerContainerVariants = {
@@ -35,6 +41,29 @@ const cardVariants = {
   }
 };
 
+const formatRentalDate = (rental: Rental): string => {
+    const start = new Date(rental.start_date + 'T00:00:00Z');
+    const end = new Date(rental.end_date + 'T00:00:00Z');
+
+    const dayOptions: Intl.DateTimeFormatOptions = { day: 'numeric', timeZone: 'UTC' };
+    const fullOptions: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', timeZone: 'UTC' };
+
+    const startDay = new Intl.DateTimeFormat('es-AR', dayOptions).format(start);
+    const endFull = new Intl.DateTimeFormat('es-AR', fullOptions).format(end);
+
+    if (start.getTime() === end.getTime()) {
+        return new Intl.DateTimeFormat('es-AR', fullOptions).format(start);
+    }
+    
+    const nextDay = new Date(start);
+    nextDay.setUTCDate(start.getUTCDate() + 1);
+    if (nextDay.getTime() === end.getTime()) {
+        return `${startDay} y ${endFull}`;
+    }
+
+    return `Del ${startDay} al ${endFull}`;
+};
+
 const LocationCardSkeleton = () => (
   <div className="bg-gray-50 p-6 rounded-lg shadow-md flex items-center gap-4 animate-pulse">
     <div className="bg-gray-200 w-12 h-12 rounded-full flex-shrink-0"></div>
@@ -47,29 +76,42 @@ const LocationCardSkeleton = () => (
 
 const LocationsPreview: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
+  const [rentals, setRentals] = useState<Rental[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLocations = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const { data, error } = await supabase
-          .from('locations')
-          .select('id, name, province')
-          .order('name', { ascending: true })
-          .limit(6); // Fetch only 6 locations for the preview
+        const today = new Date().toISOString();
+
+        const [locationsRes, rentalsRes] = await Promise.all([
+           supabase
+            .from('locations')
+            .select('id, name, province')
+            .order('name', { ascending: true })
+            .limit(6),
+           supabase
+            .from('rentals')
+            .select('location_id, start_date, end_date')
+            .gte('start_date', today)
+            .order('start_date', { ascending: true })
+        ]);
         
-        if (error) throw error;
-        if (data) setLocations(data);
+        if (locationsRes.error) throw locationsRes.error;
+        if (rentalsRes.error) throw rentalsRes.error;
+
+        if (locationsRes.data) setLocations(locationsRes.data);
+        if (rentalsRes.data) setRentals(rentalsRes.data as Rental[]);
 
       } catch (err: any) {
-        console.error("Error fetching locations preview:", err);
+        console.error("Error fetching locations/rentals preview:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchLocations();
+    fetchData();
   }, []);
   
   return (
@@ -98,21 +140,34 @@ const LocationsPreview: React.FC = () => {
         >
           {loading 
             ? [...Array(6)].map((_, i) => <LocationCardSkeleton key={i} />)
-            : locations.map((location) => (
-                <MotionDiv
-                  key={location.id}
-                  className="bg-theme-background-soft p-6 rounded-lg shadow-md flex items-center gap-4"
-                  variants={cardVariants}
-                >
-                  <div className="bg-theme-primary-soft text-theme-primary p-3 rounded-full flex-shrink-0">
-                    <MapPin size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-theme-text-strong">{location.name}</h3>
-                    <p className="text-theme-text">{location.province}</p>
-                  </div>
-                </MotionDiv>
-              ))}
+            : locations.map((location) => {
+                const nextRental = rentals.find(r => r.location_id === location.id);
+                return (
+                  <MotionDiv
+                    key={location.id}
+                    className="bg-theme-background-soft p-6 rounded-lg shadow-md flex flex-col justify-between"
+                    variants={cardVariants}
+                  >
+                    <div>
+                      <div className="flex items-center gap-4">
+                        <div className="bg-theme-primary-soft text-theme-primary p-3 rounded-full flex-shrink-0">
+                          <MapPin size={24} />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-theme-text-strong">{location.name}</h3>
+                          <p className="text-theme-text">{location.province}</p>
+                        </div>
+                      </div>
+                    </div>
+                    {nextRental && (
+                      <div className="mt-4 pt-4 border-t border-theme-border/20 text-sm">
+                          <p className="font-bold text-theme-primary flex items-center gap-1.5"><Calendar size={14}/>Próxima visita:</p>
+                          <p className="text-theme-text-strong font-medium pl-5">{formatRentalDate(nextRental)}</p>
+                      </div>
+                    )}
+                  </MotionDiv>
+                )
+            })}
         </MotionDiv>
 
         <MotionDiv 

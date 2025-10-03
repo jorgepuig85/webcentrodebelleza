@@ -1,9 +1,9 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
-import { MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { MapPin, Calendar, ArrowRight } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
 
 // FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
@@ -14,6 +14,12 @@ type Location = {
   id: number;
   name: string;
   province: string;
+};
+
+type Rental = {
+  location_id: number;
+  start_date: string;
+  end_date: string;
 };
 
 const headerContainerVariants = {
@@ -51,8 +57,32 @@ const LocationCardSkeleton = () => (
   </div>
 );
 
+const formatRentalDate = (rental: Rental): string => {
+    const start = new Date(rental.start_date + 'T00:00:00Z');
+    const end = new Date(rental.end_date + 'T00:00:00Z');
+
+    const dayOptions: Intl.DateTimeFormatOptions = { day: 'numeric', timeZone: 'UTC' };
+    const fullOptions: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', timeZone: 'UTC' };
+
+    const startDay = new Intl.DateTimeFormat('es-AR', dayOptions).format(start);
+    const endFull = new Intl.DateTimeFormat('es-AR', fullOptions).format(end);
+
+    if (start.getTime() === end.getTime()) {
+        return new Intl.DateTimeFormat('es-AR', fullOptions).format(start);
+    }
+    
+    const nextDay = new Date(start);
+    nextDay.setUTCDate(start.getUTCDate() + 1);
+    if (nextDay.getTime() === end.getTime()) {
+        return `${startDay} y ${endFull}`;
+    }
+
+    return `Del ${startDay} al ${endFull}`;
+};
+
 const Locations: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
+  const [rentals, setRentals] = useState<Rental[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,21 +90,29 @@ const Locations: React.FC = () => {
     const fetchLocations = async () => {
       try {
         setLoading(true);
-        const response = await supabase
-          .from('locations')
-          .select('id, name, province')
-          .order('name', { ascending: true });
+        const today = new Date().toISOString();
+
+        const [locationsRes, rentalsRes] = await Promise.all([
+          supabase
+            .from('locations')
+            .select('id, name, province')
+            .order('name', { ascending: true }),
+          supabase
+            .from('rentals')
+            .select('location_id, start_date, end_date')
+            .gte('start_date', today)
+            .order('start_date', { ascending: true })
+        ]);
         
-        const { data, error: fetchError } = response;
-        if (fetchError) throw fetchError;
+        if (locationsRes.error) throw locationsRes.error;
+        if (rentalsRes.error) throw rentalsRes.error;
         
-        if (data) {
-          setLocations(data);
-        }
+        if (locationsRes.data) setLocations(locationsRes.data);
+        if (rentalsRes.data) setRentals(rentalsRes.data as Rental[]);
 
       } catch (err: any) {
-        console.error("Error fetching locations:", err);
-        setError('No se pudieron cargar las localidades. Por favor, intente más tarde.');
+        console.error("Error fetching locations and rentals:", err);
+        setError('No se pudieron cargar los datos. Por favor, intente más tarde.');
       } finally {
         setLoading(false);
       }
@@ -113,21 +151,51 @@ const Locations: React.FC = () => {
         viewport={{ once: true, amount: 0.2 }}
         transition={{ staggerChildren: 0.1 }}
       >
-        {locations.map((location) => (
-          <MotionDiv
-            key={location.id}
-            className="bg-theme-background-soft p-6 rounded-lg shadow-md flex items-center gap-4 transform hover:-translate-y-1 transition-transform duration-300"
-            variants={cardVariants}
-          >
-            <div className="bg-theme-primary-soft text-theme-primary p-3 rounded-full flex-shrink-0">
-              <MapPin size={24} />
-            </div>
-            <div>
-              <AnimatedTitle as="h3" className="text-lg font-semibold text-theme-text-strong">{location.name}</AnimatedTitle>
-              <p className="text-theme-text">{location.province}</p>
-            </div>
-          </MotionDiv>
-        ))}
+        {locations.map((location) => {
+          const locationRentals = rentals.filter(r => r.location_id === location.id);
+          return (
+            <MotionDiv
+              key={location.id}
+              className="bg-theme-background p-6 rounded-lg shadow-md flex flex-col justify-between transform hover:-translate-y-1 transition-transform duration-300"
+              variants={cardVariants}
+            >
+              <div>
+                <div className="flex items-center gap-4">
+                  <div className="bg-theme-primary-soft text-theme-primary p-3 rounded-full flex-shrink-0">
+                    <MapPin size={24} />
+                  </div>
+                  <div>
+                    <AnimatedTitle as="h3" className="text-lg font-semibold text-theme-text-strong">{location.name}</AnimatedTitle>
+                    <p className="text-theme-text">{location.province}</p>
+                  </div>
+                </div>
+              </div>
+
+              {locationRentals.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-theme-border/20">
+                  <h4 className="flex items-center gap-2 text-sm font-bold text-theme-primary mb-2">
+                    <Calendar size={16} />
+                    Próximas Visitas
+                  </h4>
+                  <ul className="space-y-1 pl-1">
+                    {locationRentals.slice(0, 2).map(rental => (
+                        <li key={`${rental.start_date}-${rental.end_date}`} className="text-sm text-theme-text-strong font-medium">
+                            {formatRentalDate(rental)}
+                        </li>
+                    ))}
+                  </ul>
+                  <Link 
+                    to="/contacto"
+                    className="mt-4 inline-flex items-center gap-2 text-center bg-theme-primary text-theme-text-inverted px-4 py-2 rounded-full font-semibold text-sm hover:bg-theme-primary-hover seasonal-glow-hover"
+                  >
+                    Reservar Turno
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
+              )}
+            </MotionDiv>
+          )
+        })}
       </MotionDiv>
     );
   };
