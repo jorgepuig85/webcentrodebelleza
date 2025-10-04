@@ -2,6 +2,7 @@
 
 
 
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -67,7 +68,6 @@ const TestimonialsPreview: React.FC = () => {
   };
   
   const currentTestimonial = TESTIMONIALS[index];
-  const baseUrl = currentTestimonial.image.substring(0, currentTestimonial.image.lastIndexOf('/') + 1);
 
   return (
     <section id="testimonios" className="py-20 animated-gradient-background-soft">
@@ -119,7 +119,6 @@ const TestimonialsPreview: React.FC = () => {
                       decoding="async"
                       width="56"
                       height="56"
-                      srcSet={`${baseUrl}56/56 1x, ${baseUrl}112/112 2x`}
                     />
                     <div>
                         <p className="font-bold text-lg text-theme-text-strong">{currentTestimonial.name}</p>

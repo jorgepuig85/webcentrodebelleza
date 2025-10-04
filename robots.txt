@@ -1,0 +1,10 @@
+# Allow all web crawlers to access all content
+User-agent: *
+Allow: /
+
+# Google AdsBot
+User-agent: AdsBot-Google
+Allow: /
+
+# Sitemap location
+Sitemap: https://centrodebelleza.com.ar/sitemap.xml

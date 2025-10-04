@@ -97,12 +97,17 @@ const ServicesPreview = () => {
     const fetchServices = async () => {
       try {
         setLoading(true);
+        const topServiceNames = [
+          'Mujer - Axilas',
+          'Mujer - Rostro',
+          'Mujer - Piernas Completas',
+          'Mujer - Cavado Completo'
+        ];
+
         const { data, error } = await supabase
           .from('items')
           .select('id, name, image_url')
-          .eq('is_combo', false)
-          .order('name', { ascending: true })
-          .limit(4); // Fetch only 4 services for the preview
+          .in('name', topServiceNames);
         
         if (error) throw error;
         
@@ -114,7 +119,13 @@ const ServicesPreview = () => {
                 ? `${item.image_url}?format=webp&quality=75&width=400`
                 : `https://picsum.photos/seed/${encodeURIComponent(item.name)}/400/300`,
             }));
-          setServices(formattedServices);
+            
+            // Reorder the services to match the specified order
+            const orderedServices = topServiceNames.map(name => 
+              formattedServices.find(service => service.name === name)
+            ).filter((s): s is Service => s !== undefined);
+
+          setServices(orderedServices);
         }
 
       } catch (err) {

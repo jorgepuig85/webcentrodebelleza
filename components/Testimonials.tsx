@@ -37,7 +37,6 @@ const cardVariants = {
 };
 
 const TestimonialCard: React.FC<{ testimonial: typeof TESTIMONIALS[0] }> = ({ testimonial }) => {
-  const baseUrl = testimonial.image.substring(0, testimonial.image.lastIndexOf('/') + 1);
   return (
     <MotionDiv
       className="bg-theme-background p-8 rounded-lg shadow-lg text-center h-full flex flex-col"
@@ -54,7 +53,6 @@ const TestimonialCard: React.FC<{ testimonial: typeof TESTIMONIALS[0] }> = ({ te
           decoding="async"
           width="56"
           height="56"
-          srcSet={`${baseUrl}56/56 1x, ${baseUrl}112/112 2x`}
         />
         <div>
           <p className="font-bold text-lg text-theme-text-strong">{testimonial.name}</p>
