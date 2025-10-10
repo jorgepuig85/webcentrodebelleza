@@ -6,7 +6,8 @@ import type { Post } from '../types';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  // FIX: Add `as const` to the ease property to satisfy TypeScript's type requirements for Framer Motion Variants.
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } },
 };
 
 export const PostCardSkeleton: React.FC = () => (

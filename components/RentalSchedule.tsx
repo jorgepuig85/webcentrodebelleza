@@ -10,7 +10,8 @@ type Rental = {
   end_date: string;
   location: {
     name: string;
-  } | null;
+    // FIX: The Supabase join returns an array of locations, so this type is updated to reflect that.
+  }[] | null;
 };
 
 // Map from "YYYY-MM-DD" to location name
@@ -64,7 +65,8 @@ const RentalSchedule: React.FC = () => {
             // Adjust for timezone differences by parsing as UTC
             const startDate = new Date(rental.start_date + 'T00:00:00Z');
             const endDate = new Date(rental.end_date + 'T00:00:00Z');
-            const locationName = rental.location?.name || 'Ubicación no especificada';
+            // FIX: Access the first element of the location array to get the location name.
+            const locationName = rental.location?.[0]?.name || 'Ubicación no especificada';
 
             for (let d = new Date(startDate); d <= endDate; d.setUTCDate(d.getUTCDate() + 1)) {
               const dateString = d.toISOString().split('T')[0];
@@ -150,7 +152,8 @@ const RentalSchedule: React.FC = () => {
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
+      // FIX: Add `as const` to the ease property to satisfy TypeScript's type requirements for Framer Motion Variants.
+      transition={{ duration: 0.7, ease: "easeOut" as const }}
     >
       <div className="text-center mb-8">
         <AnimatedTitle as="h3" className="text-3xl font-bold text-theme-text-strong">Agenda de Disponibilidad</AnimatedTitle>

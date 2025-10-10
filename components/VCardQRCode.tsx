@@ -117,7 +117,8 @@ END:VCARD`;
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.5 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
+      // FIX: Add `as const` to the ease property to satisfy TypeScript's type requirements for Framer Motion Variants.
+      transition={{ duration: 0.6, ease: 'easeOut' as const }}
     >
       <img
         src={photoUrl}

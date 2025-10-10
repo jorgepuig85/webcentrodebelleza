@@ -7,4 +7,4 @@ User-agent: AdsBot-Google
 Allow: /
 
 # Sitemap location
-Sitemap: https://centrodebelleza.com.ar/api/sitemap
+Sitemap: https://centrodebelleza.com.ar/sitemap.xml
