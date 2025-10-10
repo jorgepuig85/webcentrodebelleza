@@ -18,6 +18,8 @@ const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
 const TechnologyPage = lazy(() => import('./pages/TechnologyPage'));
 const TestimonialsPage = lazy(() => import('./pages/TestimonialsPage'));
 const LocationsPage = lazy(() => import('./pages/LocationsPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const PostPage = lazy(() => import('./pages/PostPage'));
 
 const App: React.FC = () => {
   const [showRoulette, setShowRoulette] = useState(false);
@@ -129,6 +131,8 @@ const App: React.FC = () => {
                 <Route path="/alquiler" element={<RentalPage />} />
                 <Route path="/ubicaciones" element={<LocationsPage />} />
                 <Route path="/contacto" element={<ContactPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/:slug" element={<PostPage />} />
             </Routes>
         </main>
         <Footer />

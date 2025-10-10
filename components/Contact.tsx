@@ -608,6 +608,7 @@ const Contact: React.FC = () => {
                 phone="+5492954391448"
                 email="notificaciones@centrodebelleza.com.ar"
                 company="Centro de Belleza"
+                website="https://www.centrodebelleza.com.ar"
                 fgColor={primaryColor}
                 logoUrl={logoUrl}
               />

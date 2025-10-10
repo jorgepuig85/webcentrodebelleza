@@ -4,6 +4,7 @@ export const NAV_LINKS = [
   { path: '/promociones', title: 'Promociones' },
   { path: '/tecnologia', title: 'Tecnología' },
   { path: '/alquiler', title: 'Alquiler' },
+  { path: '/blog', title: 'Blog' },
   { path: '/testimonios', title: 'Testimonios' },
   { path: '/ubicaciones', title: 'Ubicaciones' },
   { path: '/contacto', title: 'Contacto' },

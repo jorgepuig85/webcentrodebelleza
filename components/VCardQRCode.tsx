@@ -11,6 +11,7 @@ interface VCardQRCodeProps {
   phone: string;
   email: string;
   company: string;
+  website: string;
   fgColor?: string;
   logoUrl?: string;
 }
@@ -22,6 +23,7 @@ const VCardQRCode: React.FC<VCardQRCodeProps> = ({
   phone,
   email,
   company,
+  website,
   fgColor = '#1f2937', // Default black
   logoUrl,
 }) => {
@@ -33,8 +35,11 @@ VERSION:3.0
 FN:${name}
 ORG:${company}
 TITLE:${title}
+PHOTO;VALUE=URL:${photoUrl}
 TEL;TYPE=WORK,VOICE:${phone}
 EMAIL:${email}
+URL:${website}
+ADR;TYPE=WORK:;;Neuquen 560;Miguel Riglos;La Pampa;8207;Argentina
 END:VCARD`;
 
   const handleDownload = () => {

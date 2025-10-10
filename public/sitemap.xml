@@ -36,6 +36,12 @@
   <changefreq>weekly</changefreq>
 </url>
 <url>
+  <loc>https://centrodebelleza.com.ar/blog</loc>
+  <lastmod>2024-08-01</lastmod>
+  <priority>0.90</priority>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
   <loc>https://centrodebelleza.com.ar/testimonios</loc>
   <lastmod>2024-08-01</lastmod>
   <priority>0.80</priority>
