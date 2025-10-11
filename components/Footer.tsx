@@ -96,6 +96,17 @@ const Footer: React.FC = () => {
                   <span>{views.toLocaleString('es-AR')} Visitas</span>
               </div>
             )}
+            <div className="mt-6 text-xs text-gray-500">
+              <p>
+                Diseño y Desarrollo Web por{' '}
+                <a 
+                  href="mailto:jorgeapuig85@gmail.com"
+                  className="font-semibold text-gray-400 hover:text-white transition-colors underline"
+                >
+                  Jorge Puig
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </footer>
