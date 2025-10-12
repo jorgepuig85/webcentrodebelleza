@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Instagram, Eye, QrCode } from 'lucide-react';
+import { Instagram, Eye, QrCode } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 import AnimatedTitle from './ui/AnimatedTitle';
 import QRCodeModal from './QRCodeModal';
@@ -37,11 +37,17 @@ const Footer: React.FC = () => {
         <div className="container mx-auto px-6 py-12">
           <div className="grid md:grid-cols-3 gap-8 text-center md:text-left">
             <div>
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-                <Sparkles className="text-theme-primary" size={28} />
-                <span className="text-xl font-bold">Centro de Belleza</span>
+              <div className="flex items-center justify-center mb-4">
+                <img 
+                  src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/Logo.svg" 
+                  alt="Logo del Centro de Belleza" 
+                  className="h-12 w-auto" 
+                  width="213"
+                  height="48"
+                  style={{ filter: 'brightness(0) invert(1)' }}
+                />
               </div>
-              <p className="text-theme-text-light max-w-xs mx-auto md:mx-0">Depilación definitiva para sentirte libre y segura.</p>
+              <p className="text-theme-text-light max-w-xs mx-auto md:text-center">Depilación definitiva para sentirte libre y segura.</p>
             </div>
             <div>
               <AnimatedTitle as="h4" className="font-bold text-lg mb-4">Navegación</AnimatedTitle>

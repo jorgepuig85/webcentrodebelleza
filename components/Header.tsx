@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 
 const MotionDiv = motion.div;
@@ -30,15 +30,19 @@ const Header: React.FC = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-theme-background/80 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2 cursor-pointer">
-          <Sparkles className="text-theme-primary" size={28} />
-          <span className="text-xl font-bold text-theme-text-strong">Centro de Belleza</span>
-        </Link>
-        
-        {/* Desktop Navigation Group */}
-        <div className="hidden md:flex items-center">
-          <nav className="flex items-center gap-8">
+      <div className="container mx-auto px-6 py-3 flex justify-between items-center">
+        {/* Logo and Desktop Navigation */}
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center cursor-pointer">
+            <img 
+              src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/Logo.svg" 
+              alt="Logo del Centro de Belleza" 
+              className="h-11 w-auto" 
+              width="196"
+              height="44"
+            />
+          </Link>
+          <nav className="hidden md:flex items-center gap-8">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.path}
@@ -49,11 +53,13 @@ const Header: React.FC = () => {
               </Link>
             ))}
           </nav>
-          <div className="ml-8">
-            <Link to="/contacto" className="bg-theme-primary text-theme-text-inverted px-5 py-2 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat whitespace-nowrap">
-              Reservar Turno
-            </Link>
-          </div>
+        </div>
+        
+        {/* Desktop CTA Button */}
+        <div className="hidden md:flex">
+          <Link to="/contacto" className="bg-theme-primary text-theme-text-inverted px-5 py-2 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat whitespace-nowrap">
+            Reservar Turno
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
