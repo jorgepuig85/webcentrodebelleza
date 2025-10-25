@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
           <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-400">
             <div className="flex flex-col sm:flex-row justify-center items-center gap-x-6 gap-y-2">
               <a 
-                href="https://centrodebelleza.vercel.app/" 
+                href="https://app.centrodebelleza.com.ar/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-sm text-gray-400 hover:text-white hover:underline transition-colors"
