@@ -6,7 +6,6 @@ import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import BeautyRoulette from './components/BeautyRoulette';
 import { ThemeProvider } from './context/ThemeContext';
-import { SeasonalCursor } from './components/SeasonalCursor';
 import FloatingActionCluster from './components/FloatingActionCluster';
 
 // Lazy load page components for code splitting
@@ -118,7 +117,6 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <SeasonalCursor />
       <div className="bg-theme-background text-theme-text">
         <Header />
         <main>
