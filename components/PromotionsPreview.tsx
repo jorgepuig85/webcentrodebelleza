@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, wrap } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { Sparkles, CheckCircle, ArrowRight } from 'lucide-react';
@@ -34,16 +34,27 @@ const itemVariants = {
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    scale: 1,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }
-  }
+    enter: (direction: number) => ({
+      x: direction > 0 ? '100%' : '-100%',
+      opacity: 0,
+      scale: 0.9,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+      scale: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? '100%' : '-100%',
+      opacity: 0,
+      scale: 0.9,
+    })
 };
 
 const PromotionCardSkeleton = () => (
-  <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center animate-pulse">
+  <div className="w-full h-full bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center animate-pulse">
     <div className="bg-gray-200 p-4 rounded-full mb-4 w-20 h-20"></div>
     <div className="h-7 bg-gray-200 rounded w-3/4 mb-6"></div>
     <div className="space-y-3 w-full flex-grow mb-6">
@@ -67,9 +78,12 @@ const PromotionCard: React.FC<{ promo: Promotion }> = ({ promo }) => {
   const displayTitle = icon ? `${promo.title} ${icon}` : promo.title;
 
   return (
-    <MotionDiv
-      className="bg-theme-background rounded-xl shadow-lg p-8 flex flex-col items-center text-center transform hover:-translate-y-2 transition-transform duration-300 border-t-4 border-theme-primary"
-      variants={cardVariants}
+    <motion.div
+      className="w-full h-full bg-theme-background rounded-xl shadow-lg p-8 flex flex-col items-center text-center transform hover:-translate-y-2 transition-transform duration-300 border-t-4 border-theme-primary"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
     >
       <div className="bg-theme-primary-soft p-4 rounded-full mb-4">
         <Sparkles className="text-theme-primary" size={32} />
@@ -95,13 +109,28 @@ const PromotionCard: React.FC<{ promo: Promotion }> = ({ promo }) => {
           ¡Lo quiero!
         </Link>
       </div>
-    </MotionDiv>
+    </motion.div>
   );
+};
+
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+  return Math.abs(offset) * velocity;
 };
 
 const PromotionsPreview = () => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
+  
+  const [[page, direction], setPage] = useState([0, 0]);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const promoIndex = wrap(0, promotions.length, page);
+
+  const paginate = (newDirection: number) => {
+    setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
+  };
 
   useEffect(() => {
     const fetchPromotions = async () => {
@@ -112,7 +141,7 @@ const PromotionsPreview = () => {
           .select('id, name, price, zones')
           .eq('is_combo', true)
           .order('price', { ascending: true })
-          .limit(3); // Fetch only 3 promotions for the preview
+          .limit(3);
 
         if (promotionsError) throw promotionsError;
 
@@ -144,9 +173,25 @@ const PromotionsPreview = () => {
         setLoading(false);
       }
     };
-
     fetchPromotions();
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (isDesktop || isHovering || loading || promotions.length <= 1) return;
+
+    const interval = setInterval(() => {
+      paginate(1);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isDesktop, isHovering, loading, promotions.length]);
 
   return (
     <section id="promociones" className="py-20 animated-gradient-primary-soft">
@@ -165,18 +210,70 @@ const PromotionsPreview = () => {
           <MotionDiv variants={itemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></MotionDiv>
         </MotionDiv>
         
-        <MotionDiv 
-            className="grid lg:grid-cols-3 gap-8 mb-12"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ staggerChildren: 0.15 }}
-        >
-          {loading 
-            ? [...Array(3)].map((_, i) => <PromotionCardSkeleton key={i} />)
-            : promotions.map((promo) => <PromotionCard key={promo.id} promo={promo} />)
-          }
-        </MotionDiv>
+        {isDesktop ? (
+          <MotionDiv 
+              className="grid lg:grid-cols-3 gap-8"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ staggerChildren: 0.15 }}
+          >
+            {loading 
+              ? [...Array(3)].map((_, i) => <PromotionCardSkeleton key={i} />)
+              : promotions.map((promo) => <PromotionCard key={promo.id} promo={promo} />)
+            }
+          </MotionDiv>
+        ) : (
+          <div 
+            className="relative h-[550px] w-full max-w-sm mx-auto mb-12"
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+          >
+            {loading ? <PromotionCardSkeleton /> : (
+              <AnimatePresence initial={false} custom={direction}>
+                <MotionDiv
+                  key={page}
+                  className="absolute w-full h-full"
+                  custom={direction}
+                  variants={cardVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: "spring", stiffness: 300, damping: 30 },
+                    opacity: { duration: 0.2 }
+                  }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={1}
+                  onDragEnd={(e, { offset, velocity }) => {
+                    const power = swipePower(offset.x, velocity.x);
+                    if (power < -swipeConfidenceThreshold) {
+                      paginate(1);
+                    } else if (power > swipeConfidenceThreshold) {
+                      paginate(-1);
+                    }
+                  }}
+                >
+                  <PromotionCard promo={promotions[promoIndex]} />
+                </MotionDiv>
+              </AnimatePresence>
+            )}
+
+            {!loading && promotions.length > 1 && (
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+                {promotions.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage([i, i > page ? 1 : -1])}
+                    className={`w-2 h-2 rounded-full transition-colors ${i === promoIndex ? 'bg-theme-primary' : 'bg-theme-border'}`}
+                    aria-label={`Ir a la promoción ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         
         <MotionDiv 
           className="text-center"

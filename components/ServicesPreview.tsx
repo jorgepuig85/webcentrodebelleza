@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, wrap } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { ArrowRight } from 'lucide-react';
@@ -35,19 +35,24 @@ const itemVariants = {
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      ease: [0, 0, 0.58, 1] as const
-    }
-  }
+    enter: (direction: number) => ({
+      x: direction > 0 ? '100%' : '-100%',
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? '100%' : '-100%',
+      opacity: 0
+    })
 };
 
 const ServiceCardSkeleton: React.FC = () => (
-  <div className="bg-white rounded-lg shadow-lg overflow-hidden animate-pulse">
+  <div className="w-full bg-white rounded-lg shadow-lg overflow-hidden animate-pulse">
     <div className="relative h-64 bg-gray-200"></div>
     <div className="p-4">
       <div className="h-6 bg-gray-200 rounded w-3/4"></div>
@@ -58,9 +63,12 @@ const ServiceCardSkeleton: React.FC = () => (
 const ServicePreviewCard: React.FC<{ service: Service }> = ({ service }) => {
   const baseUrl = service.image.split('?')[0];
   return (
-    <MotionDiv
-      className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 hover:shadow-xl transition-all duration-300"
-      variants={cardVariants}
+    <motion.div
+      className="w-full bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 hover:shadow-xl transition-all duration-300"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
     >
       <Link to="/servicios">
         <div className="relative h-64">
@@ -85,13 +93,28 @@ const ServicePreviewCard: React.FC<{ service: Service }> = ({ service }) => {
           </div>
         </div>
       </Link>
-    </MotionDiv>
+    </motion.div>
   );
+};
+
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+  return Math.abs(offset) * velocity;
 };
 
 const ServicesPreview = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  const [[page, direction], setPage] = useState([0, 0]);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const serviceIndex = wrap(0, services.length, page);
+
+  const paginate = (newDirection: number) => {
+    setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
+  };
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -120,24 +143,38 @@ const ServicesPreview = () => {
                 : `https://picsum.photos/seed/${encodeURIComponent(item.name)}/400/300`,
             }));
             
-            // Reorder the services to match the specified order
             const orderedServices = topServiceNames.map(name => 
               formattedServices.find(service => service.name === name)
             ).filter((s): s is Service => s !== undefined);
 
           setServices(orderedServices);
         }
-
       } catch (err) {
         console.error("Error fetching services preview:", err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchServices();
   }, []);
-  
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (isDesktop || isHovering || loading || services.length <= 1) return;
+
+    const interval = setInterval(() => {
+      paginate(1);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isDesktop, isHovering, loading, services.length]);
+
   return (
     <section id="servicios" className="py-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
@@ -155,18 +192,70 @@ const ServicesPreview = () => {
           <MotionDiv variants={itemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></MotionDiv>
         </MotionDiv>
         
-        <MotionDiv 
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"
+        {isDesktop ? (
+          <MotionDiv 
+            className="grid lg:grid-cols-4 gap-8"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
             transition={{ staggerChildren: 0.15 }}
-        >
-          {loading 
-            ? [...Array(4)].map((_, i) => <ServiceCardSkeleton key={i} />)
-            : services.map((service) => <ServicePreviewCard key={service.id} service={service} />)
-          }
-        </MotionDiv>
+          >
+            {loading 
+              ? [...Array(4)].map((_, i) => <ServiceCardSkeleton key={i} />)
+              : services.map((service) => <ServicePreviewCard key={service.id} service={service} />)
+            }
+          </MotionDiv>
+        ) : (
+          <div 
+            className="relative h-72 w-full max-w-lg mx-auto mb-12"
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+          >
+            {loading ? <ServiceCardSkeleton /> : (
+              <AnimatePresence initial={false} custom={direction}>
+                <MotionDiv
+                  key={page}
+                  className="absolute w-full h-full"
+                  custom={direction}
+                  variants={cardVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: "spring", stiffness: 300, damping: 30 },
+                    opacity: { duration: 0.2 }
+                  }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={1}
+                  onDragEnd={(e, { offset, velocity }) => {
+                    const power = swipePower(offset.x, velocity.x);
+                    if (power < -swipeConfidenceThreshold) {
+                      paginate(1);
+                    } else if (power > swipeConfidenceThreshold) {
+                      paginate(-1);
+                    }
+                  }}
+                >
+                  <ServicePreviewCard service={services[serviceIndex]} />
+                </MotionDiv>
+              </AnimatePresence>
+            )}
+            
+            {!loading && services.length > 1 && (
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+                {services.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage([i, i > page ? 1 : -1])}
+                    className={`w-2 h-2 rounded-full transition-colors ${i === serviceIndex ? 'bg-theme-primary' : 'bg-theme-border'}`}
+                    aria-label={`Ir al servicio ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <MotionDiv 
           className="text-center"
