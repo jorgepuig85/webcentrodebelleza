@@ -108,7 +108,6 @@ const ServicesPreview = () => {
   const [isDesktop, setIsDesktop] = useState(false);
 
   const [[page, direction], setPage] = useState([0, 0]);
-  const [isHovering, setIsHovering] = useState(false);
 
   const serviceIndex = wrap(0, services.length, page);
 
@@ -165,20 +164,6 @@ const ServicesPreview = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Autoplay timer effect
-  useEffect(() => {
-    if (isDesktop || isHovering || loading || services.length <= 1) {
-        return;
-    }
-
-    const interval = setInterval(() => {
-      // Update state directly to avoid unstable dependencies
-      setPage(prev => [prev[0] + 1, 1]);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [isDesktop, isHovering, loading, services.length]);
-
   return (
     <section id="servicios" className="py-20 animated-gradient-background-soft">
       <div className="container mx-auto px-6">
@@ -212,8 +197,6 @@ const ServicesPreview = () => {
         ) : (
           <div 
             className="relative h-72 w-full max-w-lg mx-auto mb-12"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
           >
             {loading ? <ServiceCardSkeleton /> : (
               <AnimatePresence initial={false} custom={direction}>

@@ -124,7 +124,6 @@ const PromotionsPreview = () => {
   const [isDesktop, setIsDesktop] = useState(false);
   
   const [[page, direction], setPage] = useState([0, 0]);
-  const [isHovering, setIsHovering] = useState(false);
 
   const promoIndex = wrap(0, promotions.length, page);
 
@@ -183,20 +182,6 @@ const PromotionsPreview = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Autoplay timer effect
-  useEffect(() => {
-    if (isDesktop || isHovering || loading || promotions.length <= 1) {
-        return;
-    }
-
-    const interval = setInterval(() => {
-      // Update state directly to avoid unstable dependencies
-      setPage(prev => [prev[0] + 1, 1]);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [isDesktop, isHovering, loading, promotions.length]);
-
   return (
     <section id="promociones" className="py-20 animated-gradient-primary-soft">
       <div className="container mx-auto px-6">
@@ -230,8 +215,6 @@ const PromotionsPreview = () => {
         ) : (
           <div 
             className="relative h-[550px] w-full max-w-sm mx-auto mb-12"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
           >
             {loading ? <PromotionCardSkeleton /> : (
               <AnimatePresence initial={false} custom={direction}>
