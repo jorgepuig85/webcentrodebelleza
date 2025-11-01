@@ -59,7 +59,7 @@ const ServicePreviewCard: React.FC<{ service: Service }> = ({ service }) => {
   const baseUrl = service.image.split('?')[0];
   return (
     <MotionDiv
-      className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300"
+      className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 hover:shadow-xl transition-all duration-300"
       variants={cardVariants}
     >
       <Link to="/servicios">

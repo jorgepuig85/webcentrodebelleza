@@ -73,7 +73,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
   const baseUrl = service.image.split('?')[0];
   return (
     <MotionDiv
-      className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex flex-col"
+      className="bg-white rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 hover:shadow-xl transition-all duration-300 flex flex-col"
       variants={cardVariants}
       initial="hidden"
       whileInView="visible"

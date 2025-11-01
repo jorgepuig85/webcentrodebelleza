@@ -7,7 +7,7 @@ const MotionDiv = motion.div;
 const FloatingActionCluster: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <MotionDiv
-      className="fixed bottom-24 right-6 z-40 flex flex-col items-center gap-4"
+      className="fixed bottom-28 right-6 md:bottom-24 z-40 flex flex-col items-center gap-4"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}

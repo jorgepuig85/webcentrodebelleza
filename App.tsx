@@ -7,6 +7,7 @@ import FloatingWhatsApp from './components/FloatingWhatsApp';
 import BeautyRoulette from './components/BeautyRoulette';
 import { ThemeProvider } from './context/ThemeContext';
 import FloatingActionCluster from './components/FloatingActionCluster';
+import BottomNavBar from './components/BottomNavBar';
 
 // Lazy load page components for code splitting
 const Home = lazy(() => import('./pages/Home'));
@@ -117,7 +118,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <div className="bg-theme-background text-theme-text">
+      <div className="bg-theme-background text-theme-text pb-20 md:pb-0">
         <Header />
         <main>
             <Routes>
@@ -134,6 +135,7 @@ const App: React.FC = () => {
             </Routes>
         </main>
         <Footer />
+        <BottomNavBar />
         <BeautyRoulette isOpen={showRoulette} onClose={handleRouletteClose} />
       </div>
       <FloatingActionCluster>

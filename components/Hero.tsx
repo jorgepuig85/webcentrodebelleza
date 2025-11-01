@@ -16,7 +16,7 @@ const Hero: React.FC = () => {
     const baseUrl = activeTheme.images.hero.split('?')[0];
 
   return (
-    <section id="inicio" className="relative h-screen flex items-center justify-center text-center text-white overflow-hidden">
+    <section id="inicio" className="relative min-h-[560px] h-[85vh] md:h-screen flex items-center justify-center text-center text-white overflow-hidden">
       <img
         src={`${baseUrl}?format=webp&quality=80&width=1920`}
         srcSet={`
@@ -49,13 +49,13 @@ const Hero: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0, 0, 0.58, 1] }}
         >
-          <AnimatedTitle as="h1" className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">
+          <AnimatedTitle as="h1" className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">
             Descubrí tu mejor piel.
           </AnimatedTitle>
         </MotionDiv>
 
         <MotionP
-          className="text-lg md:text-xl lg:text-2xl font-light text-white/90 mb-6"
+          className="text-base md:text-xl lg:text-2xl font-light text-white/90 mb-4 md:mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0, 0, 0.58, 1] }}
@@ -65,7 +65,7 @@ const Hero: React.FC = () => {
         </MotionP>
         
         <MotionP 
-          className="text-lg md:text-xl max-w-2xl mx-auto mb-8 font-light"
+          className="text-base md:text-xl max-w-2xl mx-auto mb-6 md:mb-8 font-light"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0, 0, 0.58, 1] }}
@@ -74,7 +74,7 @@ const Hero: React.FC = () => {
         </MotionP>
         <MotionLink 
           to="/servicios"
-          className="bg-white text-theme-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-theme-primary-soft transition-all duration-300 group flex items-center gap-2 mx-auto seasonal-glow-hover animate-heartbeat"
+          className="bg-white text-theme-primary px-6 py-3 text-base md:px-8 md:py-4 md:text-lg rounded-full font-bold hover:bg-theme-primary-soft transition-all duration-300 group flex items-center gap-2 mx-auto seasonal-glow-hover animate-heartbeat"
           key={activeTheme.ctaText} // Add key to re-animate button text on change
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

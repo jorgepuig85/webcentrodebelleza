@@ -306,9 +306,9 @@ const Contact: React.FC = () => {
                 key={i}
                 onClick={() => handleDateSelect(day)}
                 disabled={isPast}
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm transition-colors duration-200
-                    ${isPast ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-theme-primary-soft'}
-                    ${isSelected ? 'bg-theme-primary text-theme-text-inverted font-bold' : 'text-theme-text-strong'}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm transition-all duration-200 ease-out
+                    ${isPast ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-theme-primary-soft hover:scale-105'}
+                    ${isSelected ? 'bg-theme-primary text-theme-text-inverted font-bold scale-110 ring-2 ring-theme-primary/30' : 'text-theme-text-strong'}
                 `}
             >
                 {day}
