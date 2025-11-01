@@ -183,15 +183,19 @@ const PromotionsPreview = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Autoplay timer effect
   useEffect(() => {
-    if (isDesktop || isHovering || loading || promotions.length <= 1) return;
+    if (isDesktop || isHovering || loading || promotions.length <= 1) {
+        return;
+    }
 
     const interval = setInterval(() => {
-      paginate(1);
+      // Update state directly to avoid unstable dependencies
+      setPage(prev => [prev[0] + 1, 1]);
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [isDesktop, isHovering, loading, promotions.length, paginate]);
+  }, [isDesktop, isHovering, loading, promotions.length]);
 
   return (
     <section id="promociones" className="py-20 animated-gradient-primary-soft">
