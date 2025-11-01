@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, wrap } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
@@ -112,9 +112,9 @@ const ServicesPreview = () => {
 
   const serviceIndex = wrap(0, services.length, page);
 
-  const paginate = (newDirection: number) => {
+  const paginate = useCallback((newDirection: number) => {
     setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
-  };
+  }, []);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -173,7 +173,7 @@ const ServicesPreview = () => {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [isDesktop, isHovering, loading, services.length]);
+  }, [isDesktop, isHovering, loading, services.length, paginate]);
 
   return (
     <section id="servicios" className="py-20 animated-gradient-background-soft">

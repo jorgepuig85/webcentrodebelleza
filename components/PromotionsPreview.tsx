@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, wrap } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
@@ -128,9 +128,9 @@ const PromotionsPreview = () => {
 
   const promoIndex = wrap(0, promotions.length, page);
 
-  const paginate = (newDirection: number) => {
+  const paginate = useCallback((newDirection: number) => {
     setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
-  };
+  }, []);
 
   useEffect(() => {
     const fetchPromotions = async () => {
@@ -191,7 +191,7 @@ const PromotionsPreview = () => {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [isDesktop, isHovering, loading, promotions.length]);
+  }, [isDesktop, isHovering, loading, promotions.length, paginate]);
 
   return (
     <section id="promociones" className="py-20 animated-gradient-primary-soft">
