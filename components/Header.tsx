@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 
@@ -9,6 +9,7 @@ const MotionDiv = motion.div;
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,9 +19,32 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Disable body scroll when menu is open
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    // Cleanup function to restore scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
+  const handleMobileLinkClick = (path: string) => {
+    // 1. Immediately start the closing animation.
+    setIsMenuOpen(false);
+    // 2. Wait for the animation to finish before navigating.
+    // This duration (300ms) should match or slightly exceed the exit animation duration.
+    setTimeout(() => {
+      navigate(path);
+    }, 300);
+  };
+
   const menuVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } },
+    hidden: { opacity: 0, y: -20, transition: { duration: 0.3 } },
+    visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1, duration: 0.3 } },
   };
 
   const menuItemVariants = {
@@ -70,35 +94,47 @@ const Header: React.FC = () => {
         </div>
       </div>
       
-      {/* Mobile Menu */}
+      {/* Mobile Menu with Overlay */}
       <AnimatePresence>
         {isMenuOpen && (
-          <MotionDiv 
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={menuVariants}
-            className="md:hidden bg-theme-background shadow-lg absolute top-full left-0 right-0 px-6 pb-6"
-          >
-            <nav className="flex flex-col items-center gap-6 pt-4">
-              {NAV_LINKS.map((link) => (
-                <MotionDiv key={link.path} variants={menuItemVariants}>
-                  <Link
-                    to={link.path}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium text-lg"
-                  >
-                    {link.title}
-                  </Link>
+          <>
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              onClick={() => setIsMenuOpen(false)}
+            />
+
+            {/* Menu Panel */}
+            <MotionDiv 
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={menuVariants}
+              className="md:hidden bg-theme-background shadow-lg absolute top-full left-0 right-0 px-6 pb-6 z-50"
+            >
+              <nav className="flex flex-col items-center gap-6 pt-4">
+                {NAV_LINKS.map((link) => (
+                  <MotionDiv key={link.path} variants={menuItemVariants}>
+                    <button
+                      onClick={() => handleMobileLinkClick(link.path)}
+                      className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium text-lg"
+                    >
+                      {link.title}
+                    </button>
+                  </MotionDiv>
+                ))}
+                <MotionDiv variants={menuItemVariants} className="w-full mt-4">
+                  <button onClick={() => handleMobileLinkClick('/contacto')} className="bg-theme-primary text-theme-text-inverted w-full block text-center px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat">
+                    Reservar Turno
+                  </button>
                 </MotionDiv>
-              ))}
-              <MotionDiv variants={menuItemVariants} className="w-full mt-4">
-                <Link to="/contacto" onClick={() => setIsMenuOpen(false)} className="bg-theme-primary text-theme-text-inverted w-full block text-center px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat">
-                  Reservar Turno
-                </Link>
-              </MotionDiv>
-            </nav>
-          </MotionDiv>
+              </nav>
+            </MotionDiv>
+          </>
         )}
       </AnimatePresence>
     </header>
