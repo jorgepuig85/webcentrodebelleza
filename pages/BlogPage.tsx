@@ -26,6 +26,9 @@ const BlogPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
+        // Simulate a slightly longer load time to showcase the loader
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         const { data, error: fetchError } = await supabase
           .from('posts')
           .select('*')
@@ -82,28 +85,25 @@ const BlogPage: React.FC = () => {
     }
 
     return (
-      <motion.div
-        layout
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-      >
-        <AnimatePresence>
-          {filteredPosts.map(post => (
-            <motion.div
-              key={post.id}
-              layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <PostCard post={post} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
+        <motion.div
+            layout
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+            <AnimatePresence initial={false} mode="sync">
+              {filteredPosts.map(post => (
+                <motion.div
+                  key={post.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                >
+                  <PostCard post={post} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+        </motion.div>
     );
   };
 
@@ -115,22 +115,25 @@ const BlogPage: React.FC = () => {
         keywords="blog depilación láser, duele la depilación definitiva, consejos depilación, cuidados de la piel, depilación soprano ice, preguntas frecuentes depilación"
         ogImage="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/blog_og.jpg"
       />
-      <section className="pt-32 pb-20 animated-gradient-background-soft">
+      <section className="pt-32 pb-20 bg-theme-background-soft">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
+          <header className="text-center mb-12">
             <AnimatedTitle as="h1" className="text-4xl md:text-5xl font-bold text-theme-text-strong">
               Guía de Belleza Definitiva
             </AnimatedTitle>
             <p className="text-lg text-theme-text mt-4 max-w-2xl mx-auto">
               Tu espacio para resolver dudas, aprender sobre cuidados y conocer a fondo la depilación láser.
             </p>
-            <div className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></div>
+          </header>
+          
+          <div className="sticky top-[68px] z-30 py-4 bg-theme-background-soft/80 backdrop-blur-sm -mx-6 px-6 mb-8">
+             <CategoryFilter
+              categories={categories}
+              activeCategory={activeCategory}
+              onSelectCategory={setActiveCategory}
+            />
           </div>
-          <CategoryFilter
-            categories={categories}
-            activeCategory={activeCategory}
-            onSelectCategory={setActiveCategory}
-          />
+
           {renderContent()}
         </div>
       </section>

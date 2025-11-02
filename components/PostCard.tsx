@@ -1,26 +1,29 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Calendar, Tag } from 'lucide-react';
+import { Calendar, Tag, ArrowRight } from 'lucide-react';
 import type { Post } from '../types';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  // FIX: Add `as const` to the ease property to satisfy TypeScript's type requirements for Framer Motion Variants.
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } },
 };
 
 export const PostCardSkeleton: React.FC = () => (
-  <div className="bg-theme-background rounded-lg shadow-md overflow-hidden animate-pulse">
+  <div className="bg-white/50 backdrop-blur-sm border border-theme-border/20 rounded-xl shadow-lg overflow-hidden animate-pulse h-full">
     <div className="w-full h-48 bg-gray-200"></div>
     <div className="p-6">
-      <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+      <div className="flex gap-4 mb-4">
+        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+      </div>
       <div className="h-6 bg-gray-200 rounded w-full mb-3"></div>
       <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-      <div className="space-y-2">
+      <div className="space-y-2 mb-4">
         <div className="h-4 bg-gray-200 rounded w-full"></div>
         <div className="h-4 bg-gray-200 rounded w-5/6"></div>
       </div>
+      <div className="h-5 bg-gray-200 rounded w-28 mt-auto"></div>
     </div>
   </div>
 );
@@ -38,13 +41,13 @@ const PostCard: React.FC<{ post: Post }> = ({ post }) => {
   return (
     <motion.div
       variants={cardVariants}
-      className="bg-theme-background rounded-lg shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex flex-col"
+      className="bg-white/50 backdrop-blur-sm border border-theme-border/20 rounded-xl shadow-lg overflow-hidden group transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
     >
-      <Link to={`/blog/${post.slug}`} className="flex-shrink-0">
+      <Link to={`/blog/${post.slug}`} className="flex-shrink-0 overflow-hidden">
         <img
           src={imageUrl}
           alt={`Imagen de portada para ${post.title}`}
-          className="w-full h-48 object-cover"
+          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           loading="lazy"
           decoding="async"
           width="600"
@@ -54,7 +57,7 @@ const PostCard: React.FC<{ post: Post }> = ({ post }) => {
         />
       </Link>
       <div className="p-6 flex flex-col flex-grow">
-        <div className="flex items-center gap-4 text-xs text-theme-text-light mb-2">
+        <div className="flex items-center gap-4 text-xs text-theme-text-light mb-3">
           {post.category && (
             <span className="flex items-center gap-1.5 bg-theme-primary-soft text-theme-primary font-medium px-2 py-1 rounded">
               <Tag size={14} /> {post.category}
@@ -67,12 +70,13 @@ const PostCard: React.FC<{ post: Post }> = ({ post }) => {
         <h3 className="text-xl font-bold text-theme-text-strong mb-2 group-hover:text-theme-primary transition-colors duration-300">
           <Link to={`/blog/${post.slug}`}>{post.title}</Link>
         </h3>
-        <p className="text-theme-text flex-grow mb-4">{post.excerpt}</p>
+        <p className="text-theme-text text-sm flex-grow mb-4">{post.excerpt}</p>
         <Link
           to={`/blog/${post.slug}`}
-          className="font-semibold text-theme-primary self-start mt-auto hover:underline"
+          className="font-semibold text-theme-primary self-start mt-auto inline-flex items-center gap-2 group"
         >
           Leer más
+          <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
       </div>
     </motion.div>
