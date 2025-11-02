@@ -118,7 +118,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <div className="bg-theme-background text-theme-text pb-20 md:pb-0">
+      <div className="bg-theme-background text-theme-text pb-20 md:pb-0 overflow-x-hidden">
         <Header />
         <main>
             <Routes>

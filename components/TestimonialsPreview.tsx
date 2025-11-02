@@ -3,6 +3,7 @@
 
 
 
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -87,7 +88,7 @@ const TestimonialsPreview: React.FC = () => {
         </MotionDiv>
         
         <MotionDiv
-          className="relative max-w-3xl mx-auto h-80 md:h-64 flex items-center justify-center mb-12"
+          className="relative max-w-3xl mx-auto min-h-[20rem] md:min-h-[16rem] flex items-center justify-center mb-12"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
@@ -129,10 +130,10 @@ const TestimonialsPreview: React.FC = () => {
             </MotionDiv>
           </AnimatePresence>
           
-          <button onClick={handlePrev} aria-label="Testimonio anterior" className="absolute left-0 -translate-x-12 top-1/2 -translate-y-1/2 bg-theme-background p-3 rounded-full shadow-md hover:bg-theme-primary-soft transition-colors">
+          <button onClick={handlePrev} aria-label="Testimonio anterior" className="absolute left-0 -translate-x-4 sm:-translate-x-12 top-1/2 -translate-y-1/2 bg-theme-background p-3 rounded-full shadow-md hover:bg-theme-primary-soft transition-colors">
             <ChevronLeft className="text-theme-primary" />
           </button>
-          <button onClick={handleNext} aria-label="Siguiente testimonio" className="absolute right-0 translate-x-12 top-1/2 -translate-y-1/2 bg-theme-background p-3 rounded-full shadow-md hover:bg-theme-primary-soft transition-colors">
+          <button onClick={handleNext} aria-label="Siguiente testimonio" className="absolute right-0 translate-x-4 sm:translate-x-12 top-1/2 -translate-y-1/2 bg-theme-background p-3 rounded-full shadow-md hover:bg-theme-primary-soft transition-colors">
             <ChevronRight className="text-theme-primary" />
           </button>
         </MotionDiv>

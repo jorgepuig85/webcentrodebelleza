@@ -16,7 +16,7 @@ const Hero: React.FC = () => {
     const baseUrl = activeTheme.images.hero.split('?')[0];
 
   return (
-    <section id="inicio" className="relative min-h-[560px] h-[85vh] md:h-screen flex items-center justify-center text-center text-white overflow-hidden">
+    <section id="inicio" className="relative min-h-[640px] md:min-h-screen flex items-center justify-center text-center text-white overflow-hidden">
       <img
         src={`${baseUrl}?format=webp&quality=80&width=1920`}
         srcSet={`

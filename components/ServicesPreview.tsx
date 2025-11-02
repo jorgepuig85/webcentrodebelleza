@@ -196,7 +196,7 @@ const ServicesPreview = () => {
           </MotionDiv>
         ) : (
           <div 
-            className="relative h-72 w-full max-w-lg mx-auto mb-12"
+            className="relative min-h-[18rem] w-full max-w-lg mx-auto mb-12 flex items-center"
           >
             {loading ? <ServiceCardSkeleton /> : (
               <AnimatePresence initial={false} custom={direction}>

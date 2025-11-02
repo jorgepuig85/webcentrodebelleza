@@ -276,7 +276,7 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
 
     return (
         <>
-            <div className="relative w-72 h-72 md:w-80 md:h-80 mx-auto mb-6">
+            <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 mx-auto mb-6">
                 <div 
                     className="absolute top-1/2 -right-1 w-8 h-8 -translate-y-1/2 z-10 text-pink-500"
                     style={{ filter: 'drop-shadow(2px 2px 2px rgba(0,0,0,0.2))' }}

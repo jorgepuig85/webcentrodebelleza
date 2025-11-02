@@ -306,7 +306,7 @@ const Contact: React.FC = () => {
                 key={i}
                 onClick={() => handleDateSelect(day)}
                 disabled={isPast}
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm transition-all duration-200 ease-out
+                className={`w-full aspect-square rounded-full flex items-center justify-center text-sm transition-all duration-200 ease-out
                     ${isPast ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-theme-primary-soft hover:scale-105'}
                     ${isSelected ? 'bg-theme-primary text-theme-text-inverted font-bold scale-110 ring-2 ring-theme-primary/30' : 'text-theme-text-strong'}
                 `}
@@ -326,7 +326,7 @@ const Contact: React.FC = () => {
         <div className="grid grid-cols-7 gap-y-2 text-center text-xs text-theme-text mb-2">
             <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span><span>Do</span>
         </div>
-        <div className="grid grid-cols-7 gap-y-2 justify-items-center">
+        <div className="grid grid-cols-7 gap-1 sm:gap-y-2 justify-items-center">
             {calendarDays}
         </div>
         {errors.date && <span className="text-red-500 text-sm mt-2 block">{errors.date.message}</span>}

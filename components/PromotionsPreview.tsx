@@ -214,7 +214,7 @@ const PromotionsPreview = () => {
           </MotionDiv>
         ) : (
           <div 
-            className="relative h-[550px] w-full max-w-sm mx-auto mb-12"
+            className="relative min-h-[34rem] w-full max-w-sm mx-auto mb-12 flex items-center"
           >
             {loading ? <PromotionCardSkeleton /> : (
               <AnimatePresence initial={false} custom={direction}>
