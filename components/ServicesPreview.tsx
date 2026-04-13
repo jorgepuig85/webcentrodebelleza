@@ -80,12 +80,6 @@ const ServicePreviewCard: React.FC<{ service: Service }> = ({ service }) => {
             decoding="async"
             width="400"
             height="256"
-            srcSet={`
-              ${baseUrl}?format=webp&quality=75&width=400 400w,
-              ${baseUrl}?format=webp&quality=75&width=600 600w,
-              ${baseUrl}?format=webp&quality=75&width=800 800w
-            `}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent transition-opacity duration-300 group-hover:from-black/50"></div>
           <div className="absolute bottom-4 left-4 text-white">
@@ -138,7 +132,7 @@ const ServicesPreview = () => {
               id: item.id,
               name: item.name,
               image: item.image_url
-                ? `${item.image_url}?format=webp&quality=75&width=400`
+                ? item.image_url.replace(/([^:])\/\//g, '$1/')
                 : `https://picsum.photos/seed/${encodeURIComponent(item.name)}/400/300`,
             }));
             

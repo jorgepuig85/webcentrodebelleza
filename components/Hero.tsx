@@ -18,14 +18,7 @@ const Hero: React.FC = () => {
   return (
     <section id="inicio" className="relative min-h-[640px] md:min-h-screen flex items-center justify-center text-center text-white overflow-hidden">
       <img
-        src={`${baseUrl}?format=webp&quality=80&width=1920`}
-        srcSet={`
-          ${baseUrl}?format=webp&quality=75&width=480 480w,
-          ${baseUrl}?format=webp&quality=75&width=800 800w,
-          ${baseUrl}?format=webp&quality=80&width=1280 1280w,
-          ${baseUrl}?format=webp&quality=80&width=1920 1920w
-        `}
-        sizes="100vw"
+        src={baseUrl}
         alt="Fondo del centro de belleza con una mujer sonriendo"
         className="absolute inset-0 w-full h-full object-cover"
         loading="eager"

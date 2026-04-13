@@ -82,8 +82,7 @@ const PostPage: React.FC = () => {
     year: 'numeric',
   });
   const fallbackImage = `https://picsum.photos/seed/${post.slug}/1200/600`;
-  const imageUrl = post.cover_image_url ? `${post.cover_image_url}?format=webp&quality=80&width=1200` : fallbackImage;
-  const baseUrl = imageUrl.split('?')[0];
+  const imageUrl = post.cover_image_url ? post.cover_image_url.replace(/([^:])\/\//g, '$1/') : fallbackImage;
 
   return (
     <>
@@ -121,7 +120,6 @@ const PostPage: React.FC = () => {
             src={imageUrl}
             alt={`Imagen de portada para ${post.title}`}
             className="w-full h-64 md:h-96 object-cover mb-12"
-            srcSet={`${baseUrl}?format=webp&quality=80&width=600 600w, ${baseUrl}?format=webp&quality=80&width=1200 1200w, ${baseUrl}?format=webp&quality=80&width=1920 1920w`}
             sizes="100vw"
             fetchPriority="high"
           />

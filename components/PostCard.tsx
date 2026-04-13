@@ -35,8 +35,7 @@ const PostCard: React.FC<{ post: Post }> = ({ post }) => {
     year: 'numeric',
   });
   const fallbackImage = `https://picsum.photos/seed/${post.slug}/600/400`;
-  const imageUrl = post.cover_image_url ? `${post.cover_image_url}?format=webp&quality=75&width=600` : fallbackImage;
-  const baseUrl = imageUrl.split('?')[0];
+  const imageUrl = post.cover_image_url ? post.cover_image_url.replace(/([^:])\/\//g, '$1/') : fallbackImage;
 
   return (
     <motion.div
@@ -52,7 +51,6 @@ const PostCard: React.FC<{ post: Post }> = ({ post }) => {
           decoding="async"
           width="600"
           height="320"
-          srcSet={`${baseUrl}?format=webp&quality=75&width=400 400w, ${baseUrl}?format=webp&quality=75&width=800 800w`}
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
       </Link>

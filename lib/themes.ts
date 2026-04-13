@@ -47,7 +47,7 @@ export const DEFAULT_THEME: Theme = {
     '--color-glow': 'rgba(244, 114, 182, 0.4)', // pink-400 with alpha
   },
   images: {
-    hero: `${SUPABASE_URL}fondo_inicio_primavera.png?format=webp&quality=80`,
+    hero: `${SUPABASE_URL}fondo_inicio_primavera.png`,
   },
   seasonalSlogan: 'Renová tu piel y florecé con la frescura de la primavera.',
   ctaText: 'Renová tu piel',
@@ -68,7 +68,7 @@ export const THEMES: { [key: string]: Theme } = {
       '--color-glow': 'rgba(251, 113, 133, 0.4)', // rose-400 with alpha
     },
     images: {
-      hero: `${SUPABASE_URL}fondo_inicio_verano.png?format=webp&quality=80`,
+      hero: `${SUPABASE_URL}fondo_inicio_verano.png`,
     },
     seasonalSlogan: 'Mostrá tu piel libre y luminosa, lista para brillar este verano.',
     ctaText: 'Mostrá tu mejor piel',
@@ -88,7 +88,7 @@ export const THEMES: { [key: string]: Theme } = {
       '--color-glow': 'rgba(249, 115, 22, 0.4)', // orange-500 with alpha
     },
     images: {
-      hero: `${SUPABASE_URL}fondo_inicio_otono.png?format=webp&quality=80`,
+      hero: `${SUPABASE_URL}fondo_inicio_otono.png`,
     },
     seasonalSlogan: 'Prepará tu piel con la calidez y el cuidado que merece esta temporada.',
     ctaText: 'Prepará tu piel',
@@ -108,7 +108,7 @@ export const THEMES: { [key: string]: Theme } = {
       '--color-glow': 'rgba(167, 139, 250, 0.4)', // violet-400 with alpha
     },
     images: {
-      hero: `${SUPABASE_URL}fondo_inicio_invierno.png?format=webp&quality=80`,
+      hero: `${SUPABASE_URL}fondo_inicio_invierno.png`,
     },
     seasonalSlogan: 'Descubrí el placer de una piel suave y radiante incluso en los días más fríos.',
     ctaText: 'Cuidá tu piel hoy',

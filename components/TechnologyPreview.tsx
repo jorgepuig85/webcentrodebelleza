@@ -60,19 +60,13 @@ const TechnologyPreview: React.FC = () => {
           <MotionDiv variants={itemVariants}>
             <BackgroundGradient containerClassName="rounded-2xl">
               <img 
-                src={`${baseUrl}?format=webp&quality=75&width=600`}
+                src={baseUrl}
                 alt="Equipo de depilación láser de última generación"
                 className="rounded-2xl w-full h-auto aspect-[4/3] object-cover bg-gray-200"
                 loading="lazy"
                 decoding="async"
                 width="600"
                 height="450"
-                srcSet={`
-                  ${baseUrl}?format=webp&quality=75&width=400 400w,
-                  ${baseUrl}?format=webp&quality=75&width=800 800w,
-                  ${baseUrl}?format=webp&quality=75&width=1200 1200w
-                `}
-                sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </BackgroundGradient>
           </MotionDiv>

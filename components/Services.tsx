@@ -88,12 +88,6 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
           decoding="async"
           width="400"
           height="224"
-          srcSet={`
-            ${baseUrl}?format=webp&quality=75&width=400 400w,
-            ${baseUrl}?format=webp&quality=75&width=600 600w,
-            ${baseUrl}?format=webp&quality=75&width=800 800w
-          `}
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         <div className="absolute bottom-4 left-4 text-white">
@@ -135,7 +129,7 @@ const Services = () => {
         if (data) {
            const formattedServices: Service[] = data.map((item: FetchedItem) => {
             const imageUrl = item.image_url
-              ? `${item.image_url}?format=webp&quality=75&width=400`
+              ? item.image_url.replace(/([^:])\/\//g, '$1/')
               : `https://picsum.photos/seed/${encodeURIComponent(item.name)}/400/300`;
             
             return {
