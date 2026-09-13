@@ -31,52 +31,31 @@ const Hero: React.FC = () => {
       {/* Seasonal animations overlay */}
       <SeasonalHeroEffects />
 
-      <MotionDiv 
-        className="relative z-10 px-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0, 0, 0.58, 1] }}
-      >
-        <MotionDiv
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0, 0, 0.58, 1] }}
-        >
+      <div className="relative z-10 px-4">
+        <div>
           <AnimatedTitle as="h1" className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">
             Descubrí tu mejor piel.
           </AnimatedTitle>
-        </MotionDiv>
+        </div>
 
-        <MotionP
-          className="text-base md:text-xl lg:text-2xl font-light text-white/90 mb-4 md:mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0, 0, 0.58, 1] }}
-          key={activeTheme.seasonalSlogan} // Re-animate when season changes
-        >
+        <p className="text-base md:text-xl lg:text-2xl font-light text-white/90 mb-4 md:mb-6">
           {activeTheme.seasonalSlogan}
-        </MotionP>
+        </p>
         
-        <MotionP 
-          className="text-base md:text-xl max-w-2xl mx-auto mb-6 md:mb-8 font-light"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: [0, 0, 0.58, 1] }}
-        >
+        <p className="text-base md:text-xl max-w-2xl mx-auto mb-6 md:mb-8 font-light">
           Depilación láser definitiva con tecnología de vanguardia para resultados visibles y duraderos. Sentite libre, sentite renovada.
-        </MotionP>
+        </p>
         <MotionLink 
           to="/precios"
           className="bg-white text-theme-primary px-6 py-3 text-base md:px-8 md:py-4 md:text-lg rounded-full font-bold hover:bg-theme-primary-soft transition-all duration-300 group flex items-center gap-2 mx-auto seasonal-glow-hover animate-heartbeat"
-          key={activeTheme.ctaText} // Add key to re-animate button text on change
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.6, ease: [0, 0, 0.58, 1] }}
+          key={activeTheme.ctaText}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           {activeTheme.ctaText}
           <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
         </MotionLink>
-      </MotionDiv>
+      </div>
     </section>
   );
 };
