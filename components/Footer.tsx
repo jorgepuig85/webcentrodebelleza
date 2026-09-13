@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
   const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
 
   useEffect(() => {
-      const fetchViews = async () => {
+      const timer = setTimeout(async () => {
           try {
               const response = await fetch('/api/get-views');
               if (response.ok) {
@@ -27,9 +27,9 @@ const Footer: React.FC = () => {
               console.error("Failed to fetch views:", error);
               setViews(0);
           }
-      };
+      }, 3500);
 
-      fetchViews();
+      return () => clearTimeout(timer);
   }, []);
 
   return (

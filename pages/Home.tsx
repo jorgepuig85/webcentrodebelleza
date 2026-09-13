@@ -2,6 +2,7 @@
 import React, { Suspense, lazy } from 'react';
 import Hero from '../components/Hero';
 import SEO from '../components/SEO';
+import LazySection from '../components/ui/LazySection';
 
 const ServicesPreview = lazy(() => import('../components/ServicesPreview'));
 const PromotionsPreview = lazy(() => import('../components/PromotionsPreview'));
@@ -19,13 +20,31 @@ const Home: React.FC = () => {
         ogImage="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio_invierno.png"
       />
       <Hero />
-      <Suspense fallback={<div className="min-h-[300px]" />}>
-        <ServicesPreview />
-        <PromotionsPreview />
-        <TechnologyPreview />
-        <TestimonialsPreview />
-        <LocationsPreview />
-      </Suspense>
+      <LazySection fallback={<div className="min-h-[400px]" />}>
+        <Suspense fallback={<div className="min-h-[400px]" />}>
+          <ServicesPreview />
+        </Suspense>
+      </LazySection>
+      <LazySection fallback={<div className="min-h-[400px]" />}>
+        <Suspense fallback={<div className="min-h-[400px]" />}>
+          <PromotionsPreview />
+        </Suspense>
+      </LazySection>
+      <LazySection fallback={<div className="min-h-[400px]" />}>
+        <Suspense fallback={<div className="min-h-[400px]" />}>
+          <TechnologyPreview />
+        </Suspense>
+      </LazySection>
+      <LazySection fallback={<div className="min-h-[400px]" />}>
+        <Suspense fallback={<div className="min-h-[400px]" />}>
+          <TestimonialsPreview />
+        </Suspense>
+      </LazySection>
+      <LazySection fallback={<div className="min-h-[400px]" />}>
+        <Suspense fallback={<div className="min-h-[400px]" />}>
+          <LocationsPreview />
+        </Suspense>
+      </LazySection>
     </>
   );
 };

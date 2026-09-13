@@ -51,31 +51,26 @@ const App: React.FC = () => {
     // Check if the key exists in sessionStorage.
     const hasBeenTracked = sessionStorage.getItem(visitTrackedKey);
 
-    // If the visit has not been tracked in this session, proceed.
+    // If the visit has not been tracked in this session, defer the call to not block initial render.
+    let visitTimer: ReturnType<typeof setTimeout> | null = null;
     if (!hasBeenTracked) {
-      const trackVisit = async () => {
+      visitTimer = setTimeout(async () => {
         try {
           // Call our API to log the page visit. This is a "fire-and-forget" call.
           await fetch('/api/track-visit', { method: 'POST' });
-          
-          // After the call, set the key in sessionStorage to prevent
-          // tracking on subsequent reloads within the same session.
           sessionStorage.setItem(visitTrackedKey, 'true');
-
         } catch (error) {
-          // Log error for debugging, but don't bother the user.
-          // We don't set the sessionStorage key here, so it might try again on reload.
           console.error('Could not track visit:', error);
         }
-      };
-
-      trackVisit();
+      }, 3500);
     }
 
     // --- Gamification Logic ---
     let rouletteTimer: ReturnType<typeof setTimeout> | null = null;
+    let configTimer: ReturnType<typeof setTimeout> | null = null;
     
-    const checkGamificationStatus = async () => {
+    // Defer checking gamification config to avoid network and CPU contention during initial paint
+    configTimer = setTimeout(async () => {
         try {
             const rouletteShownKey = 'rouletteShown';
             const hasRouletteBeenShown = localStorage.getItem(rouletteShownKey);
@@ -98,17 +93,17 @@ const App: React.FC = () => {
             if (isRouletteEnabled && !localStorage.getItem(rouletteShownKey)) {
                 rouletteTimer = setTimeout(() => {
                     setShowRoulette(true);
-                }, 7000);
+                }, 3500);
             }
         } catch (err) {
             console.error('Unexpected error checking gamification status:', err);
         }
-    };
-    
-    checkGamificationStatus();
+    }, 3500);
 
     // Cleanup timers on unmount
     return () => {
+        if (visitTimer) clearTimeout(visitTimer);
+        if (configTimer) clearTimeout(configTimer);
         if (rouletteTimer) clearTimeout(rouletteTimer);
     };
 

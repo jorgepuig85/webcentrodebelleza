@@ -1,10 +1,11 @@
-import React, { useContext } from 'react';
+import React, { useContext, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ThemeContext } from '../context/ThemeContext';
-import { SeasonalHeroEffects } from './SeasonalHeroEffects';
 import AnimatedTitle from './ui/AnimatedTitle';
+
+const SeasonalHeroEffects = lazy(() => import('./SeasonalHeroEffects').then(m => ({ default: m.SeasonalHeroEffects })));
 
 // FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
 const MotionDiv = motion.div;
@@ -29,7 +30,9 @@ const Hero: React.FC = () => {
       <div className="absolute inset-0 bg-black/40"></div>
       
       {/* Seasonal animations overlay */}
-      <SeasonalHeroEffects />
+      <Suspense fallback={null}>
+        <SeasonalHeroEffects />
+      </Suspense>
 
       <div className="relative z-10 px-4">
         <div>
