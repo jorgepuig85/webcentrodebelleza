@@ -34,25 +34,8 @@
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"></noscript>
     
-    <!-- Preload Critical LCP Hero Image (Invierno actual: 21 jun - 20 sep) -->
-    <script>
-      (function() {
-        var now = new Date();
-        var m = now.getMonth() + 1;
-        var d = now.getDate();
-        var season = 'spring';
-        if ((m === 12 && d >= 21) || m === 1 || m === 2 || (m === 3 && d < 21)) season = 'summer';
-        else if ((m === 3 && d >= 21) || m === 4 || m === 5 || (m === 6 && d < 21)) season = 'autumn';
-        else if ((m === 6 && d >= 21) || m === 7 || m === 8 || (m === 9 && d < 21)) season = 'winter';
-        
-        var link = document.createElement('link');
-        link.rel = 'preload';
-        link.as = 'image';
-        link.href = 'https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio_' + (season === 'autumn' ? 'otono' : season) + '.png';
-        link.setAttribute('fetchpriority', 'high');
-        document.head.appendChild(link);
-      })();
-    </script>
+    <!-- Preload Critical LCP Hero Image (Invierno actual en Hemisferio Sur) -->
+    <link rel="preload" as="image" href="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio_invierno.png" fetchpriority="high">
 
     <!-- Schema.org JSON-LD para Google y Motores Generativos (GEO / Agentic Browsing) -->
     <script type="application/ld+json">

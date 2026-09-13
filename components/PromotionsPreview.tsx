@@ -248,14 +248,16 @@ const PromotionsPreview = () => {
             )}
 
             {!loading && promotions.length > 1 && (
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1">
                 {promotions.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setPage([i, i > page ? 1 : -1])}
-                    className={`w-2 h-2 rounded-full transition-colors ${i === promoIndex ? 'bg-theme-primary' : 'bg-theme-border'}`}
+                    className="p-3 flex items-center justify-center focus:outline-none"
                     aria-label={`Ir a la promoción ${i + 1}`}
-                  />
+                  >
+                    <span className={`block w-2.5 h-2.5 rounded-full transition-colors ${i === promoIndex ? 'bg-theme-primary scale-125' : 'bg-theme-border'}`} />
+                  </button>
                 ))}
               </div>
             )}

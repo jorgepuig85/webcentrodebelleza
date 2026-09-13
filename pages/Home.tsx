@@ -1,12 +1,13 @@
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import Hero from '../components/Hero';
-import ServicesPreview from '../components/ServicesPreview';
-import PromotionsPreview from '../components/PromotionsPreview';
-import TechnologyPreview from '../components/TechnologyPreview';
-import TestimonialsPreview from '../components/TestimonialsPreview';
-import LocationsPreview from '../components/LocationsPreview';
 import SEO from '../components/SEO';
+
+const ServicesPreview = lazy(() => import('../components/ServicesPreview'));
+const PromotionsPreview = lazy(() => import('../components/PromotionsPreview'));
+const TechnologyPreview = lazy(() => import('../components/TechnologyPreview'));
+const TestimonialsPreview = lazy(() => import('../components/TestimonialsPreview'));
+const LocationsPreview = lazy(() => import('../components/LocationsPreview'));
 
 const Home: React.FC = () => {
   return (
@@ -15,14 +16,16 @@ const Home: React.FC = () => {
         title="Depilación Láser Definitiva en Santa Rosa y Miguel Riglos | Centro de Belleza"
         description="Líderes en depilación láser definitiva Soprano Ice en Santa Rosa y Miguel Riglos. Descubrí el mejor tratamiento para eliminar vello. ¡Consultá precios y reservá tu turno!"
         keywords="depilación láser Santa Rosa, depilación definitiva Santa Rosa, centro de estética Santa Rosa, depilación soprano ice, eliminar vello, La Pampa, Miguel Riglos, mejor lugar para depilación definitiva"
-        ogImage="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio_primavera.png"
+        ogImage="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio_invierno.png"
       />
       <Hero />
-      <ServicesPreview />
-      <PromotionsPreview />
-      <TechnologyPreview />
-      <TestimonialsPreview />
-      <LocationsPreview />
+      <Suspense fallback={<div className="min-h-[300px]" />}>
+        <ServicesPreview />
+        <PromotionsPreview />
+        <TechnologyPreview />
+        <TestimonialsPreview />
+        <LocationsPreview />
+      </Suspense>
     </>
   );
 };

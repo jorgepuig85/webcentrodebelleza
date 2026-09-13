@@ -1,6 +1,5 @@
 import React, { useEffect, useState, lazy } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
@@ -79,6 +78,10 @@ const App: React.FC = () => {
     const checkGamificationStatus = async () => {
         try {
             const rouletteShownKey = 'rouletteShown';
+            const hasRouletteBeenShown = localStorage.getItem(rouletteShownKey);
+            if (hasRouletteBeenShown) return;
+
+            const { supabase } = await import('./lib/supabaseClient');
             const { data, error } = await supabase
                 .from('configuration')
                 .select('value')
@@ -91,9 +94,8 @@ const App: React.FC = () => {
             }
             
             const isRouletteEnabled = data?.value === true;
-            const hasRouletteBeenShown = localStorage.getItem(rouletteShownKey);
 
-            if (isRouletteEnabled && !hasRouletteBeenShown) {
+            if (isRouletteEnabled && !localStorage.getItem(rouletteShownKey)) {
                 rouletteTimer = setTimeout(() => {
                     setShowRoulette(true);
                 }, 7000);

@@ -1,11 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, Eye, QrCode } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 import AnimatedTitle from './ui/AnimatedTitle';
-import QRCodeModal from './QRCodeModal';
-import Legal from './Legal';
+
+const QRCodeModal = lazy(() => import('./QRCodeModal'));
+const Legal = lazy(() => import('./Legal'));
 
 const Footer: React.FC = () => {
   const [views, setViews] = useState<number | null>(null);
@@ -47,7 +48,7 @@ const Footer: React.FC = () => {
                   style={{ filter: 'brightness(0) invert(1)' }}
                 />
               </div>
-              <p className="text-theme-text-light max-w-xs mx-auto md:text-center">Depilación definitiva para sentirte libre y segura.</p>
+              <p className="text-gray-300 max-w-xs mx-auto md:text-center">Depilación definitiva para sentirte libre y segura.</p>
             </div>
             <div>
               <AnimatedTitle as="h4" className="font-bold text-lg mb-4">Navegación</AnimatedTitle>
@@ -71,25 +72,25 @@ const Footer: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-400">
+          <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-300">
             <div className="flex flex-col sm:flex-row justify-center items-center gap-x-6 gap-y-2">
               <a 
                 href="https://app.centrodebelleza.com.ar/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-sm text-gray-400 hover:text-white hover:underline transition-colors"
+                className="text-sm text-gray-300 hover:text-white hover:underline transition-colors"
               >
                 Acceso Profesional
               </a>
               <button
                 onClick={() => setIsLegalModalOpen(true)}
-                className="text-sm text-gray-400 hover:text-white hover:underline transition-colors"
+                className="text-sm text-gray-300 hover:text-white hover:underline transition-colors"
               >
                 Políticas y Términos
               </button>
               <button
                 onClick={() => setIsQrModalOpen(true)}
-                className="flex items-center gap-2 text-sm text-gray-400 hover:text-white hover:underline transition-colors"
+                className="flex items-center gap-2 text-sm text-gray-300 hover:text-white hover:underline transition-colors"
               >
                 <QrCode size={16} />
                 Código QR
@@ -121,8 +122,16 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </footer>
-      <QRCodeModal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} />
-      <Legal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+      {isQrModalOpen && (
+        <Suspense fallback={null}>
+          <QRCodeModal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} />
+        </Suspense>
+      )}
+      {isLegalModalOpen && (
+        <Suspense fallback={null}>
+          <Legal isOpen={isLegalModalOpen} onClose={() => setIsLegalModalOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 };
