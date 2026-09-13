@@ -66,12 +66,12 @@ const Header: React.FC = () => {
               height="44"
             />
           </Link>
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium"
+                className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium whitespace-nowrap text-sm xl:text-base"
               >
                 {link.title}
               </Link>
@@ -80,14 +80,14 @@ const Header: React.FC = () => {
         </div>
         
         {/* Desktop CTA Button */}
-        <div className="hidden md:flex">
+        <div className="hidden lg:flex">
           <Link to="/contacto" className="bg-theme-primary text-theme-text-inverted px-5 py-2 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat whitespace-nowrap">
             Reservar Turno
           </Link>
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-theme-text-strong" aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}>
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
@@ -104,7 +104,7 @@ const Header: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
               onClick={() => setIsMenuOpen(false)}
             />
 
@@ -114,7 +114,7 @@ const Header: React.FC = () => {
               animate="visible"
               exit="hidden"
               variants={menuVariants}
-              className="md:hidden bg-theme-background shadow-lg absolute top-full left-0 right-0 px-6 pb-6 z-50"
+              className="lg:hidden bg-theme-background shadow-lg absolute top-full left-0 right-0 px-6 pb-6 z-50"
             >
               <nav className="flex flex-col items-center gap-6 pt-4">
                 {NAV_LINKS.map((link) => (

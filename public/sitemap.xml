@@ -6,12 +6,9 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://www.centrodebelleza.com.ar/servicios</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.centrodebelleza.com.ar/promociones</loc>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.centrodebelleza.com.ar/precios</loc>
+    <priority>0.95</priority>
+    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://www.centrodebelleza.com.ar/tecnologia</loc>

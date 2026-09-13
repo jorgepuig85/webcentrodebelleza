@@ -246,10 +246,10 @@ const ServicesPreview = () => {
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
         >
             <MotionLink
-                to="/servicios"
+                to="/precios"
                 className="inline-flex items-center gap-2 bg-theme-primary text-theme-text-inverted px-8 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover text-lg"
             >
-                Ver Todos los Servicios
+                Ver Servicios y Precios
                 <ArrowRight />
             </MotionLink>
         </MotionDiv>

@@ -338,7 +338,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     } catch (error) {
         console.error('Error booking appointment:', error);
-        const message = error instanceof Error ? error.message : 'An unknown error occurred';
-        return res.status(500).json({ error: 'No se pudo agendar el turno.', details: message });
+        return res.status(500).json({ error: 'No se pudo agendar el turno en este momento. Por favor, intentá nuevamente más tarde.' });
     }
 }
