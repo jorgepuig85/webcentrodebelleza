@@ -34,6 +34,67 @@
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"></noscript>
     
+    <!-- Preload Critical LCP Hero Image -->
+    <link rel="preload" as="image" href="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio_primavera.png" fetchpriority="high">
+
+    <!-- Schema.org JSON-LD para Google y Motores Generativos (GEO / Agentic Browsing) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BeautySalon",
+          "@id": "https://www.centrodebelleza.com.ar/#organization",
+          "name": "Centro de Belleza - Depilación Láser Definitiva",
+          "url": "https://www.centrodebelleza.com.ar",
+          "logo": "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/Logo.svg",
+          "image": "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio_primavera.png",
+          "telephone": "+5492954391448",
+          "priceRange": "$$",
+          "description": "Centro especializado en depilación láser definitiva con tecnología Soprano Ice. Tratamientos seguros, rápidos y personalizados para mujeres y hombres en La Pampa.",
+          "address": [
+            {
+              "@type": "PostalAddress",
+              "streetAddress": "Santa Rosa",
+              "addressLocality": "Santa Rosa",
+              "addressRegion": "La Pampa",
+              "addressCountry": "AR"
+            },
+            {
+              "@type": "PostalAddress",
+              "streetAddress": "Miguel Riglos",
+              "addressLocality": "Miguel Riglos",
+              "addressRegion": "La Pampa",
+              "addressCountry": "AR"
+            }
+          ],
+          "areaServed": [
+            {
+              "@type": "City",
+              "name": "Santa Rosa"
+            },
+            {
+              "@type": "City",
+              "name": "Miguel Riglos"
+            }
+          ],
+          "sameAs": [
+            "https://www.instagram.com/centrodebelleza"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.centrodebelleza.com.ar/#website",
+          "url": "https://www.centrodebelleza.com.ar",
+          "name": "Centro de Belleza",
+          "publisher": {
+            "@id": "https://www.centrodebelleza.com.ar/#organization"
+          }
+        }
+      ]
+    }
+    </script>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>

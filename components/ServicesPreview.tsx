@@ -70,7 +70,7 @@ const ServicePreviewCard: React.FC<{ service: Service }> = ({ service }) => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.4 }}
     >
-      <Link to="/servicios">
+      <Link to="/precios">
         <div className="relative h-64">
           <img 
             src={service.image} 
