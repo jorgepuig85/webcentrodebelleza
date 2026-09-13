@@ -13,7 +13,6 @@ import BottomNavBar from './components/BottomNavBar';
 const Home = lazy(() => import('./pages/Home'));
 const RentalPage = lazy(() => import('./pages/RentalPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
-const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
 const PreciosPage = lazy(() => import('./pages/PreciosPage'));
 const TechnologyPage = lazy(() => import('./pages/TechnologyPage'));
 const TestimonialsPage = lazy(() => import('./pages/TestimonialsPage'));
@@ -125,7 +124,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/precios" element={<PreciosPage />} />
                 <Route path="/servicios" element={<Navigate to="/precios" replace />} />
-                <Route path="/promociones" element={<PromotionsPage />} />
+                <Route path="/promociones" element={<Navigate to="/precios" replace />} />
                 <Route path="/tecnologia" element={<TechnologyPage />} />
                 <Route path="/testimonios" element={<TestimonialsPage />} />
                 <Route path="/alquiler" element={<RentalPage />} />

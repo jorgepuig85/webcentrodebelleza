@@ -16,14 +16,13 @@ const generateSitemap = (posts: Post[]): string => {
   // Static pages (matching the app's routes)
   const staticPages = [
     { loc: '/', priority: '1.00', lastmod: today },
-    { loc: '/precios', priority: '0.90', lastmod: today },
-    { loc: '/promociones', priority: '0.80', lastmod: today },
+    { loc: '/precios', priority: '0.95', lastmod: today },
     { loc: '/tecnologia', priority: '0.80', lastmod: today },
     { loc: '/alquiler', priority: '0.80', lastmod: today },
     { loc: '/blog', priority: '0.90', lastmod: today },
-    { loc: '/testimonios', priority: '0.80', lastmod: today },
-    { loc: '/ubicaciones', priority: '0.80', lastmod: today },
-    { loc: '/contacto', priority: '0.80', lastmod: today },
+    { loc: '/testimonios', priority: '0.70', lastmod: today },
+    { loc: '/ubicaciones', priority: '0.70', lastmod: today },
+    { loc: '/contacto', priority: '0.85', lastmod: today },
   ];
 
   // XML structure

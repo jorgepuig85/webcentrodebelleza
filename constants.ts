@@ -1,7 +1,6 @@
 export const NAV_LINKS = [
   { path: '/', title: 'Inicio' },
-  { path: '/precios', title: 'Servicios y Precios' },
-  { path: '/promociones', title: 'Promociones' },
+  { path: '/precios', title: 'Precios y Promos' },
   { path: '/tecnologia', title: 'Tecnología' },
   { path: '/alquiler', title: 'Alquiler' },
   { path: '/blog', title: 'Blog' },

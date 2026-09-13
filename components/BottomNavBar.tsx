@@ -1,12 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, ClipboardList, Sparkles, Calendar } from 'lucide-react';
+import { Home, Tag, Cpu, Calendar } from 'lucide-react';
 
 const BottomNavBar: React.FC = () => {
   const navItems = [
     { path: '/', icon: Home, label: 'Inicio' },
-    { path: '/precios', icon: ClipboardList, label: 'Servicios' },
-    { path: '/promociones', icon: Sparkles, label: 'Promos' },
+    { path: '/precios', icon: Tag, label: 'Precios' },
+    { path: '/tecnologia', icon: Cpu, label: 'Equipo' },
     { path: '/contacto', icon: Calendar, label: 'Reservar' },
   ];
 
