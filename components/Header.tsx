@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
-
-const MotionDiv = motion.div;
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,23 +30,10 @@ const Header: React.FC = () => {
   }, [isMenuOpen]);
 
   const handleMobileLinkClick = (path: string) => {
-    // 1. Immediately start the closing animation.
     setIsMenuOpen(false);
-    // 2. Wait for the animation to finish before navigating.
-    // This duration (300ms) should match or slightly exceed the exit animation duration.
     setTimeout(() => {
       navigate(path);
-    }, 300);
-  };
-
-  const menuVariants = {
-    hidden: { opacity: 0, y: -20, transition: { duration: 0.3 } },
-    visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1, duration: 0.3 } },
-  };
-
-  const menuItemVariants = {
-    hidden: { opacity: 0, y: -10 },
-    visible: { opacity: 1, y: 0 },
+    }, 200);
   };
 
   return (
@@ -94,49 +78,39 @@ const Header: React.FC = () => {
         </div>
       </div>
       
-      {/* Mobile Menu with Overlay */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-              onClick={() => setIsMenuOpen(false)}
-            />
+      {/* Mobile Menu with Backdrop Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300 ${
+          isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setIsMenuOpen(false)}
+        aria-hidden={!isMenuOpen}
+      />
 
-            {/* Menu Panel */}
-            <MotionDiv 
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={menuVariants}
-              className="lg:hidden bg-theme-background shadow-lg absolute top-full left-0 right-0 px-6 pb-6 z-50"
-            >
-              <nav className="flex flex-col items-center gap-6 pt-4">
-                {NAV_LINKS.map((link) => (
-                  <MotionDiv key={link.path} variants={menuItemVariants}>
-                    <button
-                      onClick={() => handleMobileLinkClick(link.path)}
-                      className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium text-lg"
-                    >
-                      {link.title}
-                    </button>
-                  </MotionDiv>
-                ))}
-                <MotionDiv variants={menuItemVariants} className="w-full mt-4">
-                  <button onClick={() => handleMobileLinkClick('/contacto')} className="bg-theme-primary text-theme-text-inverted w-full block text-center px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat">
-                    Reservar Turno
-                  </button>
-                </MotionDiv>
-              </nav>
-            </MotionDiv>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Menu Panel */}
+      <div 
+        className={`lg:hidden bg-theme-background shadow-lg absolute top-full left-0 right-0 px-6 pb-6 z-50 transition-all duration-300 transform origin-top ${
+          isMenuOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-4 invisible pointer-events-none'
+        }`}
+      >
+        <nav className="flex flex-col items-center gap-6 pt-4">
+          {NAV_LINKS.map((link) => (
+            <div key={link.path}>
+              <button
+                onClick={() => handleMobileLinkClick(link.path)}
+                className="text-theme-text hover:text-theme-primary transition-colors duration-300 font-medium text-lg"
+              >
+                {link.title}
+              </button>
+            </div>
+          ))}
+          <div className="w-full mt-4">
+            <button onClick={() => handleMobileLinkClick('/contacto')} className="bg-theme-primary text-theme-text-inverted w-full block text-center px-5 py-3 rounded-full font-semibold hover:bg-theme-primary-hover seasonal-glow-hover animate-heartbeat">
+              Reservar Turno
+            </button>
+          </div>
+        </nav>
+      </div>
     </header>
   );
 };

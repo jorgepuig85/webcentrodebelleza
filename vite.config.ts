@@ -20,6 +20,23 @@ export default defineConfig(({ mode }) => {
         }
       },
       build: {
+        modulePreload: {
+          resolveDependencies: (filename, deps, { hostId, hostType }) => {
+            // Do not eagerly preload below-the-fold or non-critical preview chunks and third party heavy libs
+            return deps.filter(dep => 
+              !dep.includes('vendor-supabase') && 
+              !dep.includes('vendor-motion') &&
+              !dep.includes('supabaseClient') &&
+              !dep.includes('BackgroundGradient') &&
+              !dep.includes('ServicesPreview') && 
+              !dep.includes('PromotionsPreview') &&
+              !dep.includes('TechnologyPreview') &&
+              !dep.includes('TestimonialsPreview') &&
+              !dep.includes('LocationsPreview') &&
+              !dep.includes('SeasonalHeroEffects')
+            );
+          },
+        },
         chunkSizeWarningLimit: 600,
         rollupOptions: {
           input: {
@@ -29,7 +46,7 @@ export default defineConfig(({ mode }) => {
           },
           output: {
             manualChunks: {
-              'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+              'vendor-react': ['react', 'react-dom', 'react-dom/client', 'react-router-dom'],
               'vendor-motion': ['framer-motion'],
               'vendor-supabase': ['@supabase/supabase-js'],
               'vendor-recaptcha': ['react-google-recaptcha-v3'],

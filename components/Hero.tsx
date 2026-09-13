@@ -1,16 +1,10 @@
 import React, { useContext, lazy, Suspense } from 'react';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ThemeContext } from '../context/ThemeContext';
 import AnimatedTitle from './ui/AnimatedTitle';
 
 const SeasonalHeroEffects = lazy(() => import('./SeasonalHeroEffects').then(m => ({ default: m.SeasonalHeroEffects })));
-
-// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
-const MotionDiv = motion.div;
-const MotionP = motion.p;
-const MotionLink = motion(Link);
 
 const Hero: React.FC = () => {
     const { activeTheme } = useContext(ThemeContext);
@@ -48,16 +42,14 @@ const Hero: React.FC = () => {
         <p className="text-base md:text-xl max-w-2xl mx-auto mb-6 md:mb-8 font-light">
           Depilación láser definitiva con tecnología de vanguardia para resultados visibles y duraderos. Sentite libre, sentite renovada.
         </p>
-        <MotionLink 
+        <Link 
           to="/precios"
-          className="bg-white text-theme-primary px-6 py-3 text-base md:px-8 md:py-4 md:text-lg rounded-full font-bold hover:bg-theme-primary-soft transition-all duration-300 group flex items-center gap-2 mx-auto seasonal-glow-hover animate-heartbeat"
+          className="bg-white text-theme-primary px-6 py-3 text-base md:px-8 md:py-4 md:text-lg rounded-full font-bold hover:bg-theme-primary-soft hover:scale-105 active:scale-95 transition-all duration-300 group flex items-center gap-2 mx-auto seasonal-glow-hover animate-heartbeat w-fit"
           key={activeTheme.ctaText}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
           {activeTheme.ctaText}
           <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
-        </MotionLink>
+        </Link>
       </div>
     </section>
   );

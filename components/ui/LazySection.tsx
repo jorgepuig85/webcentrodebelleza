@@ -10,8 +10,8 @@ interface LazySectionProps {
 export const LazySection: React.FC<LazySectionProps> = ({
   children,
   fallback = <div className="min-h-[300px]" />,
-  rootMargin = '400px',
-  delay = 2500,
+  rootMargin = '150px',
+  delay = 5000,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

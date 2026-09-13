@@ -1,14 +1,8 @@
 import React from 'react';
-// FIX: Changed import to be type-only for Variants to potentially fix module resolution issues.
-import { motion, type Variants } from 'framer-motion';
 import { cn } from '../../lib/utils';
-
-// FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
-const MotionDiv = motion.div;
 
 type As = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
-// FIX: Extend React.HTMLAttributes<HTMLHeadingElement> to allow standard HTML attributes like 'id' to be passed to the component.
 interface AnimatedTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   as: As;
   children: React.ReactNode;
@@ -17,11 +11,6 @@ interface AnimatedTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
 
 const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ as: Component, children, className, ...rest }) => {
   const isMainTitle = Component === 'h1' || Component === 'h2';
-
-  const subtitleVariants: Variants = {
-    rest: { letterSpacing: 'normal' },
-    hover: { letterSpacing: '0.05em' },
-  };
 
   if (isMainTitle) {
     // For main titles, we use a CSS-based underline for performance and simplicity
@@ -34,19 +23,13 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ as: Component, children, 
     );
   }
 
-  // For subtitles, we use Framer Motion for the letter-spacing effect
+  // For subtitles, we use pure CSS transition for smooth hover letter-spacing without heavy JS runtime
   return (
-    <MotionDiv
-      variants={subtitleVariants}
-      initial="rest"
-      whileHover="hover"
-      transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="cursor-pointer inline-block"
-    >
+    <div className="cursor-pointer inline-block transition-[letter-spacing] duration-300 ease-out hover:tracking-wider">
       <Component className={className} {...rest}>
         {children}
       </Component>
-    </MotionDiv>
+    </div>
   );
 };
 

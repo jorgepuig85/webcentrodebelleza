@@ -5,10 +5,9 @@ import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import { ThemeProvider } from './context/ThemeContext';
 import FloatingActionCluster from './components/FloatingActionCluster';
-import BottomNavBar from './components/BottomNavBar';
-
 // Lazy load non-critical components to reduce initial bundle
 const BeautyRoulette = lazy(() => import('./components/BeautyRoulette'));
+const BottomNavBar = lazy(() => import('./components/BottomNavBar'));
 
 // Lazy load page components for code splitting
 const Home = lazy(() => import('./pages/Home'));
@@ -134,7 +133,9 @@ const App: React.FC = () => {
             </Routes>
         </main>
         <Footer />
-        <BottomNavBar />
+        <React.Suspense fallback={null}>
+          <BottomNavBar />
+        </React.Suspense>
         {showRoulette && (
           <React.Suspense fallback={null}>
             <BeautyRoulette isOpen={showRoulette} onClose={handleRouletteClose} />
