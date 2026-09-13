@@ -20,11 +20,19 @@ export default defineConfig(({ mode }) => {
         }
       },
       build: {
+        chunkSizeWarningLimit: 600,
         rollupOptions: {
           input: {
             main: path.resolve(__dirname, 'index.html'),
             alquiler: path.resolve(__dirname, 'alquiler/index.html'),
             precios: path.resolve(__dirname, 'precios/index.html'),
+          },
+          output: {
+            manualChunks: {
+              'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+              'vendor-motion': ['framer-motion'],
+              'vendor-supabase': ['@supabase/supabase-js'],
+            }
           }
         }
       }

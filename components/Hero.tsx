@@ -66,7 +66,7 @@ const Hero: React.FC = () => {
           Depilación láser definitiva con tecnología de vanguardia para resultados visibles y duraderos. Sentite libre, sentite renovada.
         </MotionP>
         <MotionLink 
-          to="/servicios"
+          to="/precios"
           className="bg-white text-theme-primary px-6 py-3 text-base md:px-8 md:py-4 md:text-lg rounded-full font-bold hover:bg-theme-primary-soft transition-all duration-300 group flex items-center gap-2 mx-auto seasonal-glow-hover animate-heartbeat"
           key={activeTheme.ctaText} // Add key to re-animate button text on change
           initial={{ opacity: 0, scale: 0.9 }}
