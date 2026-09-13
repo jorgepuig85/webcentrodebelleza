@@ -207,7 +207,18 @@ const Services = () => {
           <MotionDiv variants={itemVariants}>
             <AnimatedTitle as="h2" className="text-3xl md:text-4xl font-bold text-theme-text-strong">Nuestros Servicios</AnimatedTitle>
           </MotionDiv>
-          <MotionP variants={itemVariants} className="text-lg text-theme-text mt-2">Elegí la zona que querés tratar y empezá tu cambio.</MotionP>
+          <MotionP variants={itemVariants} className="text-lg text-theme-text mt-2">
+            Zonas corporales, protocolos de aplicación y beneficios de cada tratamiento.
+          </MotionP>
+          <MotionDiv variants={itemVariants} className="mt-3">
+            <Link 
+              to="/precios" 
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-pink-600 hover:text-pink-700 bg-pink-50 hover:bg-pink-100 border border-pink-200 px-4 py-1.5 rounded-full transition-colors"
+            >
+              <span>Ver tarifario completo y combos en nuestra Tabla de Precios</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </MotionDiv>
           <MotionDiv variants={itemVariants} className="mt-4 w-24 h-1 bg-theme-primary mx-auto rounded"></MotionDiv>
         </MotionDiv>
         

@@ -15,11 +15,8 @@ const PRODUCTION_SITE_KEY = "6LfJ238rAAAAAD5yTobnwO2pp01zG1dHfZWY8Lsp";
 const TEST_SITE_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
 const reCaptchaKey = isRecaptchaProd ? PRODUCTION_SITE_KEY : TEST_SITE_KEY;
 
-// Conditionally choose the router based on the environment.
-// In production (the final domain), use clean URLs with BrowserRouter.
-// For development and AI Studio previews, use HashRouter to ensure navigation works.
-const isProductionEnv = window.location.hostname === 'www.centrodebelleza.com.ar';
-const Router = isProductionEnv ? BrowserRouter : HashRouter;
+// Always use clean URLs with BrowserRouter so that Vercel preview and production URLs never inject '#' hashes.
+const Router = BrowserRouter;
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
