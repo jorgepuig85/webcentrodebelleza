@@ -5,7 +5,7 @@ import { Home, ClipboardList, Sparkles, Calendar } from 'lucide-react';
 const BottomNavBar: React.FC = () => {
   const navItems = [
     { path: '/', icon: Home, label: 'Inicio' },
-    { path: '/servicios', icon: ClipboardList, label: 'Servicios' },
+    { path: '/precios', icon: ClipboardList, label: 'Servicios' },
     { path: '/promociones', icon: Sparkles, label: 'Promos' },
     { path: '/contacto', icon: Calendar, label: 'Reservar' },
   ];

@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/servicios",
+      "destination": "/precios",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/sitemap.xml",
