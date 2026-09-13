@@ -66,7 +66,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     } catch (error) {
         console.error('Error fetching availability:', error);
-        const message = error instanceof Error ? error.message : 'An unknown error occurred';
-        return res.status(500).json({ error: 'No se pudo obtener la disponibilidad.', details: message });
+        return res.status(500).json({ error: 'No se pudo verificar la disponibilidad en este momento. Por favor, intentá nuevamente más tarde.' });
     }
 }

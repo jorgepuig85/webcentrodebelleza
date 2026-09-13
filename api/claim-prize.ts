@@ -237,7 +237,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     } catch (error) {
         console.error('Error claiming prize:', error);
-        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
-        return res.status(500).json({ error: 'No se pudo reclamar el premio.', details: message });
+        return res.status(500).json({ error: 'No se pudo reclamar el premio en este momento. Por favor, intentá nuevamente más tarde.' });
     }
 }
