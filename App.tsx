@@ -13,7 +13,6 @@ import BottomNavBar from './components/BottomNavBar';
 const Home = lazy(() => import('./pages/Home'));
 const RentalPage = lazy(() => import('./pages/RentalPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
-const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
 const PreciosPage = lazy(() => import('./pages/PreciosPage'));
 const TechnologyPage = lazy(() => import('./pages/TechnologyPage'));
