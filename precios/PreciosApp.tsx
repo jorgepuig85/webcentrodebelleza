@@ -60,7 +60,7 @@ export const PreciosApp: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeGender, setActiveGender] = useState<'woman' | 'man'>('woman');
   const [viewMode, setViewMode] = useState<'all' | 'combos' | 'zones'>('all');
-  const [displayStyle, setDisplayStyle] = useState<'cards' | 'table'>('cards');
+  const [displayStyle, setDisplayStyle] = useState<'table' | 'cards'>('table');
   const [searchQuery, setSearchQuery] = useState('');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -233,28 +233,30 @@ export const PreciosApp: React.FC = () => {
               {/* Controles de Búsqueda y Alternador Tarjetas / Lista */}
               <div className="flex items-center gap-3 w-full md:w-auto justify-end">
                 {/* Selector de Presentación Visual (Cards vs Tabla) */}
-                <div className="hidden sm:inline-flex p-1 bg-gray-100 rounded-lg border border-gray-200">
-                  <button
-                    onClick={() => setDisplayStyle('cards')}
-                    title="Vista en Tarjetas Visuales"
-                    className={`p-1.5 rounded-md text-xs font-medium transition-all ${
-                      displayStyle === 'cards' 
-                        ? 'bg-white text-gray-900 shadow-sm' 
-                        : 'text-gray-500 hover:text-gray-900'
-                    }`}
-                  >
-                    <LayoutGrid className="w-4 h-4" />
-                  </button>
+                <div className="inline-flex p-1 bg-gray-100 rounded-lg border border-gray-200">
                   <button
                     onClick={() => setDisplayStyle('table')}
                     title="Vista en Tabla de Precios"
-                    className={`p-1.5 rounded-md text-xs font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                       displayStyle === 'table' 
                         ? 'bg-white text-gray-900 shadow-sm' 
                         : 'text-gray-500 hover:text-gray-900'
                     }`}
                   >
-                    <TableIcon className="w-4 h-4" />
+                    <TableIcon className="w-3.5 h-3.5" />
+                    <span>Tabla</span>
+                  </button>
+                  <button
+                    onClick={() => setDisplayStyle('cards')}
+                    title="Vista en Tarjetas con Fotos"
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                      displayStyle === 'cards' 
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-500 hover:text-gray-900'
+                    }`}
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                    <span>Fotos</span>
                   </button>
                 </div>
 
