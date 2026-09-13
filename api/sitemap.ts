@@ -16,6 +16,7 @@ const generateSitemap = (posts: Post[]): string => {
   // Static pages (matching the app's routes)
   const staticPages = [
     { loc: '/', priority: '1.00', lastmod: today },
+    { loc: '/precios', priority: '0.90', lastmod: today },
     { loc: '/servicios', priority: '0.80', lastmod: today },
     { loc: '/promociones', priority: '0.80', lastmod: today },
     { loc: '/tecnologia', priority: '0.80', lastmod: today },

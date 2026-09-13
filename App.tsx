@@ -15,6 +15,7 @@ const RentalPage = lazy(() => import('./pages/RentalPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
+const PreciosPage = lazy(() => import('./pages/PreciosPage'));
 const TechnologyPage = lazy(() => import('./pages/TechnologyPage'));
 const TestimonialsPage = lazy(() => import('./pages/TestimonialsPage'));
 const LocationsPage = lazy(() => import('./pages/LocationsPage'));
@@ -123,6 +124,7 @@ const App: React.FC = () => {
         <main>
             <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/precios" element={<PreciosPage />} />
                 <Route path="/servicios" element={<ServicesPage />} />
                 <Route path="/promociones" element={<PromotionsPage />} />
                 <Route path="/tecnologia" element={<TechnologyPage />} />

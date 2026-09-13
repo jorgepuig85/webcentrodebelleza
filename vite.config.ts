@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
           input: {
             main: path.resolve(__dirname, 'index.html'),
             alquiler: path.resolve(__dirname, 'alquiler/index.html'),
+            precios: path.resolve(__dirname, 'precios/index.html'),
           }
         }
       }
