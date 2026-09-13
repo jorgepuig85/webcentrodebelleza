@@ -4,9 +4,21 @@ import { useState, useEffect } from 'react';
 import { Theme, THEMES, DEFAULT_THEME, getSeason } from '../lib/themes';
 
 export const useSeasonalTheme = (): { activeTheme: Theme, season: string } => {
-  const [themeState, setThemeState] = useState<{ activeTheme: Theme, season: string }>({
-    activeTheme: DEFAULT_THEME,
-    season: 'spring',
+  const [themeState, setThemeState] = useState<{ activeTheme: Theme, season: string }>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const forcedSeason = urlParams.get('season');
+        const seasonKey = (forcedSeason && THEMES[forcedSeason]) 
+          ? forcedSeason 
+          : getSeason(new Date());
+        return { activeTheme: THEMES[seasonKey] || DEFAULT_THEME, season: seasonKey };
+      }
+    } catch {
+      // fallback
+    }
+    const currentSeason = getSeason(new Date());
+    return { activeTheme: THEMES[currentSeason] || DEFAULT_THEME, season: currentSeason };
   });
 
   useEffect(() => {

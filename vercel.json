@@ -44,7 +44,7 @@
       "destination": "/api/sitemap"
     },
     {
-      "source": "/((?!api/|alquiler|precios|assets/|robots.txt|sitemap.xml).*)",
+      "source": "/((?!api/|alquiler|precios|assets/|robots.txt|sitemap.xml|llms.txt).*)",
       "destination": "/index.html"
     }
   ]

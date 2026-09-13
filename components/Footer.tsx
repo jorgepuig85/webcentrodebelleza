@@ -102,17 +102,17 @@ const Footer: React.FC = () => {
                   <span>{views.toLocaleString('es-AR')} Visitas</span>
               </div>
             )}
-            <div className="mt-6 text-xs text-gray-500 space-y-2">
+            <div className="mt-6 text-xs text-gray-300 space-y-2">
               <p>
                 Este sitio está protegido por reCAPTCHA y se aplican la{' '}
-                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">Política de Privacidad</a> y los{' '}
-                <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">Términos de Servicio</a> de Google.
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-white text-gray-200">Política de Privacidad</a> y los{' '}
+                <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-white text-gray-200">Términos de Servicio</a> de Google.
               </p>
               <p>
                 Diseño y Desarrollo Web por{' '}
                 <a 
                   href="mailto:jorgeapuig85@gmail.com"
-                  className="font-semibold text-gray-400 hover:text-white transition-colors underline"
+                  className="font-semibold text-gray-200 hover:text-white transition-colors underline"
                 >
                   Jorge Puig
                 </a>

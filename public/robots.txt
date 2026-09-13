@@ -6,5 +6,8 @@ Allow: /
 User-agent: AdsBot-Google
 Allow: /
 
-# Sitemap location
+# Sitemap and LLMs Location
 Sitemap: https://centrodebelleza.com.ar/sitemap.xml
+# LLMs.txt for AI agents and LLM crawlers
+# https://llmstxt.org/
+# https://www.centrodebelleza.com.ar/llms.txt

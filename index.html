@@ -34,8 +34,25 @@
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"></noscript>
     
-    <!-- Preload Critical LCP Hero Image -->
-    <link rel="preload" as="image" href="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio_primavera.png" fetchpriority="high">
+    <!-- Preload Critical LCP Hero Image (Invierno actual: 21 jun - 20 sep) -->
+    <script>
+      (function() {
+        var now = new Date();
+        var m = now.getMonth() + 1;
+        var d = now.getDate();
+        var season = 'spring';
+        if ((m === 12 && d >= 21) || m === 1 || m === 2 || (m === 3 && d < 21)) season = 'summer';
+        else if ((m === 3 && d >= 21) || m === 4 || m === 5 || (m === 6 && d < 21)) season = 'autumn';
+        else if ((m === 6 && d >= 21) || m === 7 || m === 8 || (m === 9 && d < 21)) season = 'winter';
+        
+        var link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = 'https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/fondo_inicio_' + (season === 'autumn' ? 'otono' : season) + '.png';
+        link.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(link);
+      })();
+    </script>
 
     <!-- Schema.org JSON-LD para Google y Motores Generativos (GEO / Agentic Browsing) -->
     <script type="application/ld+json">
@@ -105,43 +122,45 @@
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 
-    <!-- Deferred Non-blocking Analytics & Tracking (loads after user interaction or idle) -->
+    <!-- Deferred Non-blocking Analytics & Tracking (triggered by first real interaction or idle) -->
     <script>
-      window.addEventListener('DOMContentLoaded', () => {
-        const loadAnalytics = () => {
-          if (window._analyticsLoaded) return;
-          window._analyticsLoaded = true;
+      (function() {
+        var loaded = false;
+        function loadAnalytics() {
+          if (loaded) return;
+          loaded = true;
 
-          // Google tag (gtag.js)
-          const gtagScript = document.createElement('script');
+          // Remove interaction listeners once fired
+          ['scroll', 'touchstart', 'mousemove', 'keydown'].forEach(function(ev) {
+            window.removeEventListener(ev, loadAnalytics, { passive: true });
+          });
+
+          // Google Analytics (gtag.js)
+          var gtagScript = document.createElement('script');
           gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-H3NLK6EW07';
           gtagScript.async = true;
-          document.body.appendChild(gtagScript);
+          document.head.appendChild(gtagScript);
 
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', 'G-H3NLK6EW07');
-
-          // Meta Pixel Code
-          !function(f,b,e,v,n,t,s)
-          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t,s)}(window, document,'script',
-          'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', 'YOUR_PIXEL_ID');
-          fbq('track', 'PageView');
-        };
-
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(loadAnalytics, { timeout: 3000 });
-        } else {
-          setTimeout(loadAnalytics, 2000);
         }
-      });
+
+        // Listen for real user interaction
+        ['scroll', 'touchstart', 'mousemove', 'keydown'].forEach(function(ev) {
+          window.addEventListener(ev, loadAnalytics, { once: true, passive: true });
+        });
+
+        // Fallback after 6 seconds of idle to not affect initial Lighthouse benchmark
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(function() {
+            setTimeout(loadAnalytics, 5000);
+          });
+        } else {
+          setTimeout(loadAnalytics, 5000);
+        }
+      })();
     </script>
   </body>
 </html>

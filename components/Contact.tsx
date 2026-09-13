@@ -8,6 +8,8 @@ import AnimatedTitle from './ui/AnimatedTitle';
 import VCardQRCode from './VCardQRCode';
 import { ThemeContext } from '../context/ThemeContext';
 
+import { ScopedReCaptchaProvider } from './ScopedReCaptchaProvider';
+
 // FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
 const MotionDiv = motion.div;
 const MotionP = motion.p;
@@ -622,4 +624,12 @@ const Contact: React.FC = () => {
   );
 };
 
-export default Contact;
+const ContactWithReCaptcha: React.FC = () => {
+  return (
+    <ScopedReCaptchaProvider>
+      <Contact />
+    </ScopedReCaptchaProvider>
+  );
+};
+
+export default ContactWithReCaptcha;

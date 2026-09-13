@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { X, Gift, Mail, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import AnimatedTitle from './ui/AnimatedTitle';
+import { ScopedReCaptchaProvider } from './ScopedReCaptchaProvider';
 
 // FIX: Using motion factory function to potentially resolve TypeScript type inference issues.
 const MotionDiv = motion.div;
@@ -344,4 +345,12 @@ const BeautyRoulette: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
   );
 };
 
-export default BeautyRoulette;
+const BeautyRouletteWithReCaptcha: React.FC<{ isOpen: boolean; onClose: () => void }> = (props) => {
+  return (
+    <ScopedReCaptchaProvider>
+      <BeautyRoulette {...props} />
+    </ScopedReCaptchaProvider>
+  );
+};
+
+export default BeautyRouletteWithReCaptcha;

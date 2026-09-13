@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
               'vendor-react': ['react', 'react-dom', 'react-router-dom'],
               'vendor-motion': ['framer-motion'],
               'vendor-supabase': ['@supabase/supabase-js'],
+              'vendor-recaptcha': ['react-google-recaptcha-v3'],
             }
           }
         }

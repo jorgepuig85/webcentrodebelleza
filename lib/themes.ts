@@ -97,15 +97,16 @@ export const THEMES: { [key: string]: Theme } = {
     name: 'Invierno',
     colors: {
       ...DEFAULT_THEME.colors,
-      '--color-primary': '#a78bfa', // violet-400
-      '--color-primary-hover': '#8b5cf6', // violet-500
+      '--color-primary': '#7c3aed', // violet-600 (contraste óptimo WCAG AA > 5.6:1 contra blanco)
+      '--color-primary-hover': '#6d28d9', // violet-700
       '--color-primary-soft': '#f5f3ff', // violet-50
-      '--color-secondary': '#38bdf8', // lightBlue-400
+      '--color-secondary': '#0284c7', // sky-600
       '--color-text': '#374151', // gray-700
       '--color-text-strong': '#111827', // gray-900
+      '--color-text-light': '#6b7280', // gray-500 accesible
       '--color-background': '#ffffff', // white
       '--color-background-soft': '#f3f4f6', // gray-100
-      '--color-glow': 'rgba(167, 139, 250, 0.4)', // violet-400 with alpha
+      '--color-glow': 'rgba(124, 58, 237, 0.4)', // violet-600 with alpha
     },
     images: {
       hero: `${SUPABASE_URL}fondo_inicio_invierno.png`,
