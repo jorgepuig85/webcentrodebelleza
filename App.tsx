@@ -1,4 +1,4 @@
-import React, { useEffect, useState, lazy } from 'react';
+import React, { useEffect, lazy } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -6,7 +6,6 @@ import FloatingWhatsApp from './components/FloatingWhatsApp';
 import { ThemeProvider } from './context/ThemeContext';
 import FloatingActionCluster from './components/FloatingActionCluster';
 // Lazy load non-critical components to reduce initial bundle
-const BeautyRoulette = lazy(() => import('./components/BeautyRoulette'));
 const BottomNavBar = lazy(() => import('./components/BottomNavBar'));
 
 // Lazy load page components for code splitting
@@ -21,7 +20,6 @@ const BlogPage = lazy(() => import('./pages/BlogPage'));
 const PostPage = lazy(() => import('./pages/PostPage'));
 
 const App: React.FC = () => {
-  const [showRoulette, setShowRoulette] = useState(false);
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
@@ -64,54 +62,11 @@ const App: React.FC = () => {
       }, 3500);
     }
 
-    // --- Gamification Logic ---
-    let rouletteTimer: ReturnType<typeof setTimeout> | null = null;
-    let configTimer: ReturnType<typeof setTimeout> | null = null;
-    
-    // Defer checking gamification config to avoid network and CPU contention during initial paint
-    configTimer = setTimeout(async () => {
-        try {
-            const rouletteShownKey = 'rouletteShown';
-            const hasRouletteBeenShown = localStorage.getItem(rouletteShownKey);
-            if (hasRouletteBeenShown) return;
-
-            const { supabase } = await import('./lib/supabaseClient');
-            const { data, error } = await supabase
-                .from('configuration')
-                .select('value')
-                .eq('key', 'show_roulette')
-                .single();
-                
-            if (error) {
-                console.warn('Could not fetch roulette configuration:', error.message);
-                return;
-            }
-            
-            const isRouletteEnabled = data?.value === true;
-
-            if (isRouletteEnabled && !localStorage.getItem(rouletteShownKey)) {
-                rouletteTimer = setTimeout(() => {
-                    setShowRoulette(true);
-                }, 3500);
-            }
-        } catch (err) {
-            console.error('Unexpected error checking gamification status:', err);
-        }
-    }, 3500);
-
     // Cleanup timers on unmount
     return () => {
-        if (visitTimer) clearTimeout(visitTimer);
-        if (configTimer) clearTimeout(configTimer);
-        if (rouletteTimer) clearTimeout(rouletteTimer);
+      if (visitTimer) clearTimeout(visitTimer);
     };
-
   }, []); // Empty dependency array ensures it runs only once.
-  
-  const handleRouletteClose = () => {
-    setShowRoulette(false);
-    localStorage.setItem('rouletteShown', 'true');
-  };
 
   return (
     <ThemeProvider>
@@ -136,11 +91,6 @@ const App: React.FC = () => {
         <React.Suspense fallback={null}>
           <BottomNavBar />
         </React.Suspense>
-        {showRoulette && (
-          <React.Suspense fallback={null}>
-            <BeautyRoulette isOpen={showRoulette} onClose={handleRouletteClose} />
-          </React.Suspense>
-        )}
       </div>
       <FloatingActionCluster>
         <FloatingWhatsApp />

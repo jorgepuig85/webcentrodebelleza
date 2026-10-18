@@ -62,7 +62,11 @@ const createInquiryEmailHtml = (props: InquiryProps) => {
 
 // --- reCAPTCHA Verification Helper ---
 async function verifyRecaptcha(token: string): Promise<{ success: boolean; score: number }> {
-    const secretKey = process.env.RECAPTCHA_V3_SECRET_KEY || '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+    const secretKey = process.env.RECAPTCHA_V3_SECRET_KEY;
+    if (!secretKey) {
+        console.error('CRITICAL: RECAPTCHA_V3_SECRET_KEY is not configured on server.');
+        return { success: false, score: 0 };
+    }
     const verificationUrl = `https://www.google.com/recaptcha/api/siteverify`;
 
     try {
@@ -77,8 +81,7 @@ async function verifyRecaptcha(token: string): Promise<{ success: boolean; score
         }
         
         const data = await response.json();
-        console.log("reCAPTCHA verification response:", data);
-        return { success: data.success, score: data.score };
+        return { success: Boolean(data.success), score: data.score ?? 0 };
     } catch (error) {
         console.error('reCAPTCHA verification error:', error);
         return { success: false, score: 0 };

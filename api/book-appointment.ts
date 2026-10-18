@@ -85,13 +85,24 @@ const createIcsContent = (props: EmailProps): string => {
     ].join('\r\n');
 };
 
-// --- Email HTML Templates ---
+// --- Email HTML Templates & Sanitization ---
+
+const escapeHtml = (unsafe: string): string => {
+    if (!unsafe) return '';
+    return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+};
 
 const createConfirmationEmailHtml = (props: EmailProps) => {
     const { name, date, time, zones } = props;
     const { googleLink, outlookLink } = createCalendarLinks(props);
     const formattedDate = formatDateForDisplay(date);
-    const zonesHtml = zones.map(zone => `<li>${zone}</li>`).join('');
+    const safeName = escapeHtml(name);
+    const zonesHtml = zones.map(zone => `<li>${escapeHtml(zone)}</li>`).join('');
     const year = new Date().getFullYear();
 
     return `<!DOCTYPE html>
@@ -103,7 +114,7 @@ const createConfirmationEmailHtml = (props: EmailProps) => {
     <body style="margin: 0; padding: 0;">
       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #fdf2f8; padding: 20px; text-align: center;">
-            <h1 style="color: #db2777; margin: 0;">¡Hola, ${name}!</h1>
+            <h1 style="color: #db2777; margin: 0;">¡Hola, ${safeName}!</h1>
         </div>
         <div style="padding: 20px 30px;">
             <p>Hemos recibido tu solicitud de turno. ¡Gracias por elegir nuestro centro de belleza!</p>
@@ -145,11 +156,15 @@ const createAdminNotificationEmailHtml = (props: AdminEmailProps) => {
     const { name, email, phone, date, time, zones, message } = props;
     const { googleLink, outlookLink } = createCalendarLinks(props);
     const formattedDate = formatDateForDisplay(date);
-    const zonesHtml = zones.map(zone => `<li>${zone}</li>`).join('');
-    const phoneHtml = phone ? `<p><strong>Teléfono/WhatsApp:</strong> ${phone}</p>` : '';
-    const messageHtml = message ? `
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safePhone = phone ? escapeHtml(phone) : '';
+    const safeMessage = message ? escapeHtml(message) : '';
+    const zonesHtml = zones.map(zone => `<li>${escapeHtml(zone)}</li>`).join('');
+    const phoneHtml = safePhone ? `<p><strong>Teléfono/WhatsApp:</strong> ${safePhone}</p>` : '';
+    const messageHtml = safeMessage ? `
         <p style="margin-top: 15px;"><strong>Mensaje adicional del cliente:</strong></p>
-        <p style="white-space: pre-wrap; background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 4px; margin: 0;">${message}</p>
+        <p style="white-space: pre-wrap; background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 4px; margin: 0;">${safeMessage}</p>
     ` : '';
 
     return `<!DOCTYPE html>
@@ -168,8 +183,8 @@ const createAdminNotificationEmailHtml = (props: AdminEmailProps) => {
                 
                 <div style="border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 20px;">
                     <h2 style="color: #4338ca; margin-top: 0;">Datos del Cliente</h2>
-                    <p><strong>Nombre:</strong> ${name}</p>
-                    <p><strong>Email:</strong> <a href="mailto:${email}" style="color: #4338ca;">${email}</a></p>
+                    <p><strong>Nombre:</strong> ${safeName}</p>
+                    <p><strong>Email:</strong> <a href="mailto:${safeEmail}" style="color: #4338ca;">${safeEmail}</a></p>
                     ${phoneHtml}
                 </div>
 
@@ -206,9 +221,11 @@ const createAdminNotificationEmailHtml = (props: AdminEmailProps) => {
 
 // --- reCAPTCHA Verification Helper ---
 async function verifyRecaptcha(token: string): Promise<{ success: boolean; score: number }> {
-    // For production, set RECAPTCHA_V3_SECRET_KEY in your Vercel environment variables.
-    // Using Google's test key as a fallback for development.
-    const secretKey = process.env.RECAPTCHA_V3_SECRET_KEY || '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+    const secretKey = process.env.RECAPTCHA_V3_SECRET_KEY;
+    if (!secretKey) {
+        console.error('CRITICAL: RECAPTCHA_V3_SECRET_KEY is not configured on server.');
+        return { success: false, score: 0 };
+    }
     const verificationUrl = `https://www.google.com/recaptcha/api/siteverify`;
 
     try {
@@ -223,8 +240,7 @@ async function verifyRecaptcha(token: string): Promise<{ success: boolean; score
         }
         
         const data = await response.json();
-        console.log("reCAPTCHA verification response:", data); // For debugging
-        return { success: data.success, score: data.score };
+        return { success: Boolean(data.success), score: data.score ?? 0 };
     } catch (error) {
         console.error('reCAPTCHA verification error:', error);
         return { success: false, score: 0 };

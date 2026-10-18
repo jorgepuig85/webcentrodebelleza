@@ -38,20 +38,20 @@
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": "Product",
-          "@id": "https://www.centrodebelleza.com.ar/alquiler#product",
+          "@type": "Service",
+          "@id": "https://www.centrodebelleza.com.ar/alquiler#service",
           "name": "Alquiler de Equipo de Depilación Láser Definitiva",
+          "serviceType": "Alquiler de Equipamiento Estético para Profesionales",
+          "provider": {
+            "@type": "BeautySalon",
+            "name": "Centro de Belleza",
+            "url": "https://www.centrodebelleza.com.ar"
+          },
           "image": "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/web/rental.png",
           "description": "Servicio de alquiler por jornada de equipos de depilación láser con cabezal frío para profesionales y centros de estética en La Pampa.",
-          "category": "Equipamiento Médico Estético",
-          "offers": {
-            "@type": "AggregateOffer",
-            "priceCurrency": "ARS",
-            "availability": "https://schema.org/InStock",
-            "areaServed": {
-              "@type": "AdministrativeArea",
-              "name": "La Pampa, Argentina"
-            }
+          "areaServed": {
+            "@type": "AdministrativeArea",
+            "name": "La Pampa, Argentina"
           }
         },
         {

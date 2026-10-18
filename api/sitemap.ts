@@ -7,7 +7,7 @@ interface Post {
   created_at: string; // ISO string
 }
 
-const BASE_URL = 'https://centrodebelleza.com.ar';
+const BASE_URL = 'https://www.centrodebelleza.com.ar';
 
 // Function to generate the sitemap XML
 const generateSitemap = (posts: Post[]): string => {
